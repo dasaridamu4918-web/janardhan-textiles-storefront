@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Janardhan Textiles — Interactive 3D Saree Showcase" />
+  <title>Janardhan Textiles — 3D Silk Saree Showcase</title>
+
+  <!-- Google Fonts: Cormorant Garamond (Serif) & Inter (Sans) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;0,700;1,500&family=Inter:wght@400;500;600;700&display=swap"
+    rel="stylesheet"
+  />
+
+  <link rel="stylesheet" href="/src/styles.css" />
+
+  <!-- Import map enables native ES module resolution for Three.js & GSAP in both Vite and static servers -->
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.min.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.169.0/examples/jsm/",
+        "gsap": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/index.js",
+        "gsap/ScrollTrigger": "https://cdn.jsdelivr.net/npm/gsap@3.12.5/ScrollTrigger.js"
+      }
+    }
+  </script>
+</head>
+<body>
+  <a id="skip-to-collection" class="skip-link" href="#collection">Skip to collection</a>
+
+  <!-- Site Header -->
+  <header class="site-header" role="banner">
+    <a href="#" class="brand-identity" aria-label="Janardhan Textiles Home">
+      <span class="brand-crest" aria-hidden="true"><span>JT</span></span>
+      <span id="brand-name" class="brand-title">Janardhan Textiles</span>
+    </a>
+
+    <div class="header-controls">
+      <button
+        id="orbit-toggle-btn"
+        type="button"
+        class="btn-utility"
+        aria-pressed="false"
+      >
+        Inspect 3D Stage
+      </button>
+
+      <button
+        id="menu-toggle-btn"
+        type="button"
+        class="menu-toggle-btn"
+        aria-expanded="false"
+        aria-controls="site-nav-drawer"
+        aria-label="Toggle navigation menu"
+      >
+        <span class="menu-icon-bars" aria-hidden="true">
+          <span></span>
+          <span></span>
+          <span></span>
+        </span>
+        <span>Menu</span>
+      </button>
+    </div>
+
+    <div class="scroll-progress-track" aria-hidden="true">
+      <div id="scroll-progress-bar" class="scroll-progress-bar"></div>
+    </div>
+  </header>
+
+  <!-- Navigation Drawer -->
+  <nav
+    id="site-nav-drawer"
+    class="site-nav-drawer"
+    aria-label="Story Scenes & Collection Navigation"
+    aria-hidden="true"
+  >
+    <ul id="site-nav-list" class="site-nav-list"></ul>
+
+    <div class="nav-drawer-tools">
+      <input
+        id="glb-upload-input"
+        type="file"
+        accept=".glb,.gltf"
+        hidden
+        aria-label="Upload optional .glb or .gltf 3D saree model"
+      />
+      <button id="glb-upload-btn" type="button" class="btn-utility">
+        Load Optional .GLB/.GLTF
+      </button>
+      <button id="glb-reset-btn" type="button" class="btn-utility" hidden>
+        Use Layered Planes
+      </button>
+      <p id="glb-upload-status" class="glb-status-text" aria-live="polite"></p>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main-content">
+    <!-- Semantic Screen-Reader Landmarks & Image Alt Descriptions populated from src/config.js -->
+    <div id="sr-scene-landmarks" class="sr-only" aria-live="off"></div>
+
+    <!-- Scroll-Scrubbed Track containing the Pinned 3D Stage -->
+    <div id="story-scroll-track" class="story-scroll-track">
+      <div
+        id="story-stage-pin"
+        class="story-stage-pin"
+        tabindex="0"
+        role="region"
+        aria-label="Interactive 3D Saree Showcase Stage. Scroll to advance or reverse scenes; use Left, Right, Up, and Down arrow keys or drag gently to inspect within constrained angles."
+      >
+        <canvas id="saree-webgl-canvas"></canvas>
+
+        <!-- Safe-Zone HUD Overlay (keeps all copy outside the saree area) -->
+        <div class="stage-safe-hud">
+          <!-- Top Safe Zone -->
+          <div class="stage-top-bar">
+            <div id="stage-copy-card" class="stage-copy-card" aria-live="polite">
+              <p id="stage-eyebrow" class="stage-eyebrow"></p>
+              <h1 id="stage-heading" class="stage-heading"></h1>
+              <p id="stage-caption" class="stage-caption"></p>
+            </div>
+
+            <div class="stage-status-column">
+              <div id="layer-status-pill" class="layer-status-pill" aria-live="polite"></div>
+              <div id="orbit-hint-text" class="orbit-hint-pill"></div>
+            </div>
+          </div>
+
+          <!-- Bottom Safe Zone -->
+          <div class="stage-bottom-bar">
+            <div class="saree-side-badges" aria-hidden="true">
+              <span id="left-saree-badge" class="saree-badge">Magenta Kanchipuram</span>
+              <span id="right-saree-badge" class="saree-badge">Champagne-Gold Tissue</span>
+            </div>
+
+            <div
+              id="scene-step-indicators"
+              class="scene-step-indicators"
+              role="group"
+              aria-label="Jump to story stage"
+            ></div>
+          </div>
+        </div>
+
+        <!-- Scene 4: Co-Founder Closing Overlay -->
+        <section
+          id="cofounder-closing-overlay"
+          class="cofounder-closing-overlay"
+          aria-labelledby="cofounder-heading"
+          aria-hidden="true"
+        >
+          <div class="cofounder-card">
+            <p id="cofounder-eyebrow" class="cofounder-eyebrow"></p>
+            <h2 id="cofounder-heading" class="cofounder-heading">Co-Founder</h2>
+
+            <div class="cofounder-portrait-frame">
+              <img
+                id="cofounder-portrait-img"
+                class="cofounder-portrait-img"
+                alt="Co-Founder, Janardhan Textiles"
+                hidden
+              />
+              <div id="cofounder-placeholder" class="cofounder-placeholder">
+                <div class="cofounder-placeholder-emblem" aria-hidden="true">JT</div>
+                <p id="cofounder-placeholder-caption" class="cofounder-placeholder-caption">
+                  Co-Founder, Janardhan Textiles.
+                </p>
+              </div>
+            </div>
+
+            <p id="cofounder-name" class="cofounder-name" hidden></p>
+            <p id="cofounder-caption" class="cofounder-caption" hidden></p>
+
+            <a id="cofounder-cta-btn" href="#collection" class="cta-primary-btn">
+              Explore the Collection
+            </a>
+          </div>
+        </section>
+      </div>
+    </div>
+
+    <!-- Featured Collection Section (#collection) -->
+    <section id="collection" class="collection-section" aria-labelledby="collection-heading">
+      <div class="collection-container">
+        <header class="collection-header">
+          <p id="collection-eyebrow" class="collection-eyebrow"></p>
+          <h2 id="collection-heading" class="collection-heading"></h2>
+          <p id="collection-subheading" class="collection-subheading"></p>
+        </header>
+
+        <div id="products-grid" class="products-grid"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer" role="contentinfo">
+    <p><span id="footer-brand-name">Janardhan Textiles</span></p>
+  </footer>
+
+  <script type="module" src="/src/app.js"></script>
+</body>
+</html>
