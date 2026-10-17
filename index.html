@@ -986,9 +986,23 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
     </div>
   </div>
 
-  <!-- Centralized Product Data & Sample Prices by Fabric (/src/products-data.js) -->
-  <script src="/src/products-data.js"></script>
+  <!-- Centralized Product Data & Sample Prices by Fabric (src/products-data.js) -->
+  <script src="src/products-data.js"></script>
   <script>
+    (function() {
+      const basePath = window.location.pathname.replace(/\/index\.html$/i, "").replace(/\/+$/, "");
+      if (basePath && basePath !== "" && Array.isArray(window.INITIAL_PRODUCTS)) {
+        window.INITIAL_PRODUCTS.forEach((p) => {
+          if (Array.isArray(p.gallery)) {
+            p.gallery.forEach((g) => {
+              if (g && typeof g.url === "string" && g.url.startsWith("/")) g.url = basePath + g.url;
+              if (g && typeof g.webpUrl === "string" && g.webpUrl.startsWith("/")) g.webpUrl = basePath + g.webpUrl;
+            });
+          }
+        });
+      }
+      window.__ASSET_BASE_PATH__ = basePath || "";
+    })();
     /**
      * ============================================================================
      * 1. CENTRALIZED SETTINGS FILE (SETTINGS_CONFIG)
@@ -1203,7 +1217,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       framesConfig: [
         {
           index: 1,
-          jpg: "/public/images/sarees/jt-saree-09/1-front.jpg",
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/1-front.jpg`,
           viewType: "full",
           focalDesktop: "50% 50%",
           focalMobile: "50% 50%",
@@ -1213,7 +1227,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         },
         {
           index: 2,
-          jpg: "/public/images/sarees/jt-saree-09/2-back-pallu.jpg",
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/2-back-pallu.jpg`,
           viewType: "full",
           focalDesktop: "50% 50%",
           focalMobile: "50% 50%",
@@ -1223,7 +1237,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         },
         {
           index: 3,
-          jpg: "/public/images/sarees/jt-saree-09/3-pallu-detail.jpg",
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/3-pallu-detail.jpg`,
           viewType: "detail",
           focalDesktop: "54% 50%",
           focalMobile: "50% 50%",
@@ -1233,7 +1247,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         },
         {
           index: 4,
-          jpg: "/public/images/sarees/jt-saree-09/4-macro.jpg",
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/4-macro.jpg`,
           viewType: "detail",
           focalDesktop: "55% 48%",
           focalMobile: "50% 50%",
@@ -1243,7 +1257,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         },
         {
           index: 5,
-          jpg: "/public/images/sarees/jt-saree-09/5-blouse.jpg",
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/5-blouse.jpg`,
           viewType: "detail",
           focalDesktop: "48% 42%",
           focalMobile: "50% 50%",
