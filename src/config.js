@@ -107,13 +107,21 @@ export default {
       alt: 'Tissue Cutwork Saree — Full saree view showing champagne-gold tissue drape, scalloped cutwork border, and peacock motifs',
       description: 'A tissue saree featuring delicate cutwork detailing.',
       views: {
-        fullSareeView: '/assets/tissue-cutwork/full-saree-back-pallu.jpg',
-        frontOrThreeQuarterView: '/assets/tissue-cutwork/front-three-quarter-model.jpg',
-        palluDetail: '/assets/tissue-cutwork/pallu-detail.jpg',
-        borderOrCutworkDetail: '/assets/tissue-cutwork/border-cutwork-detail.jpg',
-        fabricBodyDetail: '/assets/tissue-cutwork/fabric-body-detail.jpg',
-        blousePieceView: '/assets/tissue-cutwork/blouse-and-front-drape.jpg'
-      }
+        fullFrontView: '/assets/tissue-cutwork/front-three-quarter-model.jpg',
+        threeQuarterView: '/assets/tissue-cutwork/blouse-and-front-drape.jpg',
+        sideOrBackView: '/assets/tissue-cutwork/full-saree-back-pallu.jpg',
+        palluCloseup: '/assets/tissue-cutwork/pallu-detail.jpg',
+        borderOrCutworkCloseup: '/assets/tissue-cutwork/border-cutwork-detail.jpg',
+        fabricBodyPatternCloseup: '/assets/tissue-cutwork/fabric-body-detail.jpg'
+      },
+      gallery: [
+        { order: 1, key: 'full_front', label: '1. Full front view', url: '/assets/tissue-cutwork/front-three-quarter-model.jpg', alt: 'Tissue Cutwork Saree — Full front view showing model wearing champagne-gold tissue saree' },
+        { order: 2, key: 'three_quarter', label: '2. Three-quarter view', url: '/assets/tissue-cutwork/blouse-and-front-drape.jpg', alt: 'Tissue Cutwork Saree — Three-quarter view of embroidered blouse and front drape' },
+        { order: 3, key: 'side_back', label: '3. Side or back view', url: '/assets/tissue-cutwork/full-saree-back-pallu.jpg', alt: 'Tissue Cutwork Saree — Side or back view showing fall and trailing pallu' },
+        { order: 4, key: 'pallu_closeup', label: '4. Pallu close-up', url: '/assets/tissue-cutwork/pallu-detail.jpg', alt: 'Tissue Cutwork Saree — Pallu close-up showcasing scalloped cutwork and peacock embroidery' },
+        { order: 5, key: 'border_cutwork', label: '5. Border or cutwork close-up', url: '/assets/tissue-cutwork/border-cutwork-detail.jpg', alt: 'Tissue Cutwork Saree — Border or cutwork close-up with gold zardosi and royal blue peacock motif' },
+        { order: 6, key: 'fabric_pattern', label: '6. Fabric/body-pattern close-up', url: '/assets/tissue-cutwork/fabric-body-detail.jpg', alt: 'Tissue Cutwork Saree — Fabric/body-pattern close-up showing champagne-gold tissue weave texture and motifs' }
+      ]
     },
     {
       name: 'Magenta Kanchipuram Zari Saree',

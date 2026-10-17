@@ -117,13 +117,109 @@
       from { opacity: 0; transform: translateY(6px); }
       to { opacity: 1; transform: translateY(0); }
     }
+    /* Smooth transitions respecting reduced-motion */
+    .page-transition {
+      animation: fadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Fixed-frame Saree Product Gallery with 350-450ms Crossfade & 1.02 to 1.00 Subtle Zoom Settle */
+    .gallery-stage-frame {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 5 / 6;
+      background-color: #F8F5EE;
+      overflow: hidden;
+      contain: layout paint;
+    }
+
+    .gallery-crossfade-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+      user-select: none;
+      -webkit-user-drag: none;
+      pointer-events: none;
+      /* Exactly 400ms crossfade with gentle easing */
+      transition: opacity 400ms cubic-bezier(0.4, 0, 0.2, 1), transform 400ms cubic-bezier(0.2, 0.8, 0.4, 1);
+      will-change: opacity, transform;
+    }
+
+    .gallery-crossfade-img.is-active {
+      opacity: 1;
+      transform: scale(1.00);
+      z-index: 2;
+      pointer-events: auto;
+    }
+
+    /* Incoming photo starts slightly scaled at 1.02 with opacity 0 */
+    .gallery-crossfade-img.is-entering {
+      opacity: 0;
+      transform: scale(1.02);
+      z-index: 3;
+    }
+
+    /* Settles down to exact scale 1.00 and full opacity 1 */
+    .gallery-crossfade-img.is-settled {
+      opacity: 1;
+      transform: scale(1.00);
+      z-index: 3;
+    }
+
+    /* Outgoing photo fades smoothly */
+    .gallery-crossfade-img.is-exiting {
+      opacity: 0;
+      transform: scale(1.00);
+      z-index: 2;
+    }
+
+    .gallery-crossfade-img.is-idle {
+      opacity: 0;
+      transform: scale(1.00);
+      z-index: 1;
+      display: none;
+    }
+
+    /* Active & Accessible Thumbnails */
+    .gallery-thumb-btn {
+      transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+      outline: none;
+    }
+    .gallery-thumb-btn:focus-visible {
+      ring: 2px solid #063F46;
+      outline: 2px solid #C4A15A;
+      outline-offset: 2px;
+    }
+    .gallery-thumb-btn.is-active-thumb {
+      border-color: #063F46 !important;
+      box-shadow: 0 4px 14px -2px rgba(6, 63, 70, 0.25), 0 0 0 2px #C4A15A !important;
+      transform: scale(1.03);
+      opacity: 1 !important;
+    }
+
+    /* Accessible focus on gallery nav chevrons & zoom button */
+    .gallery-nav-btn:focus-visible {
+      outline: 2px solid #063F46;
+      outline-offset: 2px;
+      box-shadow: 0 0 0 4px rgba(196, 161, 90, 0.4);
+    }
+
     @media (prefers-reduced-motion: reduce) {
       .page-transition {
         animation: none !important;
       }
+      .gallery-crossfade-img {
+        transition: opacity 40ms linear !important;
+        transform: none !important;
+      }
       * {
         scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
       }
     }
 
@@ -486,12 +582,12 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
      * ============================================================================
      */
     const REQUIRED_GALLERY_VIEWS = [
-      { index: 1, key: "front_drape", label: "1. Model wearing the saree (front view)" },
-      { index: 2, key: "back_pallu", label: "2. Back and pallu view" },
-      { index: 3, key: "border_zari", label: "3. Border and zari detail" },
-      { index: 4, key: "weave_macro", label: "4. Fabric weave close-up" },
-      { index: 5, key: "blouse_piece", label: "5. Matching blouse piece" },
-      { index: 6, key: "occasion_full", label: "6. Full-length occasion styling" }
+      { index: 1, key: "full_front", label: "1. Full front view", shortLabel: "Full front view" },
+      { index: 2, key: "three_quarter", label: "2. Three-quarter view", shortLabel: "Three-quarter view" },
+      { index: 3, key: "side_back", label: "3. Side or back view", shortLabel: "Side or back view" },
+      { index: 4, key: "pallu_closeup", label: "4. Pallu close-up", shortLabel: "Pallu close-up" },
+      { index: 5, key: "border_cutwork", label: "5. Border or cutwork close-up", shortLabel: "Border or cutwork" },
+      { index: 6, key: "fabric_pattern", label: "6. Fabric/body-pattern close-up", shortLabel: "Fabric / pattern" }
     ];
 
     function createSareeViewSVG(saree, viewNumber) {
@@ -710,45 +806,51 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
         customGallery: [
           {
             order: 1,
-            key: "full_saree",
-            label: "1. Full saree view",
-            url: "/assets/tissue-cutwork/full-saree-back-pallu.jpg",
-            alt: "Tissue Cutwork Saree — Full saree view showing complete length and fall"
+            key: "full_front",
+            label: "1. Full front view",
+            shortLabel: "Full front",
+            url: "/assets/tissue-cutwork/front-three-quarter-model.jpg",
+            alt: "Tissue Cutwork Saree — Full front view showing model wearing champagne-gold tissue saree with pleats and drape"
           },
           {
             order: 2,
-            key: "front_three_quarter",
-            label: "2. Front or three-quarter view",
-            url: "/assets/tissue-cutwork/front-three-quarter-model.jpg",
-            alt: "Tissue Cutwork Saree — Front or three-quarter view worn by model"
+            key: "three_quarter",
+            label: "2. Three-quarter view",
+            shortLabel: "Three-quarter",
+            url: "/assets/tissue-cutwork/blouse-and-front-drape.jpg",
+            alt: "Tissue Cutwork Saree — Three-quarter view of embroidered blouse, neckline, and front shoulder drape"
           },
           {
             order: 3,
-            key: "pallu_detail",
-            label: "3. Pallu detail",
-            url: "/assets/tissue-cutwork/pallu-detail.jpg",
-            alt: "Tissue Cutwork Saree — Pallu detail with peacock and floral cutwork embroidery"
+            key: "side_back",
+            label: "3. Side or back view",
+            shortLabel: "Side / Back",
+            url: "/assets/tissue-cutwork/full-saree-back-pallu.jpg",
+            alt: "Tissue Cutwork Saree — Side or back view on standing mannequin showing full length, fall, and trailing pallu"
           },
           {
             order: 4,
-            key: "border_cutwork",
-            label: "4. Border or cutwork detail",
-            url: "/assets/tissue-cutwork/border-cutwork-detail.jpg",
-            alt: "Tissue Cutwork Saree — Close-up border and scalloped cutwork detail"
+            key: "pallu_closeup",
+            label: "4. Pallu close-up",
+            shortLabel: "Pallu close-up",
+            url: "/assets/tissue-cutwork/pallu-detail.jpg",
+            alt: "Tissue Cutwork Saree — Pallu close-up showcasing scalloped cutwork and peacock embroidery"
           },
           {
             order: 5,
-            key: "fabric_body",
-            label: "5. Fabric/body detail",
-            url: "/assets/tissue-cutwork/fabric-body-detail.jpg",
-            alt: "Tissue Cutwork Saree — Fabric and body pleats detail showing fine champagne-gold tissue texture, motifs, and scalloped embroidery"
+            key: "border_cutwork",
+            label: "5. Border or cutwork close-up",
+            shortLabel: "Border / Cutwork",
+            url: "/assets/tissue-cutwork/border-cutwork-detail.jpg",
+            alt: "Tissue Cutwork Saree — Border or cutwork close-up with gold zardosi and royal blue peacock motif"
           },
           {
             order: 6,
-            key: "blouse_piece",
-            label: "6. Blouse-piece view",
-            url: "/assets/tissue-cutwork/blouse-and-front-drape.jpg",
-            alt: "Tissue Cutwork Saree — Embroidered blouse-piece and front shoulder drape view"
+            key: "fabric_pattern",
+            label: "6. Fabric/body-pattern close-up",
+            shortLabel: "Fabric / Pattern",
+            url: "/assets/tissue-cutwork/fabric-body-detail.jpg",
+            alt: "Tissue Cutwork Saree — Fabric/body-pattern close-up showing fine champagne-gold tissue weave texture, motifs, and scalloped border"
           }
         ]
       },
@@ -1554,6 +1656,12 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
           case "product":
             viewport.innerHTML = this.renderProductDetailPage();
             this.attachProductSwipeEvents();
+            {
+              const currentSaree = this.state.products.find((p) => p.id === this.state.selectedProductId) || this.state.products[0];
+              if (currentSaree) {
+                this.preloadAllSareeImages(currentSaree);
+              }
+            }
             break;
           case "cart":
             viewport.innerHTML = this.renderCartCheckoutPage();
@@ -2002,36 +2110,49 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                   </div>
 
                   <button
+                    type="button"
                     onclick="event.stopPropagation(); app.stepGallery(-1)"
-                    class="absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/90 text-teal border border-gold/40 shadow hover:bg-teal hover:text-white transition-colors"
-                    aria-label="Previous saree view"
+                    class="gallery-nav-btn absolute left-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/95 text-teal border border-gold/40 shadow-lg hover:bg-teal hover:text-white transition-all active:scale-95"
+                    aria-label="Previous photo view"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                   </button>
 
                   <button
+                    type="button"
                     onclick="event.stopPropagation(); app.stepGallery(1)"
-                    class="absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/90 text-teal border border-gold/40 shadow hover:bg-teal hover:text-white transition-colors"
-                    aria-label="Next saree view"
+                    class="gallery-nav-btn absolute right-3 top-1/2 -translate-y-1/2 z-10 p-2.5 rounded-full bg-white/95 text-teal border border-gold/40 shadow-lg hover:bg-teal hover:text-white transition-all active:scale-95"
+                    aria-label="Next photo view"
                   >
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
                   </button>
 
+                  <!-- Fixed-size Gallery Stage Frame with 350-450ms Crossfade & 1.02 to 1.00 Subtle Zoom Settle -->
                   <div
                     id="product-main-image-stage"
                     onclick="app.openLightbox()"
-                    class="aspect-[5/6] w-full flex items-center justify-center bg-ivory cursor-zoom-in select-none"
-                    role="button"
+                    class="gallery-stage-frame aspect-[5/6] w-full flex items-center justify-center bg-[#F8F5EE] cursor-zoom-in select-none relative overflow-hidden focus:outline-none focus-visible:ring-2 focus-visible:ring-teal"
+                    role="region"
                     tabindex="0"
-                    onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); app.openLightbox(); }"
-                    aria-label="Open full-screen viewer with zoom for ${largeImageAlt}"
+                    aria-roledescription="carousel"
+                    aria-label="Viewing ${activeLabel} for ${saree.name}. Click or press Enter to open full-screen zoom."
+                    onkeydown="if(event.key==='Enter' || event.key===' ') { event.preventDefault(); app.openLightbox(); } else if(event.key==='ArrowLeft') { event.preventDefault(); app.stepGallery(-1); } else if(event.key==='ArrowRight') { event.preventDefault(); app.stepGallery(1); }"
                   >
                     <img
                       id="product-main-image"
                       src="${largeImageSrc}"
                       alt="${largeImageAlt}"
                       onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${activeLabel.replace(/'/g, "\\'")}');"
-                      class="w-full h-full object-contain transition-opacity duration-200"
+                      class="gallery-crossfade-img is-active"
+                      draggable="false"
+                    />
+                    <img
+                      id="product-incoming-image"
+                      src=""
+                      alt=""
+                      aria-hidden="true"
+                      class="gallery-crossfade-img is-idle"
+                      draggable="false"
                     />
                   </div>
 
@@ -2040,7 +2161,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                       <span class="text-gold font-bold uppercase tracking-wider mr-1.5">Selected View:</span>
                       <span id="product-main-label" class="font-medium">${activeLabel}</span>
                     </div>
-                    <button onclick="app.openLightbox()" class="shrink-0 inline-flex items-center gap-1 text-gold-light hover:text-white font-semibold">
+                    <button onclick="app.openLightbox()" class="gallery-nav-btn shrink-0 inline-flex items-center gap-1 text-gold-light hover:text-white font-semibold rounded px-1.5 py-0.5">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
                       <span>Full Screen &amp; Zoom</span>
                     </button>
@@ -2053,7 +2174,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                     <span class="font-semibold uppercase tracking-wider text-teal">Select Any of the 6 Saree Views (Scroll sideways on phone):</span>
                     <span>Use ← / → keys or swipe</span>
                   </div>
-                  <div class="flex sm:grid sm:grid-cols-6 gap-2.5 overflow-x-auto no-scrollbar pb-2" role="listbox" aria-label="6 Saree Angle Thumbnails">
+                  <div id="gallery-thumbnails-strip" class="flex sm:grid sm:grid-cols-6 gap-2.5 overflow-x-auto no-scrollbar pb-2" role="tablist" aria-label="6 Saree Angle Thumbnails">
                     ${REQUIRED_GALLERY_VIEWS.map((viewMeta, idx) => {
                       const item = (saree.gallery && saree.gallery[idx]) ? saree.gallery[idx] : null;
                       const slotLabel = (item && item.label) ? item.label : viewMeta.label;
@@ -2065,28 +2186,28 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                       return `
                         <button
                           type="button"
-                          role="option"
-                          aria-selected="${isSelected}"
+                          role="tab"
+                          aria-selected="${isSelected ? 'true' : 'false'}"
+                          data-index="${idx}"
                           onclick="app.selectGalleryView(${idx})"
-                          class="group shrink-0 w-28 sm:w-auto text-left rounded-xl overflow-hidden border-2 transition-all focus:outline-none focus:ring-2 focus:ring-teal ${
+                          class="gallery-thumb-btn group shrink-0 w-28 sm:w-auto text-left rounded-xl overflow-hidden border-2 bg-white ${
                             isSelected
-                              ? "border-teal ring-2 ring-gold bg-teal/5 shadow-md scale-[1.02]"
-                              : "border-gold/30 bg-white opacity-80 hover:opacity-100 hover:border-gold"
+                              ? "is-active-thumb border-teal ring-2 ring-gold bg-teal/5 shadow-md"
+                              : "border-gold/30 opacity-80 hover:opacity-100 hover:border-gold"
                           }"
+                          aria-label="${slotLabel} thumbnail"
                         >
-                          <div class="aspect-[5/6] bg-ivory overflow-hidden relative">
+                          <div class="aspect-[5/6] bg-[#F8F5EE] overflow-hidden relative">
                             <img
                               src="${thumbSrc}"
                               alt="${saree.name} thumbnail — ${slotLabel}"
                               loading="lazy"
                               onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${slotLabel.replace(/'/g, "\\'")}');"
-                              class="w-full h-full object-cover"
+                              class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                             />
-                            ${isSelected ? `
-                              <span class="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-teal text-gold text-[10px] font-bold flex items-center justify-center shadow">✓</span>
-                            ` : ""}
+                            <span class="thumb-checkmark absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-teal text-gold text-[10px] font-bold flex items-center justify-center shadow ${isSelected ? '' : 'hidden'}">✓</span>
                           </div>
-                          <div class="p-1.5 ${isSelected ? "bg-teal text-white" : "bg-white text-ink"}">
+                          <div class="thumb-caption p-1.5 ${isSelected ? 'bg-teal text-white' : 'bg-white text-ink'}">
                             <p class="text-[10px] font-semibold leading-tight line-clamp-2">${slotLabel}</p>
                           </div>
                         </button>
@@ -2252,12 +2373,145 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
       selectGalleryView(index) {
         if (index < 0 || index >= REQUIRED_GALLERY_VIEWS.length) return;
         this.state.selectedGalleryIndex = index;
-        if (this.state.currentPage === "product") {
-          this.renderCurrentPage();
+
+        const saree = this.state.products.find((p) => p.id === this.state.selectedProductId) || this.state.products[0];
+        const viewMeta = REQUIRED_GALLERY_VIEWS[index];
+        const item = (saree && saree.gallery && saree.gallery[index]) ? saree.gallery[index] : null;
+        const slotLabel = (item && item.label) ? item.label : viewMeta.label;
+        const safeName = saree ? saree.name : "Saree";
+        const nextSrc = (item && item.url && item.url.trim() !== "")
+          ? item.url
+          : createMissingViewPlaceholderSVG(safeName, slotLabel);
+        const nextAlt = (item && item.alt)
+          ? item.alt
+          : `${safeName} — ${slotLabel} (${index + 1} of ${REQUIRED_GALLERY_VIEWS.length})`;
+
+        // 1. Update text labels in DOM
+        const activePill = document.getElementById("detail-active-view-pill");
+        if (activePill) activePill.textContent = slotLabel;
+        const mainLabel = document.getElementById("product-main-label");
+        if (mainLabel) mainLabel.textContent = slotLabel;
+
+        // 2. Update Stage container accessibility
+        const stage = document.getElementById("product-main-image-stage");
+        if (stage) {
+          stage.setAttribute("aria-label", `Viewing ${slotLabel} for ${safeName}. Click or press Enter to open full-screen zoom.`);
         }
+
+        // 3. Update thumbnails active styling without re-rendering the whole page
+        const thumbBtns = document.querySelectorAll("#gallery-thumbnails-strip .gallery-thumb-btn");
+        thumbBtns.forEach((btn, i) => {
+          const isSelected = (i === index);
+          btn.setAttribute("aria-selected", isSelected ? "true" : "false");
+          btn.classList.toggle("is-active-thumb", isSelected);
+          btn.classList.toggle("border-teal", isSelected);
+          btn.classList.toggle("ring-2", isSelected);
+          btn.classList.toggle("ring-gold", isSelected);
+          btn.classList.toggle("bg-teal/5", isSelected);
+          btn.classList.toggle("shadow-md", isSelected);
+          btn.classList.toggle("border-gold/30", !isSelected);
+          btn.classList.toggle("opacity-80", !isSelected);
+
+          const checkmark = btn.querySelector(".thumb-checkmark");
+          if (checkmark) {
+            if (isSelected) checkmark.classList.remove("hidden");
+            else checkmark.classList.add("hidden");
+          }
+
+          const caption = btn.querySelector(".thumb-caption");
+          if (caption) {
+            if (isSelected) {
+              caption.classList.remove("bg-white", "text-ink");
+              caption.classList.add("bg-teal", "text-white");
+            } else {
+              caption.classList.remove("bg-teal", "text-white");
+              caption.classList.add("bg-white", "text-ink");
+            }
+          }
+
+          if (isSelected) {
+            btn.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+          }
+        });
+
+        // 4. Smooth 350-450ms Crossfade with 1.02 to 1.00 Subtle Zoom Settle
+        const mainImg = document.getElementById("product-main-image");
+        const incomingImg = document.getElementById("product-incoming-image");
+
+        if (mainImg && incomingImg) {
+          const prefersReduced = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+          if (prefersReduced) {
+            mainImg.src = nextSrc;
+            mainImg.alt = nextAlt;
+            incomingImg.className = "gallery-crossfade-img is-idle";
+            mainImg.className = "gallery-crossfade-img is-active";
+          } else {
+            // Cancel any previous transition in flight
+            this._galleryToken = (this._galleryToken || 0) + 1;
+            const currentToken = this._galleryToken;
+
+            // Prepare incoming image
+            incomingImg.onerror = () => {
+              incomingImg.src = createMissingViewPlaceholderSVG(safeName, slotLabel);
+            };
+            incomingImg.src = nextSrc;
+            incomingImg.alt = nextAlt;
+
+            // Start entering at scale(1.02) and opacity 0
+            incomingImg.className = "gallery-crossfade-img is-entering";
+            void incomingImg.offsetWidth; // Force reflow
+
+            requestAnimationFrame(() => {
+              if (this._galleryToken !== currentToken) return;
+              // Transition smoothly to settled scale(1.00) and opacity 1
+              incomingImg.className = "gallery-crossfade-img is-settled";
+
+              setTimeout(() => {
+                if (this._galleryToken !== currentToken) return;
+                mainImg.src = nextSrc;
+                mainImg.alt = nextAlt;
+                mainImg.className = "gallery-crossfade-img is-active";
+                incomingImg.className = "gallery-crossfade-img is-idle";
+                incomingImg.src = "";
+              }, 400); // 400ms duration
+            });
+          }
+        }
+
+        // 5. Preload adjacent views to eliminate delays
+        if (saree) {
+          this.preloadAdjacentGalleryImages(saree, index);
+        }
+
+        // 6. Sync lightbox if currently open
         if (this.state.lightboxOpen) {
           this.syncLightboxView();
         }
+      },
+
+      preloadAllSareeImages(saree) {
+        if (!saree || !Array.isArray(saree.gallery)) return;
+        saree.gallery.forEach((view) => {
+          if (view && view.url && !view.url.startsWith("data:image/svg+xml")) {
+            const img = new Image();
+            img.src = view.url;
+          }
+        });
+      },
+
+      preloadAdjacentGalleryImages(saree, currentIndex) {
+        if (!saree || !Array.isArray(saree.gallery)) return;
+        const total = REQUIRED_GALLERY_VIEWS.length;
+        const nextIdx = (currentIndex + 1) % total;
+        const prevIdx = (currentIndex - 1 + total) % total;
+        [nextIdx, prevIdx].forEach((idx) => {
+          const item = saree.gallery[idx];
+          if (item && item.url && !item.url.startsWith("data:image/svg+xml")) {
+            const img = new Image();
+            img.src = item.url;
+          }
+        });
       },
 
       stepGallery(delta) {
