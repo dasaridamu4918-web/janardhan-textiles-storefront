@@ -1349,22 +1349,13 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const statusTextEl = document.getElementById("backend-status-text");
         try {
           let data = await this.request("/api/bootstrap");
-          const needsFiveViewMigration = !Array.isArray(data.products) ||
-            data.products.length !== initialState.products.length ||
-            data.products.some((p) =>
-              !Array.isArray(p.gallery) ||
-              p.gallery.length !== 5 ||
-              !p.gallery[0] ||
-              typeof p.gallery[0].url !== "string" ||
-              !p.gallery[0].url.startsWith("/public/images/sarees/") ||
-              typeof p.isSamplePrice !== "boolean"
-            );
+          const isEmpty = !Array.isArray(data.products) || data.products.length === 0;
 
-          if (!data.seeded || needsFiveViewMigration) {
+          if (!data.seeded || isEmpty) {
             data = await this.request("/api/seed", {
               method: "POST",
               body: JSON.stringify({
-                force: true,
+                force: false,
                 settings: initialState.settings,
                 products: initialState.products,
                 orders: initialState.orders,

@@ -41,7 +41,608 @@
     return trimmed;
   };
 
-  // Upgrade BACKEND_API.request to attach Authorization Bearer token & return status codes
+  // LocalStorage-backed API Engine Fallback for Static Hosts (Vercel / GitHub Pages / Mobile Offline)
+  const LOCAL_FALLBACK_API = {
+    getProducts() {
+      try {
+        const raw = localStorage.getItem("jt_local_products_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      const seed = (Array.isArray(app.state.products) && app.state.products.length > 0
+        ? app.state.products
+        : window.INITIAL_PRODUCTS || []
+      ).map((p, idx) => this.normalizeProduct(p, idx));
+      this.saveProducts(seed);
+      return seed;
+    },
+
+    saveProducts(list) {
+      try {
+        localStorage.setItem("jt_local_products_v1", JSON.stringify(list));
+      } catch (e) {}
+      app.state.products = list;
+    },
+
+    normalizeProduct(prod, idx = 0) {
+      const p = { ...prod };
+      const sku = String(p.sku || p.id || `jt-saree-${String(idx + 1).padStart(2, "0")}`).trim();
+      p.id = p.id || sku;
+      p.sku = sku;
+      const price = Math.round(Number(p.price ?? p.priceINR ?? 0));
+      const mrp = Math.round(Number(p.mrp ?? p.originalPriceINR ?? price));
+      p.price = price;
+      p.priceINR = price;
+      p.mrp = mrp;
+      p.originalPriceINR = mrp;
+      p.discountPercent = mrp > price && mrp > 0 ? Math.round(((mrp - price) / mrp) * 100) : 0;
+
+      let stock = p.stock !== undefined ? Number(p.stock) : p.stockQty !== undefined ? Number(p.stockQty) : 20;
+      if (isNaN(stock) || p.stockStatus === "Out of Stock") stock = 0;
+      stock = Math.max(0, Math.round(stock));
+      p.stock = stock;
+      p.stockQty = stock;
+      if (stock <= 0) {
+        p.stockStatus = "Out of Stock";
+        p.stock_status = "out_of_stock";
+      } else if (stock <= 10) {
+        p.stockStatus = "Low Stock";
+        p.stock_status = "low_stock";
+      } else {
+        p.stockStatus = "In Stock";
+        p.stock_status = "in_stock";
+      }
+      if (p.active === undefined) p.active = true;
+      if (p.featured === undefined) p.featured = idx < 5;
+      if (p.bestseller === undefined) p.bestseller = [0, 1, 3, 5, 6].includes(idx);
+      p.work_details = p.work_details ?? p.borderAndZari ?? "";
+      p.borderAndZari = p.borderAndZari || p.work_details;
+      p.blouse_piece = p.blouse_piece ?? p.blousePiece ?? "";
+      p.blousePiece = p.blousePiece || p.blouse_piece;
+      if (Array.isArray(p.gallery) && p.gallery.length > 0 && (!Array.isArray(p.images) || p.images.length === 0)) {
+        p.images = p.gallery.map((g) => g?.url).filter(Boolean);
+      } else if (Array.isArray(p.images) && p.images.length > 0 && (!Array.isArray(p.gallery) || p.gallery.length === 0)) {
+        p.gallery = p.images.slice(0, 5).map((url, i) => ({
+          order: i + 1,
+          label: REQUIRED_GALLERY_VIEWS[i]?.label || `View ${i + 1}`,
+          url
+        }));
+      }
+      p.image = (Array.isArray(p.images) && p.images[0]) || (Array.isArray(p.gallery) && p.gallery[0]?.url) || "";
+      return p;
+    },
+
+    getOrders() {
+      try {
+        const raw = localStorage.getItem("jt_local_orders_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed)) return parsed;
+        }
+      } catch (e) {}
+      return [];
+    },
+
+    saveOrders(list) {
+      try {
+        localStorage.setItem("jt_local_orders_v1", JSON.stringify(list));
+      } catch (e) {}
+      app.state.orders = list;
+    },
+
+    getUsers() {
+      const defaults = [
+        {
+          id: "usr-admin-01",
+          name: "Janardan Mill Admin",
+          email: "admin@janardantextiles.com",
+          phone: "9652262173",
+          password: "admin123",
+          role: "admin",
+          created_at: "2026-01-01T10:00:00Z"
+        },
+        {
+          id: "usr-cust-01",
+          name: "Ananya Sharma",
+          email: "customer@janardantextiles.com",
+          phone: "9876501234",
+          password: "customer123",
+          role: "customer",
+          created_at: "2026-01-02T10:00:00Z"
+        }
+      ];
+      try {
+        const raw = localStorage.getItem("jt_local_users_v1");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+        }
+      } catch (e) {}
+      try {
+        localStorage.setItem("jt_local_users_v1", JSON.stringify(defaults));
+      } catch (e) {}
+      return defaults;
+    },
+
+    saveUsers(list) {
+      try {
+        localStorage.setItem("jt_local_users_v1", JSON.stringify(list));
+      } catch (e) {}
+    },
+
+    getCurrentUserFromToken(token) {
+      if (!token) return null;
+      try {
+        const sessions = JSON.parse(localStorage.getItem("jt_local_sessions_v1") || "{}");
+        if (sessions[token]) return sessions[token];
+      } catch (e) {}
+      if (app.state.currentUser && (app.state.authToken === token || localStorage.getItem("jt_auth_token") === token)) {
+        return app.state.currentUser;
+      }
+      return null;
+    },
+
+    saveSession(token, user) {
+      try {
+        const sessions = JSON.parse(localStorage.getItem("jt_local_sessions_v1") || "{}");
+        sessions[token] = user;
+        localStorage.setItem("jt_local_sessions_v1", JSON.stringify(sessions));
+      } catch (e) {}
+    },
+
+    handle(path, options = {}) {
+      const method = (options.method || "GET").toUpperCase();
+      const urlObj = new URL(path.startsWith("http") ? path : `http://localhost${path}`);
+      const pathname = urlObj.pathname;
+      const qs = urlObj.searchParams;
+      let body = {};
+      if (typeof options.body === "string" && options.body.trim()) {
+        try {
+          body = JSON.parse(options.body);
+        } catch (e) {}
+      }
+      const token = app.state.authToken || localStorage.getItem("jt_auth_token") || "";
+      const user = this.getCurrentUserFromToken(token);
+
+      // 1. Razorpay 501 Honesty Rule
+      if (pathname.startsWith("/api/payments/razorpay/")) {
+        return { status: 501, ok: false, data: { ok: false, error: "Online payment is not set up yet" } };
+      }
+
+      // 2. Filters
+      if (method === "GET" && pathname === "/api/filters") {
+        const active = this.getProducts().filter((p) => p.active !== false);
+        const prices = active.map((p) => p.price || 0).filter((n) => n > 0);
+        return {
+          status: 200,
+          ok: true,
+          data: {
+            ok: true,
+            fabrics: [...new Set(active.map((p) => p.fabric).filter(Boolean))].sort(),
+            colors: [...new Set(active.map((p) => p.color).filter(Boolean))].sort(),
+            occasions: [...new Set(active.map((p) => p.occasion).filter(Boolean))].sort(),
+            price: {
+              min: prices.length ? Math.min(...prices) : 1200,
+              max: prices.length ? Math.max(...prices) : 7500
+            },
+            shipping: { flat: 99, free_above: 2999 }
+          }
+        };
+      }
+
+      // 3. Products List & Single Product
+      if (method === "GET" && pathname === "/api/products") {
+        let items = this.getProducts().filter((p) => p.active !== false);
+        const q = (qs.get("q") || "").trim().toLowerCase();
+        if (q) {
+          items = items.filter((p) =>
+            [p.name, p.sku, p.fabric, p.color, p.occasion, p.description].some((f) => String(f || "").toLowerCase().includes(q))
+          );
+        }
+        const splitParam = (k) =>
+          (qs.get(k) || "")
+            .split(",")
+            .map((s) => s.trim().toLowerCase())
+            .filter(Boolean);
+        const fabrics = splitParam("fabric");
+        if (fabrics.length) items = items.filter((p) => fabrics.includes(String(p.fabric || "").toLowerCase()));
+        const colors = splitParam("color");
+        if (colors.length) items = items.filter((p) => colors.includes(String(p.color || "").toLowerCase()));
+        const occasions = splitParam("occasion");
+        if (occasions.length) items = items.filter((p) => occasions.includes(String(p.occasion || "").toLowerCase()));
+        if (qs.get("minPrice")) items = items.filter((p) => (p.price || 0) >= Number(qs.get("minPrice")));
+        if (qs.get("maxPrice")) items = items.filter((p) => (p.price || 0) <= Number(qs.get("maxPrice")));
+        const avail = qs.get("availability");
+        if (avail === "in_stock") items = items.filter((p) => p.stock_status !== "out_of_stock" && (p.stock || 0) > 0);
+        if (avail === "out_of_stock") items = items.filter((p) => p.stock_status === "out_of_stock" || (p.stock || 0) <= 0);
+        if (qs.get("featured") === "1") items = items.filter((p) => Boolean(p.featured));
+        if (qs.get("bestseller") === "1") items = items.filter((p) => Boolean(p.bestseller));
+
+        const sort = qs.get("sort") || "newest";
+        if (sort === "price_asc") items.sort((a, b) => (a.price || 0) - (b.price || 0));
+        else if (sort === "price_desc") items.sort((a, b) => (b.price || 0) - (a.price || 0));
+        else if (sort === "name") items.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+
+        const total = items.length;
+        const page = Math.max(1, parseInt(qs.get("page") || "1", 10) || 1);
+        const limit = Math.max(1, parseInt(qs.get("limit") || "12", 10) || 12);
+        const pages = Math.max(1, Math.ceil(total / limit));
+        const paged = items.slice((page - 1) * limit, page * limit);
+        return { status: 200, ok: true, data: { ok: true, total, page, limit, pages, items: paged } };
+      }
+
+      if (method === "GET" && pathname.startsWith("/api/products/")) {
+        const pid = decodeURIComponent(pathname.slice("/api/products/".length));
+        const prod = this.getProducts().find((p) => p.id === pid || p.sku === pid);
+        if (!prod) return { status: 404, ok: false, data: { ok: false, error: "Product not found" } };
+        return { status: 200, ok: true, data: { ok: true, product: prod, ...prod } };
+      }
+
+      // 4. Auth Endpoints
+      if (method === "POST" && pathname === "/api/auth/login") {
+        const email = String(body.email || "").trim().toLowerCase();
+        const password = String(body.password || "");
+        const users = this.getUsers();
+        const found = users.find((u) => u.email.toLowerCase() === email && u.password === password);
+        if (!found) {
+          return { status: 401, ok: false, data: { ok: false, error: "Invalid email or password." } };
+        }
+        const safeUser = { id: found.id, name: found.name, email: found.email, phone: found.phone, role: found.role, created_at: found.created_at };
+        const tok = `tok-${found.id}-${Date.now()}`;
+        this.saveSession(tok, safeUser);
+        return { status: 200, ok: true, data: { ok: true, token: tok, user: safeUser } };
+      }
+
+      if (method === "POST" && pathname === "/api/auth/register") {
+        const name = String(body.name || "").trim();
+        const email = String(body.email || "").trim().toLowerCase();
+        const phone = String(body.phone || "").trim();
+        const password = String(body.password || "");
+        if (!name || !email || !password) {
+          return { status: 400, ok: false, data: { ok: false, error: "Name, email, and password are required." } };
+        }
+        const users = this.getUsers();
+        if (users.some((u) => u.email.toLowerCase() === email)) {
+          return { status: 409, ok: false, data: { ok: false, error: "An account with this email already exists." } };
+        }
+        const newUser = {
+          id: `usr-${Date.now()}`,
+          name,
+          email,
+          phone,
+          password,
+          role: "customer",
+          created_at: new Date().toISOString()
+        };
+        users.push(newUser);
+        this.saveUsers(users);
+        const safeUser = { id: newUser.id, name: newUser.name, email: newUser.email, phone: newUser.phone, role: newUser.role, created_at: newUser.created_at };
+        const tok = `tok-${newUser.id}-${Date.now()}`;
+        this.saveSession(tok, safeUser);
+        return { status: 201, ok: true, data: { ok: true, token: tok, user: safeUser } };
+      }
+
+      if (method === "GET" && pathname === "/api/me") {
+        if (!user) return { status: 401, ok: false, data: { ok: false, error: "Not authenticated" } };
+        return { status: 200, ok: true, data: { ok: true, user } };
+      }
+
+      // 5. Wishlist
+      if (pathname === "/api/wishlist" || pathname.startsWith("/api/wishlist/")) {
+        if (!user) {
+          return { status: 401, ok: false, data: { ok: false, error: "Authentication required. Please log in." } };
+        }
+        const wKey = `jt_local_wishlist_${user.id}`;
+        let ids = [];
+        try {
+          ids = JSON.parse(localStorage.getItem(wKey) || "[]");
+        } catch (e) {}
+        if (method === "PUT" && pathname.startsWith("/api/wishlist/")) {
+          const pid = decodeURIComponent(pathname.slice("/api/wishlist/".length));
+          if (!ids.includes(pid)) ids.unshift(pid);
+          localStorage.setItem(wKey, JSON.stringify(ids));
+        } else if (method === "DELETE" && pathname.startsWith("/api/wishlist/")) {
+          const pid = decodeURIComponent(pathname.slice("/api/wishlist/".length));
+          ids = ids.filter((x) => x !== pid);
+          localStorage.setItem(wKey, JSON.stringify(ids));
+        }
+        const allProds = this.getProducts();
+        const items = ids.map((id) => allProds.find((p) => p.id === id || p.sku === id)).filter(Boolean);
+        return { status: 200, ok: true, data: { ok: true, items } };
+      }
+
+      // 6. Place Order (POST /api/orders -> HTTP 201) & Get Orders
+      if (method === "POST" && pathname === "/api/orders") {
+        const rawItems = Array.isArray(body.items) ? body.items : [];
+        if (rawItems.length === 0) {
+          return { status: 400, ok: false, data: { ok: false, error: "Your cart is empty." } };
+        }
+        const addr = body.address || {
+          name: body.customerName || "",
+          phone: body.phone || "",
+          line1: body.city || "",
+          line2: "",
+          city: body.city || "",
+          state: "",
+          pincode: "500001"
+        };
+        const rawDigits = String(addr.phone || "").replace(/\D/g, "");
+        const cleanPhone = rawDigits.length > 10 && rawDigits.startsWith("91") ? rawDigits.slice(-10) : rawDigits.length === 11 && rawDigits.startsWith("0") ? rawDigits.slice(1) : rawDigits;
+        const cleanPin = String(addr.pincode || "").replace(/\D/g, "");
+        if (body.address) {
+          if (!addr.name || !addr.line1 || !addr.city || !addr.state) {
+            return { status: 400, ok: false, data: { ok: false, error: "Complete delivery address is required." } };
+          }
+          if (cleanPhone.length !== 10) {
+            return { status: 400, ok: false, data: { ok: false, error: "Phone number must be 10 digits." } };
+          }
+          if (cleanPin.length !== 6) {
+            return { status: 400, ok: false, data: { ok: false, error: "Pincode must be 6 digits." } };
+          }
+        }
+        if (body.payment_method === "online") {
+          return { status: 501, ok: false, data: { ok: false, error: "Online payment is not set up yet" } };
+        }
+
+        const prods = this.getProducts();
+        const orderItems = [];
+        let subtotal = 0;
+
+        for (const reqItem of rawItems) {
+          const pid = reqItem.product_id || reqItem.productId || reqItem.id;
+          const qty = Math.max(1, parseInt(reqItem.quantity ?? reqItem.qty ?? 1, 10) || 1);
+          const pIdx = prods.findIndex((p) => p.id === pid || p.sku === pid);
+          if (pIdx < 0) {
+            return { status: 400, ok: false, data: { ok: false, error: `Product ${pid} not found.` } };
+          }
+          const prod = prods[pIdx];
+          if ((prod.stock || 0) < qty) {
+            return { status: 400, ok: false, data: { ok: false, error: `Insufficient stock for ${prod.name} (only ${prod.stock || 0} left).` } };
+          }
+          prod.stock = Math.max(0, (prod.stock || 0) - qty);
+          prod.stockQty = prod.stock;
+          prods[pIdx] = this.normalizeProduct(prod, pIdx);
+
+          const unitPrice = prod.price || prod.priceINR || 0;
+          subtotal += unitPrice * qty;
+          orderItems.push({
+            product_id: prod.id,
+            productId: prod.id,
+            sku: prod.sku,
+            name: prod.name,
+            fabric: prod.fabric,
+            color: prod.color,
+            price: unitPrice,
+            priceINR: unitPrice,
+            quantity: qty,
+            qty,
+            thumbUrl: prod.image || (prod.gallery && prod.gallery[0]?.url) || ""
+          });
+        }
+
+        this.saveProducts(prods);
+        const shipping = subtotal >= 2999 || subtotal === 0 ? 0 : 99;
+        const total = subtotal + shipping;
+        const orderNumber = body.orderId || `JT-ORD-${Math.floor(100000 + Math.random() * 900000)}`;
+        const createdAt = new Date().toISOString();
+        const newOrder = {
+          order_number: orderNumber,
+          orderId: orderNumber,
+          user_id: user ? user.id : "guest",
+          customerName: addr.name,
+          phone: cleanPhone || addr.phone,
+          city: `${addr.city}${addr.state ? ", " + addr.state : ""}`,
+          address: {
+            name: addr.name,
+            phone: cleanPhone || addr.phone,
+            line1: addr.line1,
+            line2: addr.line2 || "",
+            city: addr.city,
+            state: addr.state,
+            pincode: cleanPin
+          },
+          items: orderItems,
+          subtotal,
+          shipping,
+          total,
+          totalINR: total,
+          payment_method: body.payment_method || "cod",
+          payment_status: "pending",
+          status: "placed",
+          created_at: createdAt,
+          date: createdAt.slice(0, 10)
+        };
+
+        const orders = this.getOrders();
+        orders.unshift(newOrder);
+        this.saveOrders(orders);
+
+        return {
+          status: 201,
+          ok: true,
+          data: {
+            ok: true,
+            order_number: orderNumber,
+            order: newOrder,
+            createdOrder: newOrder,
+            orders,
+            products: prods
+          }
+        };
+      }
+
+      if (method === "GET" && pathname === "/api/orders/mine") {
+        const orders = this.getOrders();
+        const mine = user ? orders.filter((o) => !o.user_id || o.user_id === "guest" || o.user_id === user.id || o.phone === user.phone) : orders;
+        return { status: 200, ok: true, data: { ok: true, items: mine } };
+      }
+
+      if (method === "GET" && pathname.startsWith("/api/orders/")) {
+        const ordNum = decodeURIComponent(pathname.slice("/api/orders/".length));
+        const ord = this.getOrders().find((o) => (o.order_number || o.orderId) === ordNum);
+        if (!ord) return { status: 404, ok: false, data: { ok: false, error: "Order not found" } };
+        return { status: 200, ok: true, data: { ok: true, order: ord, ...ord } };
+      }
+
+      // 7. Admin Endpoints (/api/admin/*)
+      if (pathname.startsWith("/api/admin/")) {
+        if (!user) return { status: 401, ok: false, data: { ok: false, error: "Authentication required." } };
+        if (user.role !== "admin") return { status: 403, ok: false, data: { ok: false, error: "Admin privileges required." } };
+
+        const prods = this.getProducts();
+        const orders = this.getOrders();
+        const users = this.getUsers();
+
+        if (method === "GET" && pathname === "/api/admin/stats") {
+          const validOrders = orders.filter((o) => o.status !== "cancelled");
+          const revenue = validOrders.reduce((s, o) => s + Number(o.total ?? o.totalINR ?? 0), 0);
+          return {
+            status: 200,
+            ok: true,
+            data: {
+              ok: true,
+              products_total: prods.length,
+              in_stock: prods.filter((p) => (p.stock || 0) > 0).length,
+              out_of_stock: prods.filter((p) => (p.stock || 0) <= 0).length,
+              orders_total: orders.length,
+              revenue_total: revenue,
+              low_stock: prods.filter((p) => (p.stock || 0) <= 10),
+              recent_orders: orders.slice(0, 10)
+            }
+          };
+        }
+
+        if (method === "GET" && pathname === "/api/admin/products") {
+          let list = [...prods];
+          const q = (qs.get("q") || "").trim().toLowerCase();
+          if (q) list = list.filter((p) => [p.name, p.sku, p.fabric, p.color].some((f) => String(f || "").toLowerCase().includes(q)));
+          if (qs.get("fabric")) list = list.filter((p) => p.fabric === qs.get("fabric"));
+          if (qs.get("availability") === "in_stock") list = list.filter((p) => (p.stock || 0) > 0);
+          if (qs.get("availability") === "out_of_stock") list = list.filter((p) => (p.stock || 0) <= 0);
+          if (qs.get("active") === "true" || qs.get("active") === "1") list = list.filter((p) => p.active !== false);
+          if (qs.get("active") === "false" || qs.get("active") === "0") list = list.filter((p) => p.active === false);
+          const total = list.length;
+          const page = Math.max(1, parseInt(qs.get("page") || "1", 10) || 1);
+          const limit = Math.max(1, parseInt(qs.get("limit") || "10", 10) || 10);
+          const pages = Math.max(1, Math.ceil(total / limit));
+          return {
+            status: 200,
+            ok: true,
+            data: { ok: true, total, page, limit, pages, items: list.slice((page - 1) * limit, page * limit) }
+          };
+        }
+
+        if (method === "POST" && pathname === "/api/admin/products") {
+          const created = this.normalizeProduct(body, prods.length);
+          prods.unshift(created);
+          this.saveProducts(prods);
+          return { status: 201, ok: true, data: { ok: true, product: created } };
+        }
+
+        if (pathname.startsWith("/api/admin/products/") && pathname.endsWith("/stock") && method === "PATCH") {
+          const pid = decodeURIComponent(pathname.slice("/api/admin/products/".length, -"/stock".length));
+          const idx = prods.findIndex((p) => p.id === pid || p.sku === pid);
+          if (idx < 0) return { status: 404, ok: false, data: { ok: false, error: "Product not found" } };
+          prods[idx].stock = Math.max(0, parseInt(body.stock, 10) || 0);
+          prods[idx].stockQty = prods[idx].stock;
+          prods[idx] = this.normalizeProduct(prods[idx], idx);
+          this.saveProducts(prods);
+          return { status: 200, ok: true, data: { ok: true, product: prods[idx] } };
+        }
+
+        if (pathname.startsWith("/api/admin/products/") && (method === "PATCH" || method === "DELETE")) {
+          const pid = decodeURIComponent(pathname.slice("/api/admin/products/".length));
+          const idx = prods.findIndex((p) => p.id === pid || p.sku === pid);
+          if (idx < 0) return { status: 404, ok: false, data: { ok: false, error: "Product not found" } };
+          if (method === "DELETE") {
+            prods[idx].active = false;
+          } else {
+            prods[idx] = this.normalizeProduct({ ...prods[idx], ...body }, idx);
+          }
+          this.saveProducts(prods);
+          return { status: 200, ok: true, data: { ok: true, product: prods[idx] } };
+        }
+
+        if (method === "GET" && pathname === "/api/admin/orders") {
+          let list = [...orders];
+          const st = qs.get("status");
+          if (st && st !== "ALL") list = list.filter((o) => o.status === st);
+          const q = (qs.get("q") || "").trim().toLowerCase();
+          if (q) {
+            list = list.filter((o) =>
+              [o.order_number, o.orderId, o.customerName, o.phone, o.address?.name, o.address?.phone].some((f) =>
+                String(f || "").toLowerCase().includes(q)
+              )
+            );
+          }
+          return { status: 200, ok: true, data: { ok: true, items: list } };
+        }
+
+        if (pathname.startsWith("/api/admin/orders/") && pathname.endsWith("/status") && method === "PATCH") {
+          const ordNum = decodeURIComponent(pathname.slice("/api/admin/orders/".length, -"/status".length));
+          const ord = orders.find((o) => (o.order_number || o.orderId) === ordNum);
+          if (!ord) return { status: 404, ok: false, data: { ok: false, error: "Order not found" } };
+          const prevStatus = ord.status;
+          const nextStatus = body.status;
+          ord.status = nextStatus;
+          if (nextStatus === "cancelled" && prevStatus !== "cancelled") {
+            (ord.items || []).forEach((item) => {
+              const pid = item.product_id || item.productId;
+              const pIdx = prods.findIndex((p) => p.id === pid || p.sku === pid);
+              if (pIdx >= 0) {
+                prods[pIdx].stock = (prods[pIdx].stock || 0) + Number(item.quantity ?? item.qty ?? 1);
+                prods[pIdx].stockQty = prods[pIdx].stock;
+                prods[pIdx] = this.normalizeProduct(prods[pIdx], pIdx);
+              }
+            });
+            this.saveProducts(prods);
+          }
+          this.saveOrders(orders);
+          return { status: 200, ok: true, data: { ok: true, order: ord } };
+        }
+
+        if (method === "GET" && pathname === "/api/admin/customers") {
+          const custs = users.map((u) => {
+            const uOrders = orders.filter((o) => o.user_id === u.id && o.status !== "cancelled");
+            return {
+              id: u.id,
+              name: u.name,
+              email: u.email,
+              phone: u.phone,
+              role: u.role,
+              orders_count: uOrders.length,
+              total_spent: uOrders.reduce((s, o) => s + Number(o.total ?? o.totalINR ?? 0), 0),
+              created_at: u.created_at
+            };
+          });
+          return { status: 200, ok: true, data: { ok: true, items: custs } };
+        }
+      }
+
+      if (pathname === "/api/bootstrap" || pathname === "/api/seed") {
+        return {
+          status: 200,
+          ok: true,
+          data: {
+            ok: true,
+            seeded: true,
+            dbStatus: "Browser Persistent Storage (Cloud / Static Mode)",
+            products: this.getProducts(),
+            orders: this.getOrders(),
+            settings: app.state.settings,
+            wholesaleEnquiries: app.state.wholesaleEnquiries || [],
+            contactMessages: app.state.contactMessages || []
+          }
+        };
+      }
+
+      return { status: 200, ok: true, data: { ok: true } };
+    }
+  };
+
+  // Upgrade BACKEND_API.request to attach Authorization Bearer token & automatically fall back to LOCAL_FALLBACK_API on static hosts
   BACKEND_API.requestWithStatus = async function (path, options = {}) {
     const fullUrl = path.startsWith("http") ? path : `${API_URL}${path}`;
     const headers = { ...(options.headers || {}) };
@@ -52,12 +653,23 @@
     if (token) {
       headers["Authorization"] = `Bearer ${token}`;
     }
-    const res = await fetch(fullUrl, {
-      ...options,
-      headers
-    });
-    const data = await res.json().catch(() => ({}));
-    return { status: res.status, ok: res.ok, data };
+    try {
+      const res = await fetch(fullUrl, {
+        ...options,
+        headers
+      });
+      // If deployed on a static host (Vercel / GitHub Pages) that returns 404/405 for /api/* routes, use LOCAL_FALLBACK_API
+      if ((res.status === 404 || res.status === 405 || res.status === 502 || res.status === 503) && path.startsWith("/api/")) {
+        const text = await res.clone().text().catch(() => "");
+        if (!text.trim().startsWith("{")) {
+          return LOCAL_FALLBACK_API.handle(path, options);
+        }
+      }
+      const data = await res.json().catch(() => ({}));
+      return { status: res.status, ok: res.ok, data };
+    } catch (networkErr) {
+      return LOCAL_FALLBACK_API.handle(path, options);
+    }
   };
 
   BACKEND_API.request = async function (path, options = {}) {
@@ -2244,6 +2856,11 @@
 
     if (cs.confirmedOrder) {
       const ord = cs.confirmedOrder;
+      const ordNum = ord.order_number || ord.orderId;
+      const ordTotal = this.formatINR(ord.total || ord.totalINR);
+      const waOrderText = encodeURIComponent(
+        `Hi Janardan Textiles, I have placed order ${ordNum} (${ordTotal}, ${(ord.payment_method || "cod").toUpperCase()}) on your website. Please confirm dispatch details.`
+      );
       return `
         <div class="page-transition max-w-3xl mx-auto px-3 sm:px-6 py-10">
           <div class="bg-[#FAF8F5] rounded-3xl border-2 border-gold p-6 sm:p-10 shadow-xl text-center space-y-4">
@@ -2251,12 +2868,24 @@
             <span class="px-3 py-1 rounded-full bg-gold/25 text-ink font-bold text-xs uppercase tracking-wider">Order Confirmed (HTTP 201)</span>
             <h1 class="font-serif text-3xl sm:text-4xl font-bold text-ink">Thank You, ${ord.address?.name || ord.customerName}!</h1>
             <p class="text-sm text-ink-muted">
-              Your order <strong>${ord.order_number || ord.orderId}</strong> for <strong>${this.formatINR(ord.total || ord.totalINR)}</strong> (${(ord.payment_method || "cod").toUpperCase()}) has been placed.
+              Your order <strong>${ordNum}</strong> for <strong>${ordTotal}</strong> (${(ord.payment_method || "cod").toUpperCase()}) has been placed.
             </p>
             <div class="flex flex-wrap justify-center gap-3 pt-4">
               <button type="button" onclick="app.navigate('orders')" class="px-6 py-3 rounded-full bg-teal text-ivory font-semibold text-xs sm:text-sm hover:bg-teal-light">
                 View Order History →
               </button>
+              <a
+                href="https://wa.me/919652262173?text=${waOrderText}"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Send order confirmation to Janardan Textiles on WhatsApp"
+                class="px-6 py-3 rounded-full bg-[#1E3F35] text-[#FAF8F5] border border-gold font-semibold text-xs sm:text-sm hover:bg-[#2A5447] inline-flex items-center gap-2"
+              >
+                <svg class="w-4 h-4 text-gold shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12.031 2c-5.516 0-9.999 4.486-10 10.003-.001 1.766.46 3.489 1.337 5.008L2 22l5.122-1.343a9.958 9.958 0 0 0 4.904 1.298h.004c5.515 0 9.998-4.486 10-10.002A9.963 9.963 0 0 0 19.104 4.93 9.937 9.937 0 0 0 12.031 2zm0 18.299h-.004a8.29 8.29 0 0 1-4.231-1.158l-.303-.18-3.039.797.811-2.963-.197-.314a8.293 8.293 0 0 1-1.275-4.426c.002-4.581 3.73-8.309 8.313-8.309 2.22 0 4.306.865 5.875 2.435a8.257 8.257 0 0 1 2.432 5.879c-.002 4.581-3.73 8.309-8.382 8.239zm4.56-6.219c-.25-.125-1.478-.729-1.707-.813-.229-.083-.396-.125-.562.125-.167.25-.646.813-.792.979-.146.167-.292.188-.542.063-.25-.125-1.055-.389-2.01-1.24-.743-.662-1.244-1.481-1.39-1.731-.146-.25-.015-.385.11-.51.112-.112.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.021-.438-.062-.125-.562-1.355-.771-1.855-.203-.486-.409-.42-.562-.428l-.479-.008c-.167 0-.438.063-.667.313-.229.25-.875.855-.875 2.084s.896 2.418 1.021 2.584c.125.167 1.763 2.692 4.271 3.775.597.258 1.063.412 1.426.527.599.19 1.144.163 1.575.099.48-.072 1.478-.604 1.687-1.188.208-.583.208-1.084.146-1.188-.063-.104-.229-.167-.479-.292z"/>
+                </svg>
+                <span>Share Order on WhatsApp</span>
+              </a>
               <button type="button" onclick="app.navigate('shop')" class="px-6 py-3 rounded-full bg-[#F5EFE4] text-ink border border-gold/50 font-semibold text-xs sm:text-sm hover:bg-gold/20">
                 Continue Shopping
               </button>
@@ -2326,7 +2955,7 @@
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
           <!-- Step Content -->
           <div class="lg:col-span-8 bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 sm:p-7 shadow-sm">
-            ${cs.step === 1 ? this.renderCheckoutAddressStep() : ""}
+            ${cs.step === 1 ? this.renderCheckoutAddressStep(total) : ""}
             ${cs.step === 2 ? this.renderCheckoutShippingStep(subtotal, shipping, freeAbove, isFree) : ""}
             ${cs.step === 3 ? this.renderCheckoutPaymentStep() : ""}
             ${cs.step === 4 ? this.renderCheckoutReviewStep(subtotal, shipping, total) : ""}
@@ -2361,13 +2990,36 @@
                 <span class="font-serif text-xl">${this.formatINR(total)}</span>
               </div>
             </div>
+            <div class="pt-2">
+              <button
+                type="button"
+                ${cs.placingOrder ? "disabled" : ""}
+                onclick="app.submitFinalOrder()"
+                class="w-full py-3 px-4 rounded-full bg-gold text-ink font-bold text-xs sm:text-sm hover:bg-gold-light shadow transition-all disabled:opacity-50"
+              >
+                ${cs.placingOrder ? "Placing Order..." : `Place Order (${this.formatINR(total)})`}
+              </button>
+            </div>
           </aside>
         </div>
       </div>
     `;
   };
 
-  app.renderCheckoutAddressStep = function () {
+  app.syncCheckoutAddressFromDOM = function () {
+    const nameEl = document.getElementById("chk-name");
+    if (!nameEl) return;
+    const addr = this.state.checkoutState.address;
+    addr.name = (nameEl.value || "").trim();
+    addr.phone = (document.getElementById("chk-phone")?.value || "").trim();
+    addr.line1 = (document.getElementById("chk-line1")?.value || "").trim();
+    addr.line2 = (document.getElementById("chk-line2")?.value || "").trim();
+    addr.city = (document.getElementById("chk-city")?.value || "").trim();
+    addr.state = (document.getElementById("chk-state")?.value || "").trim();
+    addr.pincode = (document.getElementById("chk-pincode")?.value || "").trim();
+  };
+
+  app.renderCheckoutAddressStep = function (total) {
     const addr = this.state.checkoutState.address;
     const errs = this.state.checkoutState.addressErrors || {};
     return `
@@ -2376,42 +3028,49 @@
         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label for="chk-name" class="block text-xs font-semibold text-ink-muted mb-1">Full Name *</label>
-            <input id="chk-name" name="name" required value="${addr.name}" placeholder="e.g., Arundhati Deshmukh" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+            <input id="chk-name" name="name" required value="${addr.name}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="e.g., Arundhati Deshmukh" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             ${errs.name ? `<p class="text-xs text-red-700 mt-1 font-medium">${errs.name}</p>` : ""}
           </div>
           <div>
             <label for="chk-phone" class="block text-xs font-semibold text-ink-muted mb-1">10-Digit Mobile Number *</label>
-            <input id="chk-phone" name="phone" required maxlength="10" inputmode="numeric" value="${addr.phone}" placeholder="9876543210" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+            <input id="chk-phone" name="phone" required maxlength="15" inputmode="numeric" value="${addr.phone}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="9876543210" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             ${errs.phone ? `<p id="chk-phone-error" class="text-xs text-red-700 mt-1 font-medium">${errs.phone}</p>` : ""}
           </div>
         </div>
         <div>
           <label for="chk-line1" class="block text-xs font-semibold text-ink-muted mb-1">Address Line 1 (House / Flat / Street) *</label>
-          <input id="chk-line1" name="line1" required value="${addr.line1}" placeholder="House No. 42, MG Road" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+          <input id="chk-line1" name="line1" required value="${addr.line1}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="House No. 42, MG Road" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
           ${errs.line1 ? `<p class="text-xs text-red-700 mt-1 font-medium">${errs.line1}</p>` : ""}
         </div>
         <div>
           <label for="chk-line2" class="block text-xs font-semibold text-ink-muted mb-1">Address Line 2 (Landmark / Area — Optional)</label>
-          <input id="chk-line2" name="line2" value="${addr.line2}" placeholder="Near Silk Market" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+          <input id="chk-line2" name="line2" value="${addr.line2}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="Near Silk Market" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
         </div>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div>
             <label for="chk-city" class="block text-xs font-semibold text-ink-muted mb-1">City *</label>
-            <input id="chk-city" name="city" required value="${addr.city}" placeholder="Hyderabad" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+            <input id="chk-city" name="city" required value="${addr.city}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="Hyderabad" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             ${errs.city ? `<p class="text-xs text-red-700 mt-1 font-medium">${errs.city}</p>` : ""}
           </div>
           <div>
             <label for="chk-state" class="block text-xs font-semibold text-ink-muted mb-1">State *</label>
-            <input id="chk-state" name="state" required value="${addr.state}" placeholder="Telangana" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+            <input id="chk-state" name="state" required value="${addr.state}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="Telangana" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             ${errs.state ? `<p class="text-xs text-red-700 mt-1 font-medium">${errs.state}</p>` : ""}
           </div>
           <div>
             <label for="chk-pincode" class="block text-xs font-semibold text-ink-muted mb-1">6-Digit Pincode *</label>
-            <input id="chk-pincode" name="pincode" required maxlength="6" inputmode="numeric" value="${addr.pincode}" placeholder="500001" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+            <input id="chk-pincode" name="pincode" required maxlength="8" inputmode="numeric" value="${addr.pincode}" oninput="app.syncCheckoutAddressFromDOM()" placeholder="500001" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             ${errs.pincode ? `<p id="chk-pincode-error" class="text-xs text-red-700 mt-1 font-medium">${errs.pincode}</p>` : ""}
           </div>
         </div>
-        <div class="pt-3 flex justify-end">
+        <div class="pt-3 flex flex-wrap items-center justify-end gap-3">
+          <button
+            type="button"
+            onclick="app.submitFinalOrder()"
+            class="px-5 py-3 rounded-full bg-[#F5EFE4] text-ink border border-gold/60 font-bold text-xs sm:text-sm hover:bg-gold/25 transition-all"
+          >
+            Place Order Now (Cash on Delivery)
+          </button>
           <button type="submit" class="px-6 py-3 rounded-full bg-teal text-ivory font-bold text-xs sm:text-sm hover:bg-teal-light shadow">
             Continue to Shipping →
           </button>
@@ -2420,10 +3079,17 @@
     `;
   };
 
+  app.normalizeTenDigitPhone = function (raw) {
+    const digits = String(raw || "").replace(/\D/g, "");
+    if (digits.length === 12 && digits.startsWith("91")) return digits.slice(2);
+    if (digits.length === 11 && digits.startsWith("0")) return digits.slice(1);
+    return digits;
+  };
+
   app.validateCheckoutAddress = function (addr) {
     const errors = {};
     if (!addr.name || !addr.name.trim()) errors.name = "Full name is required.";
-    const cleanPhone = String(addr.phone || "").replace(/\D/g, "");
+    const cleanPhone = this.normalizeTenDigitPhone(addr.phone);
     if (cleanPhone.length !== 10) errors.phone = "Please enter a valid 10-digit mobile number.";
     if (!addr.line1 || !addr.line1.trim()) errors.line1 = "Address Line 1 is required.";
     if (!addr.city || !addr.city.trim()) errors.city = "City is required.";
@@ -2438,12 +3104,12 @@
     const f = event.target;
     const addr = {
       name: f.name.value.trim(),
-      phone: f.phone.value.trim(),
+      phone: this.normalizeTenDigitPhone(f.phone.value.trim()) || f.phone.value.trim(),
       line1: f.line1.value.trim(),
       line2: f.line2.value.trim(),
       city: f.city.value.trim(),
       state: f.state.value.trim(),
-      pincode: f.pincode.value.trim()
+      pincode: String(f.pincode.value || "").replace(/\D/g, "") || f.pincode.value.trim()
     };
     const errors = this.validateCheckoutAddress(addr);
     this.state.checkoutState.address = addr;
@@ -2631,6 +3297,7 @@
   };
 
   app.goToCheckoutStep = function (targetStep) {
+    this.syncCheckoutAddressFromDOM();
     if (targetStep > 1) {
       const errs = this.validateCheckoutAddress(this.state.checkoutState.address);
       this.state.checkoutState.addressErrors = errs;
@@ -2640,6 +3307,8 @@
         this.renderCurrentPage();
         return;
       }
+      this.state.checkoutState.address.phone = this.normalizeTenDigitPhone(this.state.checkoutState.address.phone);
+      this.state.checkoutState.address.pincode = String(this.state.checkoutState.address.pincode || "").replace(/\D/g, "");
     }
     this.state.checkoutState.step = targetStep;
     this.renderCurrentPage();
@@ -2647,14 +3316,20 @@
 
   // Honesty Rule: An order counts as placed ONLY when POST /api/orders returns 201
   app.submitFinalOrder = async function () {
+    this.syncCheckoutAddressFromDOM();
     const cs = this.state.checkoutState;
     const errs = this.validateCheckoutAddress(cs.address);
     if (Object.keys(errs).length > 0) {
       cs.addressErrors = errs;
       cs.step = 1;
+      const firstErr = Object.values(errs)[0] || "Please complete your delivery address.";
+      this.showToast(firstErr, "error");
       this.renderCurrentPage();
       return;
     }
+
+    cs.address.phone = this.normalizeTenDigitPhone(cs.address.phone);
+    cs.address.pincode = String(cs.address.pincode || "").replace(/\D/g, "");
 
     const stockErrs = await this.revalidateCartStock();
     if (stockErrs.length > 0) {
@@ -2682,12 +3357,12 @@
       items: this.state.cart.map((i) => ({ product_id: i.productId, quantity: i.qty })),
       address: {
         name: cs.address.name,
-        phone: String(cs.address.phone).replace(/\D/g, ""),
+        phone: cs.address.phone,
         line1: cs.address.line1,
         line2: cs.address.line2,
         city: cs.address.city,
         state: cs.address.state,
-        pincode: String(cs.address.pincode).replace(/\D/g, "")
+        pincode: cs.address.pincode
       },
       payment_method: cs.paymentMethod
     };
