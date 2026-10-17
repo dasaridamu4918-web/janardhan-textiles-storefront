@@ -111,7 +111,7 @@ export default {
         frontOrThreeQuarterView: '/assets/tissue-cutwork/front-three-quarter-model.jpg',
         palluDetail: '/assets/tissue-cutwork/pallu-detail.jpg',
         borderOrCutworkDetail: '/assets/tissue-cutwork/border-cutwork-detail.jpg',
-        fabricBodyDetail: null, // Photo coming soon placeholder
+        fabricBodyDetail: '/assets/tissue-cutwork/fabric-body-detail.jpg',
         blousePieceView: '/assets/tissue-cutwork/blouse-and-front-drape.jpg'
       }
     },
