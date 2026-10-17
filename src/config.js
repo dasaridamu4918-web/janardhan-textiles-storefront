@@ -96,6 +96,26 @@ export default {
   ],
   products: [
     {
+      id: 'jt-saree-09',
+      name: 'Tissue Cutwork Saree',
+      fabric: 'Tissue Cutwork Saree',
+      color: 'Champagne Gold',
+      originalPriceINR: 8999,
+      discountPercent: 5,
+      availability: '', // left editable; do not assume stock status
+      image: '/assets/tissue-cutwork/full-saree-back-pallu.jpg',
+      alt: 'Tissue Cutwork Saree — Full saree view showing champagne-gold tissue drape, scalloped cutwork border, and peacock motifs',
+      description: 'A tissue saree featuring delicate cutwork detailing.',
+      views: {
+        fullSareeView: '/assets/tissue-cutwork/full-saree-back-pallu.jpg',
+        frontOrThreeQuarterView: '/assets/tissue-cutwork/front-three-quarter-model.jpg',
+        palluDetail: '/assets/tissue-cutwork/pallu-detail.jpg',
+        borderOrCutworkDetail: '/assets/tissue-cutwork/border-cutwork-detail.jpg',
+        fabricBodyDetail: null, // Photo coming soon placeholder
+        blousePieceView: '/assets/tissue-cutwork/blouse-and-front-drape.jpg'
+      }
+    },
+    {
       name: 'Magenta Kanchipuram Zari Saree',
       image: '/assets/product1.jpg',
       alt: 'Finished magenta Kanchipuram saree with antique gold zari border and motifs',

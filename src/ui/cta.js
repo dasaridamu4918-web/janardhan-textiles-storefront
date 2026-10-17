@@ -62,20 +62,38 @@ export function initCollectionAndCTA(config, { onSelectScene }) {
       desc.className = 'product-card-desc';
       desc.textContent = product.description;
 
+      body.appendChild(title);
+
+      if (typeof product.originalPriceINR === 'number' && product.originalPriceINR > 0) {
+        const discPct = typeof product.discountPercent === 'number' ? product.discountPercent : 0;
+        const finalPrice = Math.round(product.originalPriceINR * (1 - discPct / 100));
+        const priceRow = document.createElement('div');
+        priceRow.style.cssText = 'display:flex;align-items:baseline;gap:0.6rem;flex-wrap:wrap;margin:0.35rem 0;';
+        priceRow.innerHTML = `
+          <span style="font-size:1.35rem;font-weight:700;color:#C4A15A;">₹${finalPrice.toLocaleString('en-IN')}</span>
+          <span style="font-size:0.95rem;text-decoration:line-through;opacity:0.65;">₹${Math.round(product.originalPriceINR).toLocaleString('en-IN')}</span>
+          ${discPct > 0 ? `<span style="font-size:0.78rem;font-weight:700;padding:0.15rem 0.5rem;border-radius:999px;background:rgba(196,161,90,0.22);color:#C4A15A;border:1px solid rgba(196,161,90,0.5);">${discPct}% off.</span>` : ''}
+        `;
+        body.appendChild(priceRow);
+      }
+
+      body.appendChild(desc);
+
       const actionBtn = document.createElement('button');
       actionBtn.type = 'button';
       actionBtn.className = 'product-card-btn';
-      actionBtn.textContent = config.ui?.collectionSection?.inquireLabel || 'Inspect Weave in 3D';
+      actionBtn.textContent = product.id ? 'Open in Full Catalogue' : (config.ui?.collectionSection?.inquireLabel || 'Inspect Weave in 3D');
       actionBtn.setAttribute('aria-label', `${actionBtn.textContent}: ${product.name}`);
       actionBtn.addEventListener('click', () => {
+        if (product.id) {
+          window.location.href = '/';
+          return;
+        }
         if (onSelectScene) {
-          // Scroll back to Finished Sarees (Scene 1) to inspect in 3D stage
           onSelectScene(1);
         }
       });
 
-      body.appendChild(title);
-      body.appendChild(desc);
       body.appendChild(actionBtn);
 
       article.appendChild(mediaWrap);

@@ -666,26 +666,92 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
     }
 
     function createMissingViewPlaceholderSVG(sareeName, viewLabel) {
-      const safeName = (sareeName || "Sample Saree").replace(/&/g, "&amp;");
-      const safeLabel = (viewLabel || "Catalogue View").replace(/&/g, "&amp;");
+      const safeName = (sareeName || "Saree").replace(/&/g, "&amp;");
+      const safeLabel = (viewLabel || "Product View").replace(/&/g, "&amp;");
       const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 960">
         <rect width="800" height="960" fill="#FAF8F5"/>
         <rect x="40" y="40" width="720" height="880" rx="16" fill="#F3EFE6" stroke="#C4A15A" stroke-width="3" stroke-dasharray="10 6"/>
-        <circle cx="400" cy="400" r="64" fill="#063F46"/>
-        <text x="400" y="415" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="#C4A15A" text-anchor="middle">JT</text>
-        <text x="400" y="510" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#063F46" text-anchor="middle">${safeName}</text>
-        <text x="400" y="550" font-family="sans-serif" font-size="18" font-weight="bold" fill="#18181B" text-anchor="middle">${safeLabel}</text>
-        <text x="400" y="590" font-family="sans-serif" font-size="14" fill="#52525B" text-anchor="middle">Clean Labelled Placeholder — Image Awaiting Upload</text>
+        <circle cx="400" cy="390" r="64" fill="#063F46"/>
+        <text x="400" y="405" font-family="Georgia, serif" font-size="38" font-weight="bold" fill="#C4A15A" text-anchor="middle">JT</text>
+        <text x="400" y="500" font-family="Georgia, serif" font-size="28" font-weight="bold" fill="#063F46" text-anchor="middle">${safeName}</text>
+        <text x="400" y="545" font-family="sans-serif" font-size="18" font-weight="bold" fill="#18181B" text-anchor="middle">${safeLabel}</text>
+        <rect x="250" y="575" width="300" height="46" rx="23" fill="#063F46"/>
+        <text x="400" y="604" font-family="sans-serif" font-size="18" font-weight="bold" fill="#C4A15A" text-anchor="middle">Photo coming soon</text>
       </svg>`;
       return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
     }
 
     /**
      * ============================================================================
-     * 3. EIGHT FICTIONAL DEMO SAREES (Clearly marked "Sample product")
+     * 3. CATALOGUE PRODUCTS (Including New "Tissue Cutwork Saree" + 8 Sample Sarees)
      * ============================================================================
      */
     const RAW_SAMPLE_SAREES = [
+      {
+        id: "jt-saree-09",
+        isSampleProduct: false,
+        name: "Tissue Cutwork Saree",
+        originalPriceINR: 8999,
+        discountPercent: 5,
+        priceINR: Math.round(8999 * (1 - 5 / 100)), // ₹8,549 (5% off ₹8,999, rounded to nearest rupee)
+        fabric: "Tissue Cutwork Saree",
+        color: "Champagne Gold",
+        occasion: "Festive & Wedding",
+        description: "A tissue saree featuring delicate cutwork detailing.",
+        stockStatus: "", // Left editable; do not assume stock status
+        stockQty: null,
+        borderAndZari: "Scalloped cutwork border with antique gold zardosi, royal blue peacock motifs, and pastel pink & sage floral embroidery",
+        motifs: "Self-patterned jacquard tissue weave body with intricate peacock and floral cutwork vine detailing",
+        blousePiece: "Matching champagne-gold tissue blouse piece with coordinated peacock and floral cutwork embroidery on sleeves and neckline",
+        hexPrimary: "#C9B18C",
+        hexSecondary: "#1E3A8A",
+        hexZari: "#C4A15A",
+        hexBlouse: "#C9B18C",
+        customGallery: [
+          {
+            order: 1,
+            key: "full_saree",
+            label: "1. Full saree view",
+            url: "/assets/tissue-cutwork/full-saree-back-pallu.jpg",
+            alt: "Tissue Cutwork Saree — Full saree view showing complete length and fall"
+          },
+          {
+            order: 2,
+            key: "front_three_quarter",
+            label: "2. Front or three-quarter view",
+            url: "/assets/tissue-cutwork/front-three-quarter-model.jpg",
+            alt: "Tissue Cutwork Saree — Front or three-quarter view worn by model"
+          },
+          {
+            order: 3,
+            key: "pallu_detail",
+            label: "3. Pallu detail",
+            url: "/assets/tissue-cutwork/pallu-detail.jpg",
+            alt: "Tissue Cutwork Saree — Pallu detail with peacock and floral cutwork embroidery"
+          },
+          {
+            order: 4,
+            key: "border_cutwork",
+            label: "4. Border or cutwork detail",
+            url: "/assets/tissue-cutwork/border-cutwork-detail.jpg",
+            alt: "Tissue Cutwork Saree — Close-up border and scalloped cutwork detail"
+          },
+          {
+            order: 5,
+            key: "fabric_body",
+            label: "5. Fabric/body detail",
+            url: "", // No separate 6th photo supplied -> displays "Photo coming soon" placeholder
+            alt: "Tissue Cutwork Saree — Fabric/body detail (Photo coming soon)"
+          },
+          {
+            order: 6,
+            key: "blouse_piece",
+            label: "6. Blouse-piece view",
+            url: "/assets/tissue-cutwork/blouse-and-front-drape.jpg",
+            alt: "Tissue Cutwork Saree — Embroidered blouse-piece and front shoulder drape view"
+          }
+        ]
+      },
       {
         id: "jt-saree-01",
         isSampleProduct: true,
@@ -833,6 +899,19 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
     ];
 
     const INITIAL_PRODUCTS = RAW_SAMPLE_SAREES.map((saree) => {
+      if (Array.isArray(saree.customGallery)) {
+        const gallery = saree.customGallery.map((g) => ({
+          order: g.order,
+          key: g.key,
+          label: g.label,
+          url: g.url && g.url.trim() !== ""
+            ? g.url
+            : createMissingViewPlaceholderSVG(saree.name, g.label),
+          isComingSoon: !g.url || g.url.trim() === "",
+          alt: g.alt || `${saree.name} — ${g.label}`
+        }));
+        return { ...saree, gallery };
+      }
       const gallery = REQUIRED_GALLERY_VIEWS.map((view) => ({
         order: view.index,
         key: view.key,
@@ -924,6 +1003,16 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                 wholesaleEnquiries: initialState.wholesaleEnquiries
               })
             });
+          } else if (Array.isArray(data.products) && !data.products.some((p) => p.id === "jt-saree-09")) {
+            // Ensure the new Tissue Cutwork Saree (jt-saree-09) is present in existing SQLite DB
+            const tissueProduct = initialState.products.find((p) => p.id === "jt-saree-09");
+            if (tissueProduct) {
+              await this.request("/api/products/jt-saree-09", {
+                method: "PUT",
+                body: JSON.stringify(tissueProduct)
+              });
+              data = await this.request("/api/bootstrap");
+            }
           }
           this.isConnected = true;
           this.statusMessage = data.dbStatus || "Connected • SQLite Persistent Backend";
@@ -1161,7 +1250,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
     const app = {
       state: {
         currentPage: "home",
-        selectedProductId: "jt-saree-01",
+        selectedProductId: "jt-saree-09",
         selectedGalleryIndex: 0,
         productDetailQty: 1,
         lightboxOpen: false,
@@ -1177,14 +1266,14 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
           fabric: "ALL",
           color: "ALL",
           occasion: "ALL",
-          maxPrice: 6000,
+          maxPrice: 10000,
           availability: "ALL",
           sortBy: "featured"
         },
         activePolicyTab: "shipping",
         activeAdminTab: "products",
-        adminEditingProductId: "jt-saree-01",
-        aiStudioProductId: "jt-saree-01",
+        adminEditingProductId: "jt-saree-09",
+        aiStudioProductId: "jt-saree-09",
         aiStudioGeneratingView: null,
         deferredPWAPrompt: null
       },
@@ -1217,7 +1306,13 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
         if (backendData && backendData.ok) {
           if (backendData.settings) this.state.settings = backendData.settings;
           if (Array.isArray(backendData.products) && backendData.products.length > 0) {
-            this.state.products = backendData.products;
+            // Ensure Tissue Cutwork Saree (jt-saree-09) appears first in featured order
+            const sortedProducts = [...backendData.products].sort((a, b) => {
+              if (a.id === "jt-saree-09") return -1;
+              if (b.id === "jt-saree-09") return 1;
+              return 0;
+            });
+            this.state.products = sortedProducts;
           }
           if (Array.isArray(backendData.orders)) {
             this.state.orders = backendData.orders;
@@ -1312,7 +1407,33 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
       },
 
       formatINR(amount) {
-        return "₹" + Number(amount || 0).toLocaleString("en-IN");
+        return "₹" + Math.round(Number(amount || 0)).toLocaleString("en-IN");
+      },
+
+      getPricing(saree) {
+        const hasOriginal = typeof saree.originalPriceINR === "number" && saree.originalPriceINR > 0;
+        const discountPct = typeof saree.discountPercent === "number" && saree.discountPercent > 0
+          ? saree.discountPercent
+          : 0;
+        const originalINR = hasOriginal ? Math.round(saree.originalPriceINR) : Math.round(Number(saree.priceINR || 0));
+        const finalINR = (hasOriginal && discountPct > 0)
+          ? Math.round(originalINR * (1 - discountPct / 100))
+          : Math.round(Number(saree.priceINR || originalINR));
+        const hasDiscount = hasOriginal && discountPct > 0 && originalINR > finalINR;
+        return {
+          originalINR,
+          discountPct,
+          finalINR,
+          hasDiscount,
+          discountLabel: hasDiscount ? `${discountPct}% off.` : ""
+        };
+      },
+
+      isProductOutOfStock(saree) {
+        if (!saree) return false;
+        if (saree.stockStatus === "Out of Stock") return true;
+        if (typeof saree.stockQty === "number" && saree.stockQty <= 0 && saree.stockStatus !== "") return true;
+        return false;
       },
 
       renderFooterContacts() {
@@ -1391,15 +1512,21 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
       syncStickyProductBar() {
         const product = this.state.products.find((p) => p.id === this.state.selectedProductId);
         if (!product) return;
+        const pricing = this.getPricing(product);
         const titleEl = document.getElementById("sticky-bar-title");
         const priceEl = document.getElementById("sticky-bar-price");
         const addBtn = document.getElementById("sticky-bar-add");
         const waBtn = document.getElementById("sticky-bar-whatsapp");
 
         if (titleEl) titleEl.textContent = product.name;
-        if (priceEl) priceEl.textContent = `${this.formatINR(product.priceINR)} • ${product.stockStatus}`;
+        if (priceEl) {
+          const stockPart = product.stockStatus ? ` • ${product.stockStatus}` : "";
+          priceEl.innerHTML = pricing.hasDiscount
+            ? `<span class="line-through text-ink-muted mr-1">${this.formatINR(pricing.originalINR)}</span><span class="text-teal font-bold">${this.formatINR(pricing.finalINR)}</span> <span class="text-emerald-700 font-bold">(${pricing.discountLabel})</span>${stockPart}`
+            : `${this.formatINR(pricing.finalINR)}${stockPart}`;
+        }
         if (addBtn) {
-          const outOfStock = product.stockStatus === "Out of Stock" || product.stockQty <= 0;
+          const outOfStock = this.isProductOutOfStock(product);
           addBtn.disabled = outOfStock;
           addBtn.textContent = outOfStock ? "Out of Stock" : "Add to Cart";
           addBtn.className = outOfStock
@@ -1453,7 +1580,8 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
 
       renderHomePage() {
         const featuredSarees = this.state.products.slice(0, 4);
-        const stillHeroSvg = createSareeViewSVG(this.state.products[0], 3);
+        const heroSampleSaree = this.state.products.find((p) => p.id === "jt-saree-01") || this.state.products[0];
+        const stillHeroSvg = createSareeViewSVG(heroSampleSaree, 3);
 
         return `
           <div class="page-transition">
@@ -1474,7 +1602,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                     </p>
                     <div class="flex flex-wrap items-center gap-3 pt-2">
                       <button onclick="app.navigate('shop')" class="px-6 py-3.5 rounded-xl bg-gold text-ink font-bold text-sm sm:text-base shadow-lg hover:bg-gold-light active:scale-95 transition-all flex items-center gap-2">
-                        <span>Explore ${this.state.products.length} Sample Sarees</span>
+                        <span>Explore ${this.state.products.length} Sarees</span>
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"/></svg>
                       </button>
                       <button onclick="app.navigate('wholesale')" class="px-6 py-3.5 rounded-xl bg-white/10 text-ivory border border-gold/40 font-semibold text-sm sm:text-base hover:bg-white/20 transition-colors">
@@ -1531,10 +1659,10 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
               <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-8">
                 <div>
                   <span class="text-xs font-bold uppercase tracking-widest text-teal">6-Angle Validated Gallery Per Saree</span>
-                  <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-1">Featured Sample Sarees</h2>
+                  <h2 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-1">Featured Saree Collection</h2>
                 </div>
                 <button onclick="app.navigate('shop')" class="self-start sm:self-auto px-5 py-2.5 rounded-xl border border-teal text-teal font-semibold text-sm hover:bg-teal hover:text-white transition-colors">
-                  View All ${this.state.products.length} Sample Sarees →
+                  View All ${this.state.products.length} Sarees →
                 </button>
               </div>
 
@@ -1568,9 +1696,14 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
       },
 
       renderProductCard(saree) {
+        const firstViewLabel = (saree.gallery && saree.gallery[0] && saree.gallery[0].label)
+          ? saree.gallery[0].label
+          : REQUIRED_GALLERY_VIEWS[0].label;
         const primaryImg = (saree.gallery && saree.gallery[0] && saree.gallery[0].url)
           ? saree.gallery[0].url
-          : createMissingViewPlaceholderSVG(saree.name, REQUIRED_GALLERY_VIEWS[0].label);
+          : createMissingViewPlaceholderSVG(saree.name, firstViewLabel);
+
+        const pricing = this.getPricing(saree);
 
         const badgeColor = saree.stockStatus === "In Stock"
           ? "bg-emerald-50 text-emerald-800 border-emerald-200"
@@ -1578,26 +1711,35 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
             ? "bg-amber-50 text-amber-800 border-amber-200"
             : "bg-red-50 text-red-800 border-red-200";
 
+        const subtitleText = saree.description || saree.borderAndZari || "";
+
         return `
           <article class="group bg-white rounded-2xl border border-gold/30 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col overflow-hidden">
             <div onclick="app.openProductDetail('${saree.id}')" class="relative aspect-[5/6] bg-ivory overflow-hidden cursor-pointer">
               <img
                 src="${primaryImg}"
-                alt="${saree.name} — 1. Model wearing the saree (front view)"
+                alt="${saree.name} — ${firstViewLabel}"
                 loading="lazy"
-                onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '1. Model wearing the saree (front view)');"
+                onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${firstViewLabel.replace(/'/g, "\\'")}');"
                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
               />
               <div class="absolute top-3 left-3 flex flex-col gap-1.5">
                 <span class="px-2.5 py-1 rounded-md bg-teal text-gold font-bold text-[11px] uppercase tracking-wider shadow">
-                  Sample product
+                  ${saree.isSampleProduct === false ? "Featured Saree" : "Sample product"}
                 </span>
+                ${pricing.hasDiscount ? `
+                  <span class="px-2.5 py-1 rounded-md bg-emerald-700 text-white font-bold text-[11px] tracking-wide shadow">
+                    ${pricing.discountLabel}
+                  </span>
+                ` : ""}
               </div>
-              <div class="absolute top-3 right-3">
-                <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold border ${badgeColor} shadow-sm">
-                  ${saree.stockStatus}
-                </span>
-              </div>
+              ${saree.stockStatus ? `
+                <div class="absolute top-3 right-3">
+                  <span class="px-2.5 py-1 rounded-md text-[11px] font-semibold border ${badgeColor} shadow-sm">
+                    ${saree.stockStatus}
+                  </span>
+                </div>
+              ` : ""}
               <div class="absolute bottom-3 right-3 px-2.5 py-1 rounded-md bg-ink/80 backdrop-blur-sm text-white text-[11px] font-medium">
                 6 Catalogue Views
               </div>
@@ -1606,20 +1748,28 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
             <div class="p-4 sm:p-5 flex-grow flex flex-col justify-between space-y-4">
               <div onclick="app.openProductDetail('${saree.id}')" class="cursor-pointer space-y-1.5">
                 <div class="flex items-center justify-between text-xs text-ink-muted">
-                  <span>${saree.fabric}</span>
+                  <span class="font-medium text-teal">${saree.fabric}</span>
                   <span>•</span>
-                  <span>${saree.occasion}</span>
+                  <span>${saree.color}</span>
                 </div>
                 <h3 class="font-serif text-xl font-bold text-ink group-hover:text-teal transition-colors line-clamp-2">
                   ${saree.name}
                 </h3>
-                <p class="text-xs text-ink-muted line-clamp-2">${saree.borderAndZari}</p>
+                <p class="text-xs text-ink-muted line-clamp-2">${subtitleText}</p>
               </div>
 
               <div class="pt-3 border-t border-gold/20 flex items-center justify-between gap-2">
                 <div>
-                  <span class="text-xs text-ink-muted block">Mill Price (INR)</span>
-                  <span class="font-serif text-2xl font-bold text-teal">${this.formatINR(saree.priceINR)}</span>
+                  ${pricing.hasDiscount ? `
+                    <div class="flex items-center gap-1.5">
+                      <span class="text-xs text-ink-muted line-through">${this.formatINR(pricing.originalINR)}</span>
+                      <span class="px-1.5 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold text-[10px]">${pricing.discountLabel}</span>
+                    </div>
+                    <span class="font-serif text-2xl font-bold text-teal block">${this.formatINR(pricing.finalINR)}</span>
+                  ` : `
+                    <span class="text-xs text-ink-muted block">Mill Price (INR)</span>
+                    <span class="font-serif text-2xl font-bold text-teal">${this.formatINR(pricing.finalINR)}</span>
+                  `}
                 </div>
                 <button
                   onclick="app.openProductDetail('${saree.id}')"
@@ -1635,22 +1785,25 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
 
       renderShopPage() {
         const f = this.state.shopFilters;
-        const fabrics = ["ALL", ...new Set(this.state.products.map((p) => p.fabric))];
+        const fabricSet = new Set(["Tissue Cutwork Saree", ...this.state.products.map((p) => p.fabric)]);
+        const fabrics = ["ALL", ...fabricSet];
         const colors = ["ALL", ...new Set(this.state.products.map((p) => p.color))];
         const occasions = ["ALL", ...new Set(this.state.products.map((p) => p.occasion))];
 
         let filtered = this.state.products.filter((p) => {
           const q = f.search.trim().toLowerCase();
+          const pricing = this.getPricing(p);
           const matchesSearch = !q ||
             p.name.toLowerCase().includes(q) ||
             p.fabric.toLowerCase().includes(q) ||
             p.color.toLowerCase().includes(q) ||
-            p.occasion.toLowerCase().includes(q) ||
-            p.borderAndZari.toLowerCase().includes(q);
+            (p.occasion || "").toLowerCase().includes(q) ||
+            (p.description || "").toLowerCase().includes(q) ||
+            (p.borderAndZari || "").toLowerCase().includes(q);
           const matchesFabric = f.fabric === "ALL" || p.fabric === f.fabric;
           const matchesColor = f.color === "ALL" || p.color === f.color;
           const matchesOccasion = f.occasion === "ALL" || p.occasion === f.occasion;
-          const matchesPrice = p.priceINR <= f.maxPrice;
+          const matchesPrice = pricing.finalINR <= f.maxPrice;
           const matchesAvail = f.availability === "ALL" ||
             (f.availability === "IN_STOCK" && p.stockStatus !== "Out of Stock") ||
             (f.availability === "OUT_OF_STOCK" && p.stockStatus === "Out of Stock");
@@ -1658,29 +1811,29 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
           return matchesSearch && matchesFabric && matchesColor && matchesOccasion && matchesPrice && matchesAvail;
         });
 
-        if (f.sortBy === "price-asc") filtered.sort((a, b) => a.priceINR - b.priceINR);
-        if (f.sortBy === "price-desc") filtered.sort((a, b) => b.priceINR - a.priceINR);
+        if (f.sortBy === "price-asc") filtered.sort((a, b) => this.getPricing(a).finalINR - this.getPricing(b).finalINR);
+        if (f.sortBy === "price-desc") filtered.sort((a, b) => this.getPricing(b).finalINR - this.getPricing(a).finalINR);
         if (f.sortBy === "name-asc") filtered.sort((a, b) => a.name.localeCompare(b.name));
 
         return `
           <div class="page-transition max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="mb-6">
-              <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardan Textiles • Sample Catalogue</span>
-              <h1 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-1">Shop All Sample Sarees</h1>
-              <p class="text-sm text-ink-muted mt-1">Tap any saree card to inspect all 6 ordered catalogue views, weave macro, and matching blouse piece.</p>
+              <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardan Textiles • Saree Collection</span>
+              <h1 class="font-serif text-3xl sm:text-4xl font-bold text-ink mt-1">Shop All Sarees</h1>
+              <p class="text-sm text-ink-muted mt-1">Tap any saree card to inspect all 6 ordered catalogue views, border/cutwork close-ups, and matching blouse piece.</p>
             </div>
 
             <div class="bg-white rounded-2xl border border-gold/40 p-4 sm:p-6 shadow-sm mb-8 space-y-4">
               <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
                 <div class="md:col-span-5">
-                  <label for="shop-search" class="block text-xs font-semibold text-ink-muted mb-1">Search Saree, Weave, Zari or Colour</label>
+                  <label for="shop-search" class="block text-xs font-semibold text-ink-muted mb-1">Search Saree, Weave, Cutwork, Zari or Colour</label>
                   <div class="relative">
                     <input
                       id="shop-search"
                       type="search"
                       value="${f.search}"
                       oninput="app.updateShopFilter('search', this.value)"
-                      placeholder="e.g., Peacock Teal, Katan, Brocade, Temple border..."
+                      placeholder="e.g., Tissue Cutwork Saree, Champagne Gold, Katan..."
                       class="w-full pl-9 pr-4 py-2.5 rounded-xl border border-gold/40 bg-ivory text-sm focus:outline-none focus:ring-2 focus:ring-teal"
                     />
                     <svg class="w-4 h-4 text-ink-muted absolute left-3 top-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
@@ -1706,7 +1859,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                     id="shop-price"
                     type="range"
                     min="1500"
-                    max="6000"
+                    max="10000"
                     step="150"
                     value="${f.maxPrice}"
                     oninput="app.updateShopFilter('maxPrice', Number(this.value))"
@@ -1741,21 +1894,21 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                   <label for="filter-avail" class="block text-[11px] font-semibold text-ink-muted mb-1">Availability</label>
                   <select id="filter-avail" onchange="app.updateShopFilter('availability', this.value)" class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory text-xs sm:text-sm">
                     <option value="ALL" ${f.availability === "ALL" ? "selected" : ""}>All Stock Statuses</option>
-                    <option value="IN_STOCK" ${f.availability === "IN_STOCK" ? "selected" : ""}>In Stock / Low Stock Only</option>
+                    <option value="IN_STOCK" ${f.availability === "IN_STOCK" ? "selected" : ""}>Available / In Stock</option>
                     <option value="OUT_OF_STOCK" ${f.availability === "OUT_OF_STOCK" ? "selected" : ""}>Out of Stock</option>
                   </select>
                 </div>
               </div>
 
               <div class="flex items-center justify-between text-xs text-ink-muted pt-1">
-                <span>Showing <strong>${filtered.length}</strong> of ${this.state.products.length} sample sarees</span>
+                <span>Showing <strong>${filtered.length}</strong> of ${this.state.products.length} sarees</span>
                 <button onclick="app.resetShopFilters()" class="text-teal font-semibold hover:underline">Reset All Filters</button>
               </div>
             </div>
 
             ${filtered.length === 0 ? `
               <div class="bg-white rounded-2xl border border-gold/30 p-12 text-center space-y-3">
-                <p class="font-serif text-2xl font-bold text-teal">No Sample Sarees Match Your Filter</p>
+                <p class="font-serif text-2xl font-bold text-teal">No Sarees Match Your Filter</p>
                 <p class="text-sm text-ink-muted">Try widening your price range or clearing a fabric/colour filter.</p>
                 <button onclick="app.resetShopFilters()" class="px-5 py-2.5 rounded-xl bg-teal text-white text-sm font-semibold">Reset Filters</button>
               </div>
@@ -1790,7 +1943,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
           fabric: "ALL",
           color: "ALL",
           occasion: "ALL",
-          maxPrice: 6000,
+          maxPrice: 10000,
           availability: "ALL",
           sortBy: "featured"
         };
@@ -1802,16 +1955,18 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
         const activeIdx = this.state.selectedGalleryIndex || 0;
         const activeViewMeta = REQUIRED_GALLERY_VIEWS[activeIdx];
         const activeGalleryItem = (saree.gallery && saree.gallery[activeIdx]) ? saree.gallery[activeIdx] : null;
+        const activeLabel = (activeGalleryItem && activeGalleryItem.label) ? activeGalleryItem.label : activeViewMeta.label;
 
         const largeImageSrc = (activeGalleryItem && activeGalleryItem.url && activeGalleryItem.url.trim() !== "")
           ? activeGalleryItem.url
-          : createMissingViewPlaceholderSVG(saree.name, activeViewMeta.label);
+          : createMissingViewPlaceholderSVG(saree.name, activeLabel);
 
         const largeImageAlt = (activeGalleryItem && activeGalleryItem.alt)
           ? activeGalleryItem.alt
-          : `${saree.name} — ${activeViewMeta.label}`;
+          : `${saree.name} — ${activeLabel}`;
 
-        const outOfStock = saree.stockStatus === "Out of Stock" || saree.stockQty <= 0;
+        const pricing = this.getPricing(saree);
+        const outOfStock = this.isProductOutOfStock(saree);
 
         return `
           <div class="page-transition max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10">
@@ -1834,10 +1989,15 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                 <div class="relative rounded-2xl bg-white border-2 border-gold/50 shadow-md overflow-hidden group">
                   <div class="absolute top-3 left-3 z-10 flex flex-wrap items-center gap-2 pointer-events-none">
                     <span class="px-3 py-1 rounded-md bg-teal text-gold font-bold text-xs uppercase tracking-wider shadow">
-                      Sample product
+                      ${saree.isSampleProduct === false ? "Featured Saree" : "Sample product"}
                     </span>
+                    ${pricing.hasDiscount ? `
+                      <span class="px-3 py-1 rounded-md bg-emerald-700 text-white font-bold text-xs shadow">
+                        ${pricing.discountLabel}
+                      </span>
+                    ` : ""}
                     <span id="detail-active-view-pill" class="px-3 py-1 rounded-md bg-white/95 backdrop-blur-sm text-ink font-semibold text-xs border border-gold/40 shadow">
-                      ${activeViewMeta.label}
+                      ${activeLabel}
                     </span>
                   </div>
 
@@ -1870,7 +2030,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                       id="product-main-image"
                       src="${largeImageSrc}"
                       alt="${largeImageAlt}"
-                      onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${activeViewMeta.label.replace(/'/g, "\\'")}');"
+                      onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${activeLabel.replace(/'/g, "\\'")}');"
                       class="w-full h-full object-contain transition-opacity duration-200"
                     />
                   </div>
@@ -1878,7 +2038,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                   <div class="bg-teal text-ivory px-4 py-3 flex items-center justify-between gap-2 text-xs sm:text-sm">
                     <div class="truncate">
                       <span class="text-gold font-bold uppercase tracking-wider mr-1.5">Selected View:</span>
-                      <span id="product-main-label" class="font-medium">${activeViewMeta.label}</span>
+                      <span id="product-main-label" class="font-medium">${activeLabel}</span>
                     </div>
                     <button onclick="app.openLightbox()" class="shrink-0 inline-flex items-center gap-1 text-gold-light hover:text-white font-semibold">
                       <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
@@ -1896,9 +2056,10 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                   <div class="flex sm:grid sm:grid-cols-6 gap-2.5 overflow-x-auto no-scrollbar pb-2" role="listbox" aria-label="6 Saree Angle Thumbnails">
                     ${REQUIRED_GALLERY_VIEWS.map((viewMeta, idx) => {
                       const item = (saree.gallery && saree.gallery[idx]) ? saree.gallery[idx] : null;
+                      const slotLabel = (item && item.label) ? item.label : viewMeta.label;
                       const thumbSrc = (item && item.url && item.url.trim() !== "")
                         ? item.url
-                        : createMissingViewPlaceholderSVG(saree.name, viewMeta.label);
+                        : createMissingViewPlaceholderSVG(saree.name, slotLabel);
                       const isSelected = idx === activeIdx;
 
                       return `
@@ -1916,9 +2077,9 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                           <div class="aspect-[5/6] bg-ivory overflow-hidden relative">
                             <img
                               src="${thumbSrc}"
-                              alt="${saree.name} thumbnail — ${viewMeta.label}"
+                              alt="${saree.name} thumbnail — ${slotLabel}"
                               loading="lazy"
-                              onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${viewMeta.label.replace(/'/g, "\\'")}');"
+                              onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${saree.name.replace(/'/g, "\\'")}', '${slotLabel.replace(/'/g, "\\'")}');"
                               class="w-full h-full object-cover"
                             />
                             ${isSelected ? `
@@ -1926,7 +2087,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                             ` : ""}
                           </div>
                           <div class="p-1.5 ${isSelected ? "bg-teal text-white" : "bg-white text-ink"}">
-                            <p class="text-[10px] font-semibold leading-tight line-clamp-2">${viewMeta.label}</p>
+                            <p class="text-[10px] font-semibold leading-tight line-clamp-2">${slotLabel}</p>
                           </div>
                         </button>
                       `;
@@ -1939,23 +2100,43 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
               <div class="lg:col-span-5 bg-white rounded-2xl border border-gold/40 p-6 sm:p-8 shadow-sm space-y-6">
                 <div class="space-y-2 border-b border-gold/20 pb-5">
                   <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-2.5 py-0.5 rounded bg-gold/20 text-teal font-bold text-xs uppercase tracking-wider">Sample Product</span>
-                    <span class="px-2.5 py-0.5 rounded text-xs font-semibold ${
-                      saree.stockStatus === "In Stock"
-                        ? "bg-emerald-100 text-emerald-800"
-                        : saree.stockStatus === "Low Stock"
-                          ? "bg-amber-100 text-amber-800"
-                          : "bg-red-100 text-red-800"
-                    }">
-                      ${saree.stockStatus} ${saree.stockQty > 0 ? `(${saree.stockQty} pcs available)` : ""}
+                    <span class="px-2.5 py-0.5 rounded bg-gold/20 text-teal font-bold text-xs uppercase tracking-wider">
+                      ${saree.isSampleProduct === false ? "New Collection" : "Sample Product"}
                     </span>
+                    ${saree.stockStatus ? `
+                      <span class="px-2.5 py-0.5 rounded text-xs font-semibold ${
+                        saree.stockStatus === "In Stock"
+                          ? "bg-emerald-100 text-emerald-800"
+                          : saree.stockStatus === "Low Stock"
+                            ? "bg-amber-100 text-amber-800"
+                            : "bg-red-100 text-red-800"
+                      }">
+                        ${saree.stockStatus} ${typeof saree.stockQty === "number" && saree.stockQty > 0 ? `(${saree.stockQty} pcs available)` : ""}
+                      </span>
+                    ` : `
+                      <span class="px-2.5 py-0.5 rounded bg-ivory border border-gold/40 text-ink-muted text-xs font-medium">
+                        Availability: Editable in Admin
+                      </span>
+                    `}
                   </div>
 
                   <h1 class="font-serif text-3xl sm:text-4xl font-bold text-ink">${saree.name}</h1>
 
-                  <div class="pt-2 flex items-baseline gap-3">
-                    <span class="font-serif text-3xl sm:text-4xl font-bold text-teal">${this.formatINR(saree.priceINR)}</span>
-                    <span class="text-xs text-ink-muted">Indicative Sample Price (INR)</span>
+                  ${saree.description ? `
+                    <p class="text-sm sm:text-base text-ink leading-relaxed pt-1">${saree.description}</p>
+                  ` : ""}
+
+                  <div class="pt-3 flex flex-wrap items-baseline gap-3">
+                    ${pricing.hasDiscount ? `
+                      <span class="font-serif text-3xl sm:text-4xl font-bold text-teal">${this.formatINR(pricing.finalINR)}</span>
+                      <span class="font-serif text-xl sm:text-2xl text-ink-muted line-through">${this.formatINR(pricing.originalINR)}</span>
+                      <span class="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-xs sm:text-sm border border-emerald-300">
+                        ${pricing.discountLabel}
+                      </span>
+                    ` : `
+                      <span class="font-serif text-3xl sm:text-4xl font-bold text-teal">${this.formatINR(pricing.finalINR)}</span>
+                      <span class="text-xs text-ink-muted">Indicative Price (INR)</span>
+                    `}
                   </div>
                 </div>
 
@@ -1967,20 +2148,24 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                   <div class="p-3 rounded-xl bg-ivory border border-gold/20">
                     <dt class="text-xs text-ink-muted uppercase tracking-wider">Main Colour</dt>
                     <dd class="font-semibold text-ink mt-0.5 flex items-center gap-2">
-                      <span class="w-3.5 h-3.5 rounded-full border border-black/20 inline-block" style="background:${saree.hexPrimary}"></span>
+                      <span class="w-3.5 h-3.5 rounded-full border border-black/20 inline-block" style="background:${saree.hexPrimary || '#D8C093'}"></span>
                       <span>${saree.color}</span>
                     </dd>
                   </div>
-                  <div class="p-3 rounded-xl bg-ivory border border-gold/20 sm:col-span-2">
+                  <div class="p-3 rounded-xl bg-ivory border border-gold/20">
                     <dt class="text-xs text-ink-muted uppercase tracking-wider">Occasion</dt>
                     <dd class="font-semibold text-ink mt-0.5">${saree.occasion}</dd>
                   </div>
+                  <div class="p-3 rounded-xl bg-ivory border border-gold/20">
+                    <dt class="text-xs text-ink-muted uppercase tracking-wider">Availability</dt>
+                    <dd class="font-semibold text-ink mt-0.5">${saree.stockStatus || "Editable (Not Assumed)"}</dd>
+                  </div>
                   <div class="p-3 rounded-xl bg-ivory border border-gold/20 sm:col-span-2">
-                    <dt class="text-xs text-ink-muted uppercase tracking-wider">Border &amp; Zari Detail</dt>
+                    <dt class="text-xs text-ink-muted uppercase tracking-wider">Border &amp; Cutwork / Zari Detail</dt>
                     <dd class="text-ink mt-0.5 leading-relaxed">${saree.borderAndZari}</dd>
                   </div>
                   <div class="p-3 rounded-xl bg-ivory border border-gold/20 sm:col-span-2">
-                    <dt class="text-xs text-ink-muted uppercase tracking-wider">Body Motifs</dt>
+                    <dt class="text-xs text-ink-muted uppercase tracking-wider">Body &amp; Pallu Motifs</dt>
                     <dd class="text-ink mt-0.5 leading-relaxed">${saree.motifs}</dd>
                   </div>
                   <div class="p-3 rounded-xl bg-ivory border border-gold/20 sm:col-span-2">
@@ -2003,7 +2188,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                         id="detail-qty-input"
                         type="number"
                         min="1"
-                        max="${Math.max(1, saree.stockQty)}"
+                        max="${typeof saree.stockQty === 'number' && saree.stockQty > 0 ? saree.stockQty : 99}"
                         value="${this.state.productDetailQty}"
                         onchange="app.setDetailQty(this.value)"
                         class="w-14 text-center bg-transparent font-bold text-sm focus:outline-none"
@@ -2053,10 +2238,10 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
 
                 <div class="p-4 rounded-xl bg-teal/5 border border-teal/20 text-xs space-y-2">
                   <div class="flex items-center justify-between">
-                    <span class="font-bold text-teal uppercase tracking-wider">Catalogue Photo Tools</span>
-                    <button onclick="app.openAdminForProduct('${saree.id}')" class="text-teal font-bold underline">Edit or Generate 6 Photos →</button>
+                    <span class="font-bold text-teal uppercase tracking-wider">Edit Product &amp; Gallery</span>
+                    <button onclick="app.state.adminEditingProductId='${saree.id}'; app.state.activeAdminTab='products'; app.navigate('admin')" class="text-teal font-bold underline">Edit Details or Photos →</button>
                   </div>
-                  <p class="text-ink-muted">Need photorealistic AI studio photos or custom uploads for <strong>${saree.name}</strong>? Open the Admin AI 6-Image Studio.</p>
+                  <p class="text-ink-muted">Edit name, fabric, color, description, price/discount, availability, or upload photos for <strong>${saree.name}</strong> in the Admin Dashboard.</p>
                 </div>
               </div>
             </div>
@@ -2138,35 +2323,37 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
         const idx = this.state.selectedGalleryIndex;
         const viewMeta = REQUIRED_GALLERY_VIEWS[idx];
         const item = (saree.gallery && saree.gallery[idx]) ? saree.gallery[idx] : null;
+        const slotLabel = (item && item.label) ? item.label : viewMeta.label;
         const src = (item && item.url && item.url.trim() !== "")
           ? item.url
-          : createMissingViewPlaceholderSVG(saree.name, viewMeta.label);
+          : createMissingViewPlaceholderSVG(saree.name, slotLabel);
 
         const nameEl = document.getElementById("lightbox-saree-name");
         const labelEl = document.getElementById("lightbox-view-label");
         const imgEl = document.getElementById("lightbox-img");
         const thumbsEl = document.getElementById("lightbox-thumbs");
 
-        if (nameEl) nameEl.textContent = `${saree.name} (Sample Product)`;
-        if (labelEl) labelEl.textContent = viewMeta.label;
+        if (nameEl) nameEl.textContent = saree.name;
+        if (labelEl) labelEl.textContent = slotLabel;
         if (imgEl) {
           imgEl.src = src;
-          imgEl.alt = `${saree.name} — ${viewMeta.label}`;
+          imgEl.alt = `${saree.name} — ${slotLabel}`;
           imgEl.style.transform = "scale(1)";
           this.state.lightboxZoomed = false;
         }
         if (thumbsEl) {
           thumbsEl.innerHTML = REQUIRED_GALLERY_VIEWS.map((v, i) => {
             const gItem = (saree.gallery && saree.gallery[i]) ? saree.gallery[i] : null;
-            const tSrc = (gItem && gItem.url) ? gItem.url : createMissingViewPlaceholderSVG(saree.name, v.label);
+            const gLabel = (gItem && gItem.label) ? gItem.label : v.label;
+            const tSrc = (gItem && gItem.url) ? gItem.url : createMissingViewPlaceholderSVG(saree.name, gLabel);
             const active = i === idx;
             return `
               <button
                 onclick="app.selectGalleryView(${i})"
                 class="shrink-0 w-14 h-16 rounded-lg overflow-hidden border-2 transition-all ${active ? "border-gold scale-110 ring-2 ring-white" : "border-white/20 opacity-60 hover:opacity-100"}"
-                title="${v.label}"
+                title="${gLabel}"
               >
-                <img src="${tSrc}" alt="${v.label}" class="w-full h-full object-cover"/>
+                <img src="${tSrc}" alt="${gLabel}" class="w-full h-full object-cover"/>
               </button>
             `;
           }).join("");
@@ -2175,7 +2362,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
 
       adjustDetailQty(delta) {
         const saree = this.state.products.find((p) => p.id === this.state.selectedProductId);
-        const max = saree && saree.stockQty > 0 ? saree.stockQty : 99;
+        const max = saree && typeof saree.stockQty === "number" && saree.stockQty > 0 ? saree.stockQty : 99;
         this.state.productDetailQty = Math.min(max, Math.max(1, this.state.productDetailQty + delta));
         const input = document.getElementById("detail-qty-input");
         if (input) input.value = this.state.productDetailQty;
@@ -2189,14 +2376,16 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
       addToCart(productId, qty = 1) {
         const saree = this.state.products.find((p) => p.id === productId);
         if (!saree) return;
-        if (saree.stockStatus === "Out of Stock" || saree.stockQty <= 0) {
+        if (this.isProductOutOfStock(saree)) {
           this.showToast(`"${saree.name}" is currently Out of Stock.`, "error");
           return;
         }
 
+        const pricing = this.getPricing(saree);
         const existing = this.state.cart.find((item) => item.productId === productId);
         if (existing) {
           existing.qty += Number(qty);
+          existing.priceINR = pricing.finalINR;
         } else {
           this.state.cart.push({
             productId: saree.id,
@@ -2204,7 +2393,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
             fabric: saree.fabric,
             color: saree.color,
             occasion: saree.occasion,
-            priceINR: saree.priceINR,
+            priceINR: pricing.finalINR,
             thumbUrl: saree.gallery[0]?.url || createMissingViewPlaceholderSVG(saree.name, REQUIRED_GALLERY_VIEWS[0].label),
             qty: Number(qty)
           });
@@ -2218,15 +2407,18 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
       openWhatsAppProductEnquiry(productId) {
         const saree = this.state.products.find((p) => p.id === productId);
         if (!saree) return;
+        const pricing = this.getPricing(saree);
         const qty = this.state.productDetailQty || 1;
+        const priceLine = pricing.hasDiscount
+          ? `• Price: ₹${pricing.finalINR.toLocaleString("en-IN")} (${pricing.discountLabel} from ₹${pricing.originalINR.toLocaleString("en-IN")})`
+          : `• Indicative Price: ₹${pricing.finalINR.toLocaleString("en-IN")}`;
         const message = [
           `Hello Janardan Textiles,`,
-          `I would like to enquire about this Sample Product from your catalogue:`,
+          `I would like to enquire about this saree from your catalogue:`,
           `• Saree Name: ${saree.name} (ID: ${saree.id})`,
           `• Fabric: ${saree.fabric}`,
           `• Main Colour: ${saree.color}`,
-          `• Occasion: ${saree.occasion}`,
-          `• Indicative Price: ₹${saree.priceINR.toLocaleString("en-IN")}`,
+          priceLine,
           `• Quantity Interested: ${qty}`,
           `Please share availability and dispatch details.`
         ].join("\n");
@@ -2768,23 +2960,26 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
               <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 <div class="lg:col-span-4 bg-white rounded-2xl border border-gold/40 p-4 space-y-2 h-fit">
                   <h2 class="font-serif text-xl font-bold text-teal px-2 mb-2">Select Saree to Edit</h2>
-                  ${this.state.products.map((p) => `
-                    <button
-                      onclick="app.state.adminEditingProductId='${p.id}'; app.renderCurrentPage();"
-                      class="w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between gap-2 ${
-                        p.id === editProduct.id ? "bg-teal text-white border-teal font-semibold" : "bg-ivory text-ink border-gold/20 hover:bg-gold/10"
-                      }"
-                    >
-                      <span class="text-xs sm:text-sm truncate">${p.name}</span>
-                      <span class="text-xs shrink-0 ${p.id === editProduct.id ? "text-gold" : "text-teal font-bold"}">${this.formatINR(p.priceINR)}</span>
-                    </button>
-                  `).join("")}
+                  ${this.state.products.map((p) => {
+                    const pr = this.getPricing(p);
+                    return `
+                      <button
+                        onclick="app.state.adminEditingProductId='${p.id}'; app.renderCurrentPage();"
+                        class="w-full text-left p-3 rounded-xl border transition-all flex items-center justify-between gap-2 ${
+                          p.id === editProduct.id ? "bg-teal text-white border-teal font-semibold" : "bg-ivory text-ink border-gold/20 hover:bg-gold/10"
+                        }"
+                      >
+                        <span class="text-xs sm:text-sm truncate">${p.name}</span>
+                        <span class="text-xs shrink-0 ${p.id === editProduct.id ? "text-gold" : "text-teal font-bold"}">${this.formatINR(pr.finalINR)}</span>
+                      </button>
+                    `;
+                  }).join("")}
                 </div>
 
                 <div class="lg:col-span-8 bg-white rounded-2xl border border-gold/40 p-6 space-y-6">
                   <div class="flex items-center justify-between border-b border-gold/20 pb-3">
                     <div>
-                      <span class="text-xs font-bold uppercase text-teal">Editing Sample Product (${editProduct.id})</span>
+                      <span class="text-xs font-bold uppercase text-teal">Editing Product (${editProduct.id})</span>
                       <h2 class="font-serif text-2xl font-bold text-ink">${editProduct.name}</h2>
                     </div>
                     <button onclick="app.openProductDetail('${editProduct.id}')" class="px-3.5 py-2 rounded-xl bg-gold/20 text-teal font-bold text-xs hover:bg-gold/30">
@@ -2795,41 +2990,57 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                   <form onsubmit="app.saveAdminProduct(event, '${editProduct.id}')" class="space-y-4 text-sm">
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       <div>
-                        <label class="block text-xs font-semibold text-ink-muted mb-1">Saree Name</label>
+                        <label class="block text-xs font-semibold text-ink-muted mb-1">Product Name</label>
                         <input name="name" value="${editProduct.name}" required class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                       </div>
                       <div>
-                        <label class="block text-xs font-semibold text-ink-muted mb-1">Price in INR (₹)</label>
-                        <input name="priceINR" type="number" value="${editProduct.priceINR}" required class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
-                      </div>
-                      <div>
-                        <label class="block text-xs font-semibold text-ink-muted mb-1">Fabric</label>
+                        <label class="block text-xs font-semibold text-ink-muted mb-1">Fabric / Filter Category</label>
                         <input name="fabric" value="${editProduct.fabric}" required class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                       </div>
                       <div>
-                        <label class="block text-xs font-semibold text-ink-muted mb-1">Main Color</label>
+                        <label class="block text-xs font-semibold text-ink-muted mb-1">Original Price in INR (₹)</label>
+                        <input name="originalPriceINR" type="number" value="${editProduct.originalPriceINR || editProduct.priceINR}" required class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
+                      </div>
+                      <div class="grid grid-cols-2 gap-2">
+                        <div>
+                          <label class="block text-xs font-semibold text-ink-muted mb-1">Discount (%)</label>
+                          <input name="discountPercent" type="number" min="0" max="95" step="1" value="${editProduct.discountPercent || 0}" class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
+                        </div>
+                        <div>
+                          <label class="block text-xs font-semibold text-ink-muted mb-1">Calculated Price</label>
+                          <input type="text" readonly value="${this.formatINR(this.getPricing(editProduct).finalINR)}" class="w-full px-3 py-2 rounded-xl border border-gold/30 bg-gold/10 text-teal font-bold"/>
+                        </div>
+                      </div>
+                      <div>
+                        <label class="block text-xs font-semibold text-ink-muted mb-1">Color (Editable)</label>
                         <input name="color" value="${editProduct.color}" required class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                       </div>
                       <div>
                         <label class="block text-xs font-semibold text-ink-muted mb-1">Occasion</label>
                         <input name="occasion" value="${editProduct.occasion}" required class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                       </div>
-                      <div class="grid grid-cols-2 gap-2">
+                      <div class="grid grid-cols-2 gap-2 sm:col-span-2">
                         <div>
-                          <label class="block text-xs font-semibold text-ink-muted mb-1">Stock Status</label>
+                          <label class="block text-xs font-semibold text-ink-muted mb-1">Availability / Stock Status (Editable)</label>
                           <select name="stockStatus" class="w-full px-2.5 py-2 rounded-xl border border-gold/40 bg-ivory">
+                            <option value="" ${!editProduct.stockStatus ? "selected" : ""}>Not Assumed (Leave Open / Editable)</option>
                             ${["In Stock", "Low Stock", "Out of Stock"].map((st) => `<option value="${st}" ${editProduct.stockStatus === st ? "selected" : ""}>${st}</option>`).join("")}
                           </select>
                         </div>
                         <div>
-                          <label class="block text-xs font-semibold text-ink-muted mb-1">Stock Qty</label>
-                          <input name="stockQty" type="number" value="${editProduct.stockQty}" class="w-full px-2.5 py-2 rounded-xl border border-gold/40 bg-ivory"/>
+                          <label class="block text-xs font-semibold text-ink-muted mb-1">Stock Qty (Optional)</label>
+                          <input name="stockQty" type="number" placeholder="Leave blank if not assumed" value="${typeof editProduct.stockQty === 'number' ? editProduct.stockQty : ''}" class="w-full px-2.5 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <label class="block text-xs font-semibold text-ink-muted mb-1">Border &amp; Zari Description</label>
+                      <label class="block text-xs font-semibold text-ink-muted mb-1">Product Description</label>
+                      <input name="description" value="${editProduct.description || ''}" placeholder="e.g., A tissue saree featuring delicate cutwork detailing." class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
+                    </div>
+
+                    <div>
+                      <label class="block text-xs font-semibold text-ink-muted mb-1">Border &amp; Cutwork / Zari Description</label>
                       <input name="borderAndZari" value="${editProduct.borderAndZari}" class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                     </div>
 
@@ -2852,13 +3063,14 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                       ${REQUIRED_GALLERY_VIEWS.map((viewMeta, idx) => {
                         const gItem = editProduct.gallery[idx];
-                        const previewSrc = (gItem && gItem.url) ? gItem.url : createMissingViewPlaceholderSVG(editProduct.name, viewMeta.label);
+                        const slotLabel = (gItem && gItem.label) ? gItem.label : viewMeta.label;
+                        const previewSrc = (gItem && gItem.url) ? gItem.url : createMissingViewPlaceholderSVG(editProduct.name, slotLabel);
                         return `
                           <div class="p-3 rounded-xl bg-ivory border border-gold/40 space-y-2.5 flex flex-col justify-between">
                             <div>
-                              <span class="text-[11px] font-bold text-teal block">${viewMeta.label}</span>
+                              <span class="text-[11px] font-bold text-teal block">${slotLabel}</span>
                               <div class="aspect-[5/6] bg-white rounded-lg overflow-hidden border border-gold/20 mt-1.5">
-                                <img src="${previewSrc}" alt="${viewMeta.label}" class="w-full h-full object-cover"/>
+                                <img src="${previewSrc}" alt="${slotLabel}" class="w-full h-full object-cover"/>
                               </div>
                             </div>
                             <div class="space-y-1.5">
@@ -2875,7 +3087,7 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
                                   onclick="app.clearAdminImageSlot('${editProduct.id}', ${idx})"
                                   class="w-full py-1 px-2 rounded bg-amber-100 text-amber-900 text-[10px] font-semibold hover:bg-amber-200"
                                 >
-                                  Test Missing Image Placeholder
+                                  Set Photo Coming Soon
                                 </button>
                                 <button
                                   type="button"
@@ -3131,16 +3343,17 @@ No text, price labels, logos, watermarks, frames or extra garments. Do not chang
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
               ${REQUIRED_GALLERY_VIEWS.map((viewMeta, idx) => {
                 const gItem = saree.gallery[idx];
+                const slotLabel = (gItem && gItem.label) ? gItem.label : viewMeta.label;
                 const isGenerating = this.state.aiStudioGeneratingView === `${saree.id}_${idx}`;
                 return `
                   <div class="p-4 rounded-2xl bg-ivory border border-gold/40 flex flex-col justify-between space-y-3">
                     <div>
                       <div class="flex items-center justify-between mb-1.5">
-                        <span class="text-xs font-bold text-teal">${viewMeta.label}</span>
+                        <span class="text-xs font-bold text-teal">${slotLabel}</span>
                         <span class="text-[10px] px-2 py-0.5 rounded bg-gold/20 text-ink font-semibold">Slot ${idx + 1}/6</span>
                       </div>
                       <div class="aspect-[5/6] bg-white rounded-xl overflow-hidden border border-gold/30 relative">
-                        <img src="${gItem.url}" alt="${viewMeta.label}" class="w-full h-full object-cover"/>
+                        <img src="${gItem.url}" alt="${slotLabel}" class="w-full h-full object-cover"/>
                         ${isGenerating ? `
                           <div class="absolute inset-0 bg-teal/85 backdrop-blur-sm flex flex-col items-center justify-center text-ivory p-4 text-center">
                             <div class="w-8 h-8 border-3 border-gold border-t-transparent rounded-full animate-spin mb-2"></div>
@@ -3250,12 +3463,17 @@ Keep the color, fabric, pattern, border and blouse strictly faithful to the deta
         if (!saree) return;
         const f = event.target;
         saree.name = f.name.value.trim();
-        saree.priceINR = Number(f.priceINR.value) || 0;
         saree.fabric = f.fabric.value.trim();
         saree.color = f.color.value.trim();
         saree.occasion = f.occasion.value.trim();
+        saree.description = f.description ? f.description.value.trim() : (saree.description || "");
+        const origPrice = Number(f.originalPriceINR.value) || 0;
+        const discPct = Math.max(0, Math.min(95, Number(f.discountPercent.value) || 0));
+        saree.originalPriceINR = origPrice;
+        saree.discountPercent = discPct;
+        saree.priceINR = discPct > 0 ? Math.round(origPrice * (1 - discPct / 100)) : Math.round(origPrice);
         saree.stockStatus = f.stockStatus.value;
-        saree.stockQty = Number(f.stockQty.value) || 0;
+        saree.stockQty = f.stockQty.value.trim() === "" ? null : (Number(f.stockQty.value) || 0);
         saree.borderAndZari = f.borderAndZari.value.trim();
         saree.blousePiece = f.blousePiece.value.trim();
 
@@ -3264,7 +3482,7 @@ Keep the color, fabric, pattern, border and blouse strictly faithful to the deta
             method: "PUT",
             body: JSON.stringify(saree)
           });
-          this.showToast(`Saved "${saree.name}" specifications to SQLite database!`);
+          this.showToast(`Saved "${saree.name}" specifications (${this.formatINR(saree.priceINR)}) to SQLite database!`);
         } catch (err) {
           this.showToast(`Updated "${saree.name}" locally.`);
         }
@@ -3295,7 +3513,8 @@ Keep the color, fabric, pattern, border and blouse strictly faithful to the deta
         const reader = new FileReader();
         reader.onload = async (e) => {
           await this.persistGallerySlotToBackend(productId, viewIdx, e.target.result);
-          this.showToast(`Uploaded & persisted "${REQUIRED_GALLERY_VIEWS[viewIdx].label}" in SQLite!`);
+          const slotLabel = saree.gallery[viewIdx]?.label || REQUIRED_GALLERY_VIEWS[viewIdx].label;
+          this.showToast(`Uploaded & persisted "${slotLabel}" in SQLite!`);
           this.renderCurrentPage();
         };
         reader.readAsDataURL(file);
@@ -3304,18 +3523,22 @@ Keep the color, fabric, pattern, border and blouse strictly faithful to the deta
       async clearAdminImageSlot(productId, viewIdx) {
         const saree = this.state.products.find((p) => p.id === productId);
         if (!saree) return;
-        const placeholder = createMissingViewPlaceholderSVG(saree.name, REQUIRED_GALLERY_VIEWS[viewIdx].label);
+        const slotLabel = saree.gallery[viewIdx]?.label || REQUIRED_GALLERY_VIEWS[viewIdx].label;
+        const placeholder = createMissingViewPlaceholderSVG(saree.name, slotLabel);
         await this.persistGallerySlotToBackend(productId, viewIdx, placeholder);
-        this.showToast(`Slot ${viewIdx + 1} set to clean labelled placeholder in SQLite.`);
+        this.showToast(`Slot ${viewIdx + 1} set to "Photo coming soon" placeholder in SQLite.`);
         this.renderCurrentPage();
       },
 
       async restoreAdminImageSlot(productId, viewIdx) {
         const saree = this.state.products.find((p) => p.id === productId);
         if (!saree) return;
-        const defaultSvg = createSareeViewSVG(saree, viewIdx + 1);
-        await this.persistGallerySlotToBackend(productId, viewIdx, defaultSvg);
-        this.showToast(`Restored default artwork for Slot ${viewIdx + 1} in SQLite.`);
+        const initialMatch = INITIAL_PRODUCTS.find((p) => p.id === productId);
+        const defaultUrl = initialMatch && initialMatch.gallery && initialMatch.gallery[viewIdx]
+          ? initialMatch.gallery[viewIdx].url
+          : createSareeViewSVG(saree, viewIdx + 1);
+        await this.persistGallerySlotToBackend(productId, viewIdx, defaultUrl);
+        this.showToast(`Restored original photo for Slot ${viewIdx + 1} in SQLite.`);
         this.renderCurrentPage();
       },
 

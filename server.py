@@ -440,15 +440,31 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 cur.execute("SELECT data_json FROM products WHERE id = ?", (product_id,))
                 row = cur.fetchone()
                 if not row:
+                    pdata = dict(body)
+                    pdata["id"] = product_id
+                    if pdata.get("originalPriceINR") and pdata.get("discountPercent"):
+                        orig = float(pdata["originalPriceINR"])
+                        disc = float(pdata["discountPercent"])
+                        pdata["priceINR"] = int(round(orig * (1.0 - disc / 100.0)))
+                    cur.execute(
+                        "INSERT INTO products (id, sort_order, data_json, updated_at) VALUES (?, ?, ?, ?)",
+                        (product_id, -1, json.dumps(pdata), ts)
+                    )
+                    conn.commit()
                     conn.close()
-                    return self._send_json(404, {"ok": False, "error": "Product not found"})
+                    return self._send_json(200, {"ok": True, "product": pdata, "inserted": True})
                 pdata = json.loads(row["data_json"])
                 for field in (
-                    "name", "priceINR", "fabric", "color", "occasion",
-                    "stockStatus", "stockQty", "borderAndZari", "motifs", "blousePiece"
+                    "name", "priceINR", "originalPriceINR", "discountPercent",
+                    "description", "fabric", "color", "occasion",
+                    "stockStatus", "stockQty", "borderAndZari", "motifs", "blousePiece", "gallery"
                 ):
                     if field in body:
                         pdata[field] = body[field]
+                if pdata.get("originalPriceINR") and pdata.get("discountPercent") is not None:
+                    orig = float(pdata["originalPriceINR"])
+                    disc = float(pdata["discountPercent"])
+                    pdata["priceINR"] = int(round(orig * (1.0 - disc / 100.0)))
                 cur.execute(
                     "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
                     (json.dumps(pdata), ts, product_id)
