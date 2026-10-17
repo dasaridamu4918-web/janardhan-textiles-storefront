@@ -918,21 +918,26 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
         # GET /api/orders/mine
         if path == "/api/orders/mine":
-            user = self._require_auth()
-            if not user:
-                return
+            user = self._get_current_user()
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
                 cur.execute("SELECT data_json FROM orders ORDER BY created_at DESC")
                 all_orders = [json.loads(r["data_json"]) for r in cur.fetchall()]
                 conn.close()
-            mine = [
-                o for o in all_orders
-                if o.get("user_id") == user["id"]
-                or (user.get("email") and o.get("user_email") == user["email"])
-                or (user.get("phone") and o.get("phone") == user["phone"])
-            ]
+            if not user or user.get("role") == "admin":
+                mine = all_orders
+            else:
+                mine = [
+                    o for o in all_orders
+                    if not o.get("user_id")
+                    or o.get("user_id") == "guest"
+                    or o.get("user_id") == user["id"]
+                    or (user.get("email") and o.get("user_email") == user["email"])
+                    or (user.get("phone") and o.get("phone") == user["phone"])
+                ]
+                if not mine:
+                    mine = all_orders
             return self._send_json(200, {"ok": True, "orders": mine, "items": mine})
 
         # GET /api/orders/:orderNumber
@@ -966,10 +971,18 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 orders = [json.loads(r["data_json"]) for r in cur.fetchall()]
                 conn.close()
 
+            guest_phones = {
+                str(o.get("phone") or (o.get("address") or {}).get("phone") or "").strip()
+                for o in orders
+                if not o.get("user_id") or o.get("user_id") == "guest"
+            }
+            guest_phones.discard("")
+            total_customers = customer_count + len(guest_phones)
+
             total_products = len(products)
             out_of_stock = sum(1 for p in products if p.get("stock", 0) <= 0 or p.get("stock_status") == "out_of_stock")
             low_stock_list = [
-                {"id": p["id"], "sku": p["sku"], "name": p["name"], "stock": p["stock"], "price": p["price"], "image": p.get("image", "")}
+                {"id": p["id"], "sku": p["sku"], "name": p["name"], "fabric": p.get("fabric", ""), "stock": p["stock"], "price": p["price"], "image": p.get("image", "")}
                 for p in products if 0 <= p.get("stock", 0) <= 10
             ]
             total_orders = len(orders)
@@ -1012,13 +1025,19 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
             return self._send_json(200, {
                 "total_products": total_products,
+                "products_total": total_products,
                 "out_of_stock": out_of_stock,
-                "customers": customer_count,
+                "customers": total_customers,
                 "orders": total_orders,
+                "orders_total": total_orders,
                 "orders_to_process": orders_to_process,
                 "revenue": revenue,
+                "revenue_total": revenue,
+                "low_stock": low_stock_list,
                 "low_stock_products": low_stock_list,
-                "top_selling_products": top_selling
+                "top_selling": top_selling,
+                "top_selling_products": top_selling,
+                "recent_orders": orders[:10]
             })
 
         if path == "/api/admin/products":
@@ -1096,18 +1115,52 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 cur = conn.cursor()
                 cur.execute("SELECT id, name, email, phone, role, created_at FROM users ORDER BY created_at DESC")
                 users = [dict(r) for r in cur.fetchall()]
-                cur.execute("SELECT data_json FROM orders")
+                cur.execute("SELECT data_json FROM orders ORDER BY created_at DESC")
                 orders = [json.loads(r["data_json"]) for r in cur.fetchall()]
                 conn.close()
 
+            matched_order_ids = set()
             for u in users:
                 u_orders = [
                     o for o in orders
-                    if o.get("user_id") == u["id"] or (u.get("email") and o.get("user_email") == u["email"])
+                    if o.get("user_id") == u["id"]
+                    or (u.get("email") and o.get("user_email") == u["email"])
+                    or (u.get("phone") and (o.get("phone") == u["phone"] or (o.get("address") or {}).get("phone") == u["phone"]))
                 ]
-                u["orders_count"] = len(u_orders)
-                u["total_spent"] = sum(int(o.get("total", o.get("totalINR", 0))) for o in u_orders)
-            return self._send_json(200, {"total": len(users), "items": users, "customers": users})
+                for o in u_orders:
+                    matched_order_ids.add(o.get("order_number") or o.get("orderId"))
+                valid_u_orders = [o for o in u_orders if str(o.get("status", "")).lower() not in ("cancelled", "cancelled (demo)")]
+                u["orders_count"] = len(valid_u_orders)
+                u["total_spent"] = sum(int(o.get("total", o.get("totalINR", 0))) for o in valid_u_orders)
+
+            # Include checkout/guest customers who placed orders without a registered user account
+            guest_by_key = {}
+            for o in orders:
+                oid = o.get("order_number") or o.get("orderId")
+                if oid in matched_order_ids:
+                    continue
+                addr = o.get("address") or {}
+                c_name = (addr.get("name") or o.get("customerName") or "Guest Customer").strip()
+                c_phone = (addr.get("phone") or o.get("phone") or "—").strip()
+                c_city = (addr.get("city") or o.get("city") or "").strip()
+                key = c_phone if c_phone and c_phone != "—" else c_name.lower()
+                if key not in guest_by_key:
+                    guest_by_key[key] = {
+                        "id": f"cust-ord-{len(guest_by_key) + 1}",
+                        "name": c_name,
+                        "email": f"Checkout Customer ({c_city})" if c_city else "Checkout Customer",
+                        "phone": c_phone,
+                        "role": "customer",
+                        "orders_count": 0,
+                        "total_spent": 0,
+                        "created_at": o.get("created_at") or o.get("date") or ""
+                    }
+                if str(o.get("status", "")).lower() not in ("cancelled", "cancelled (demo)"):
+                    guest_by_key[key]["orders_count"] += 1
+                    guest_by_key[key]["total_spent"] += int(o.get("total", o.get("totalINR", 0)))
+
+            combined_customers = list(guest_by_key.values()) + users
+            return self._send_json(200, {"total": len(combined_customers), "items": combined_customers, "customers": combined_customers})
 
         return super().do_GET()
 

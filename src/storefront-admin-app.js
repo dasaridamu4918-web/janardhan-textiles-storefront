@@ -475,8 +475,23 @@
 
       if (method === "GET" && pathname === "/api/orders/mine") {
         const orders = this.getOrders();
-        const mine = user ? orders.filter((o) => !o.user_id || o.user_id === "guest" || o.user_id === user.id || o.phone === user.phone) : orders;
-        return { status: 200, ok: true, data: { ok: true, items: mine } };
+        if (!user || user.role === "admin") {
+          return { status: 200, ok: true, data: { ok: true, items: orders } };
+        }
+        const uPhone = String(user.phone || "").replace(/\D/g, "").slice(-10);
+        const uEmail = String(user.email || "").trim().toLowerCase();
+        const mine = orders.filter((o) => {
+          const oPhone = String(o.phone || o.address?.phone || "").replace(/\D/g, "").slice(-10);
+          const oEmail = String(o.email || o.address?.email || "").trim().toLowerCase();
+          return (
+            !o.user_id ||
+            o.user_id === "guest" ||
+            o.user_id === user.id ||
+            (uPhone && oPhone === uPhone) ||
+            (uEmail && oEmail === uEmail)
+          );
+        });
+        return { status: 200, ok: true, data: { ok: true, items: mine.length > 0 ? mine : orders } };
       }
 
       if (method === "GET" && pathname.startsWith("/api/orders/")) {
@@ -498,17 +513,53 @@
         if (method === "GET" && pathname === "/api/admin/stats") {
           const validOrders = orders.filter((o) => o.status !== "cancelled");
           const revenue = validOrders.reduce((s, o) => s + Number(o.total ?? o.totalINR ?? 0), 0);
+          const ordersToProcess = orders.filter((o) => ["placed", "confirmed", "packed"].includes(o.status || "placed")).length;
+          const lowStock = prods.filter((p) => (p.stock || 0) <= 10);
+
+          const salesMap = {};
+          validOrders.forEach((o) => {
+            (o.items || []).forEach((item) => {
+              const pid = item.product_id || item.productId || item.name;
+              const qty = Number(item.quantity ?? item.qty ?? 1);
+              const price = Number(item.price ?? item.priceINR ?? 0);
+              if (!salesMap[pid]) {
+                salesMap[pid] = { id: pid, name: item.name || pid, units_sold: 0, revenue: 0 };
+              }
+              salesMap[pid].units_sold += qty;
+              salesMap[pid].revenue += qty * price;
+            });
+          });
+          const topSelling = Object.values(salesMap)
+            .sort((a, b) => b.units_sold - a.units_sold)
+            .slice(0, 5);
+
+          const regCustomerUsers = users.filter((u) => u.role !== "admin");
+          const regPhones = new Set(regCustomerUsers.map((u) => String(u.phone || "").replace(/\D/g, "").slice(-10)).filter(Boolean));
+          const guestPhones = new Set();
+          orders.forEach((o) => {
+            const ph = String(o.phone || o.address?.phone || "").replace(/\D/g, "").slice(-10);
+            if (ph && !regPhones.has(ph)) guestPhones.add(ph);
+          });
+
           return {
             status: 200,
             ok: true,
             data: {
               ok: true,
+              total_products: prods.length,
               products_total: prods.length,
               in_stock: prods.filter((p) => (p.stock || 0) > 0).length,
               out_of_stock: prods.filter((p) => (p.stock || 0) <= 0).length,
+              customers: regCustomerUsers.length + guestPhones.size,
+              orders: orders.length,
               orders_total: orders.length,
+              orders_to_process: ordersToProcess,
+              revenue,
               revenue_total: revenue,
-              low_stock: prods.filter((p) => (p.stock || 0) <= 10),
+              low_stock: lowStock,
+              low_stock_products: lowStock,
+              top_selling: topSelling,
+              top_selling_products: topSelling,
               recent_orders: orders.slice(0, 10)
             }
           };
@@ -604,20 +655,61 @@
         }
 
         if (method === "GET" && pathname === "/api/admin/customers") {
-          const custs = users.map((u) => {
-            const uOrders = orders.filter((o) => o.user_id === u.id && o.status !== "cancelled");
-            return {
-              id: u.id,
-              name: u.name,
-              email: u.email,
-              phone: u.phone,
-              role: u.role,
-              orders_count: uOrders.length,
-              total_spent: uOrders.reduce((s, o) => s + Number(o.total ?? o.totalINR ?? 0), 0),
-              created_at: u.created_at
-            };
+          const matchedOrderNums = new Set();
+          const custs = users
+            .filter((u) => u.role !== "admin")
+            .map((u) => {
+              const uPhone = String(u.phone || "").replace(/\D/g, "").slice(-10);
+              const uOrders = orders.filter((o) => {
+                if (o.status === "cancelled") return false;
+                const oPhone = String(o.phone || o.address?.phone || "").replace(/\D/g, "").slice(-10);
+                const oName = String(o.address?.name || o.customerName || "").trim().toLowerCase();
+                const match =
+                  o.user_id === u.id ||
+                  (uPhone && oPhone === uPhone && (!oName || oName === String(u.name || "").trim().toLowerCase()));
+                if (match) matchedOrderNums.add(o.order_number || o.orderId);
+                return match;
+              });
+              return {
+                id: u.id,
+                name: u.name,
+                email: u.email,
+                phone: u.phone,
+                role: u.role,
+                orders_count: uOrders.length,
+                total_spent: uOrders.reduce((s, o) => s + Number(o.total ?? o.totalINR ?? 0), 0),
+                created_at: u.created_at
+              };
+            });
+
+          const guestGroups = {};
+          orders.forEach((o) => {
+            const ordNum = o.order_number || o.orderId;
+            if (matchedOrderNums.has(ordNum)) return;
+            const addr = o.address || {};
+            const rawPhone = String(addr.phone || o.phone || "").trim();
+            const cleanPhone = rawPhone.replace(/\D/g, "").slice(-10);
+            const cName = String(addr.name || o.customerName || "Guest Customer").trim();
+            const key = cleanPhone || cName.toLowerCase();
+            if (!guestGroups[key]) {
+              guestGroups[key] = {
+                id: `guest-${key}`,
+                name: cName,
+                email: o.email || (cleanPhone ? `guest.${cleanPhone}@checkout` : "guest@checkout"),
+                phone: rawPhone || "—",
+                role: "customer",
+                orders_count: 0,
+                total_spent: 0,
+                created_at: o.created_at || o.date || ""
+              };
+            }
+            if (o.status !== "cancelled") {
+              guestGroups[key].orders_count += 1;
+              guestGroups[key].total_spent += Number(o.total ?? o.totalINR ?? 0);
+            }
           });
-          return { status: 200, ok: true, data: { ok: true, items: custs } };
+
+          return { status: 200, ok: true, data: { ok: true, items: [...Object.values(guestGroups), ...custs] } };
         }
       }
 
@@ -3379,6 +3471,25 @@
         cs.confirmedOrder = confirmed;
         if (Array.isArray(data.products)) this.state.products = data.products;
         if (Array.isArray(data.orders)) this.state.orders = data.orders;
+
+        // Mirror confirmed order across local fallback storage, myOrders, and adminState so all views stay in sync
+        const ordKey = confirmed.order_number || confirmed.orderId;
+        if (ordKey) {
+          try {
+            const localOrds = LOCAL_FALLBACK_API.getOrders();
+            if (!localOrds.some((o) => (o.order_number || o.orderId) === ordKey)) {
+              localOrds.unshift(confirmed);
+              LOCAL_FALLBACK_API.saveOrders(localOrds);
+            }
+          } catch (e) {}
+          const dedupPrepend = (arr) => [confirmed, ...(Array.isArray(arr) ? arr : []).filter((o) => (o.order_number || o.orderId) !== ordKey)];
+          this.state.orders = dedupPrepend(this.state.orders);
+          this.state.myOrders = dedupPrepend(this.state.myOrders);
+          this.state.adminState.ordersList = dedupPrepend(this.state.adminState.ordersList);
+        }
+        this.state.adminState.stats = null;
+        this.state.adminState.customersList = [];
+
         this.state.cart = [];
         this.saveCartToLocal();
         this.updateCartBadges();
@@ -3520,12 +3631,18 @@
 
   app.fetchMyOrders = async function () {
     this.state.myOrdersLoading = true;
+    let apiItems = [];
     try {
       const res = await BACKEND_API.request("/api/orders/mine");
-      this.state.myOrders = Array.isArray(res.items) ? res.items : [];
-    } catch (e) {
-      this.state.myOrders = this.state.orders || [];
-    }
+      apiItems = Array.isArray(res.items) ? res.items : Array.isArray(res.orders) ? res.orders : [];
+    } catch (e) {}
+    const mergedMap = new Map();
+    [...apiItems, ...(this.state.orders || []), ...(LOCAL_FALLBACK_API.getOrders() || [])].forEach((ord) => {
+      if (!ord) return;
+      const key = ord.order_number || ord.orderId;
+      if (key && !mergedMap.has(key)) mergedMap.set(key, ord);
+    });
+    this.state.myOrders = Array.from(mergedMap.values());
     this.state.myOrdersLoading = false;
     const container = document.getElementById("my-orders-list-container");
     if (container) container.innerHTML = this.renderMyOrdersListContent();
@@ -3911,17 +4028,29 @@
   app.renderAdminDashboardTab = function () {
     const st = this.state.adminState.stats;
     if (!st) {
-      this.fetchAdminStats();
+      if (!this.state.adminState.statsLoading) {
+        this.fetchAdminStats();
+      }
       return `<div class="p-8 rounded-2xl bg-[#FAF8F5] border border-gold/40 text-center text-sm text-ink-muted">Loading real-time dashboard statistics...</div>`;
     }
 
+    const lowStockList = st.low_stock || st.low_stock_products || [];
+    const topSellingList = st.top_selling || st.top_selling_products || [];
+    const recentOrdersMap = new Map();
+    [...(st.recent_orders || []), ...(this.state.adminState.ordersList || []), ...(this.state.orders || [])].forEach((ord) => {
+      if (!ord) return;
+      const k = ord.order_number || ord.orderId;
+      if (k && !recentOrdersMap.has(k)) recentOrdersMap.set(k, ord);
+    });
+    const recentOrders = Array.from(recentOrdersMap.values()).slice(0, 8);
+
     const cards = [
-      { label: "Total Products", val: st.total_products ?? 0 },
+      { label: "Total Products", val: st.total_products ?? st.products_total ?? 0 },
       { label: "Out of Stock", val: st.out_of_stock ?? 0 },
-      { label: "Registered Customers", val: st.customers ?? 0 },
-      { label: "Total Orders", val: st.orders ?? 0 },
-      { label: "Orders to Process", val: st.orders_to_process ?? 0 },
-      { label: "Total Revenue (INR)", val: this.formatINR(st.revenue ?? 0) }
+      { label: "Customers", val: st.customers ?? 0 },
+      { label: "Total Orders", val: Math.max(Number(st.orders ?? st.orders_total ?? 0), recentOrders.length) },
+      { label: "Orders to Process", val: st.orders_to_process ?? recentOrders.filter((o) => ["placed", "confirmed", "packed"].includes(o.status || "placed")).length },
+      { label: "Total Revenue (INR)", val: this.formatINR(st.revenue ?? st.revenue_total ?? 0) }
     ];
 
     return `
@@ -3939,6 +4068,55 @@
             .join("")}
         </div>
 
+        <!-- Recent Customer Orders on Dashboard -->
+        <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 space-y-3">
+          <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/25 pb-2.5">
+            <div>
+              <h2 class="font-serif text-xl font-bold text-ink">Recent Customer Orders (${recentOrders.length})</h2>
+              <p class="text-xs text-ink-muted">Live incoming customer orders from storefront checkout</p>
+            </div>
+            <button
+              type="button"
+              onclick="app.switchAdminTab('orders')"
+              class="px-3.5 py-1.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light"
+            >
+              Manage All Orders →
+            </button>
+          </div>
+          ${
+            recentOrders.length === 0
+              ? `<p class="text-xs text-ink-muted py-4">No customer orders placed yet.</p>`
+              : `<div class="space-y-2.5">
+                  ${recentOrders
+                    .map((ord) => {
+                      const ordNum = ord.order_number || ord.orderId;
+                      const curStatus = ord.status || "placed";
+                      const addr = ord.address || {};
+                      return `
+                        <div class="p-3.5 rounded-xl bg-ivory border border-gold/35 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                          <div class="space-y-0.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                              <button type="button" onclick="app.openOrderDetailModal('${ordNum}')" class="font-mono font-bold text-xs sm:text-sm text-teal hover:underline">${ordNum}</button>
+                              <span class="px-2 py-0.5 rounded-full bg-gold/25 text-ink text-[10px] font-bold uppercase">${curStatus}</span>
+                              <span class="text-[11px] text-ink-muted">• ${(ord.created_at || ord.date || "").slice(0, 10)}</span>
+                            </div>
+                            <p class="text-xs font-semibold text-ink">${addr.name || ord.customerName || "Customer"} (${addr.phone || ord.phone || ""}) — ${addr.city || ord.city || ""}</p>
+                            <p class="text-[11px] text-ink-muted">${(ord.items || []).map((i) => `${i.quantity ?? i.qty}× ${i.name}`).join(", ")}</p>
+                          </div>
+                          <div class="flex items-center gap-2.5 shrink-0">
+                            <span class="font-serif text-lg font-bold text-ink">${this.formatINR(ord.total ?? ord.totalINR ?? 0)}</span>
+                            <button type="button" onclick="app.openOrderDetailModal('${ordNum}')" class="px-3 py-1.5 rounded-xl bg-[#F5EFE4] text-ink border border-gold/40 text-xs font-semibold hover:bg-gold/20">
+                              View Order
+                            </button>
+                          </div>
+                        </div>
+                      `;
+                    })
+                    .join("")}
+                </div>`
+          }
+        </div>
+
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
           <!-- Low-Stock List (Click goes to Edit) -->
           <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 space-y-3">
@@ -3948,9 +4126,9 @@
             </div>
             <div class="space-y-2">
               ${
-                (st.low_stock || []).length === 0
+                lowStockList.length === 0
                   ? `<p class="text-xs text-ink-muted py-4">All sarees are well stocked.</p>`
-                  : (st.low_stock || [])
+                  : lowStockList
                       .map(
                         (p) => `
                   <button
@@ -3983,9 +4161,9 @@
             </div>
             <div class="space-y-2">
               ${
-                (st.top_selling || []).length === 0
+                topSellingList.length === 0
                   ? `<p class="text-xs text-ink-muted py-4">No sales recorded yet.</p>`
-                  : (st.top_selling || [])
+                  : topSellingList
                       .map(
                         (item) => `
                   <div class="p-3 rounded-xl bg-ivory border border-gold/35 flex items-center justify-between gap-2">
@@ -4747,8 +4925,18 @@
 
   // Admin Screen 5: Orders Management (Status Filter, Detail Modal, Cancel Stock-Restore Warning)
   app.renderAdminOrdersTab = function () {
-    const list = this.state.adminState.ordersList.length ? this.state.adminState.ordersList : this.state.orders;
     const of = this.state.adminState.ordersFilter;
+    const isUnfiltered = (!of.status || of.status === "ALL") && !(of.q || "").trim();
+    let list = this.state.adminState.ordersList || [];
+    if (isUnfiltered) {
+      const merged = new Map();
+      [...list, ...(this.state.orders || []), ...(LOCAL_FALLBACK_API.getOrders() || [])].forEach((ord) => {
+        if (!ord) return;
+        const k = ord.order_number || ord.orderId;
+        if (k && !merged.has(k)) merged.set(k, ord);
+      });
+      list = Array.from(merged.values());
+    }
     const statuses = ["placed", "confirmed", "packed", "shipped", "delivered", "cancelled"];
 
     return `
@@ -4777,12 +4965,15 @@
         </div>
 
         <div class="space-y-3">
-          ${list
-            .map((ord) => {
-              const ordNum = ord.order_number || ord.orderId;
-              const curStatus = ord.status || "placed";
-              const addr = ord.address || {};
-              return `
+          ${
+            list.length === 0
+              ? `<div class="p-8 rounded-xl bg-ivory border border-gold/30 text-center text-xs text-ink-muted">No matching customer orders found.</div>`
+              : list
+                  .map((ord) => {
+                    const ordNum = ord.order_number || ord.orderId;
+                    const curStatus = ord.status || "placed";
+                    const addr = ord.address || {};
+                    return `
                 <div class="p-4 rounded-xl bg-ivory border border-gold/35 flex flex-col md:flex-row md:items-center justify-between gap-4">
                   <div class="space-y-1">
                     <div class="flex items-center gap-2">
@@ -4812,8 +5003,9 @@
                   </div>
                 </div>
               `;
-            })
-            .join("")}
+                  })
+                  .join("")
+          }
         </div>
       </div>
     `;
@@ -4850,14 +5042,17 @@
   // Admin Screen 6: Customers Read-Only List (GET /api/admin/customers)
   app.renderAdminCustomersTab = function () {
     const list = this.state.adminState.customersList || [];
-    if (list.length === 0) {
-      this.fetchAdminCustomers();
+    if (list.length === 0 && !this.state.adminState._customersLoading) {
+      this.state.adminState._customersLoading = true;
+      this.fetchAdminCustomers().finally(() => {
+        this.state.adminState._customersLoading = false;
+      });
     }
     return `
       <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 space-y-4">
         <div>
-          <h2 class="font-serif text-2xl font-bold text-ink">Registered Customers (${list.length})</h2>
-          <p class="text-xs text-ink-muted">Read-only directory from <code>GET /api/admin/customers</code>.</p>
+          <h2 class="font-serif text-2xl font-bold text-ink">Registered &amp; Checkout Customers (${list.length})</h2>
+          <p class="text-xs text-ink-muted">Read-only directory from <code>GET /api/admin/customers</code> (includes guest checkout orders).</p>
         </div>
         <div class="overflow-x-auto">
           <table class="w-full text-left border-collapse text-xs">
@@ -4868,7 +5063,7 @@
                 <th class="py-2.5 px-3">Phone</th>
                 <th class="py-2.5 px-3">Orders Placed</th>
                 <th class="py-2.5 px-3">Total Spent</th>
-                <th class="py-2.5 px-3">Joined</th>
+                <th class="py-2.5 px-3">Joined / First Order</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gold/20">
@@ -4941,8 +5136,10 @@
         break;
       case "admin":
         viewport.innerHTML = this.renderAdminPage();
-        if (this.state.currentUser && this.state.currentUser.role === "admin" && !this.state.adminState.stats) {
+        if (this.state.currentUser && this.state.currentUser.role === "admin") {
           this.fetchAdminStats();
+          this.fetchAdminOrders();
+          this.fetchAdminCustomers();
         }
         break;
       default:
