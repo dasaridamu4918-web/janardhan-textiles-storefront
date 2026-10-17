@@ -163,14 +163,41 @@ def fetch_bootstrap_payload():
 
 
 class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
+    extensions_map = {
+        **http.server.SimpleHTTPRequestHandler.extensions_map,
+        ".html": "text/html; charset=utf-8",
+        ".css": "text/css; charset=utf-8",
+        ".js": "application/javascript; charset=utf-8",
+        ".mjs": "application/javascript; charset=utf-8",
+        ".json": "application/json; charset=utf-8",
+        ".webp": "image/webp",
+        ".jpg": "image/jpeg",
+        ".jpeg": "image/jpeg",
+        ".png": "image/png",
+        ".svg": "image/svg+xml",
+    }
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT_DIR, **kwargs)
 
+    def translate_path(self, path):
+        resolved = super().translate_path(path)
+        if not os.path.exists(resolved):
+            parsed_path = urllib.parse.urlparse(path).path.lstrip("/")
+            public_candidate = os.path.join(ROOT_DIR, "public", parsed_path.replace("/", os.sep))
+            if os.path.exists(public_candidate):
+                return public_candidate
+        return resolved
+
+    def log_message(self, format, *args):
+        pass
+
     def end_headers(self):
-        # Enable CORS for local development flexibility
+        # Enable CORS and disable browser caching so updated images/data load immediately
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
         super().end_headers()
 
     def do_OPTIONS(self):
@@ -182,7 +209,6 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         self.send_response(status_code)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store")
         self.end_headers()
         self.wfile.write(body)
 
@@ -196,6 +222,11 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
     def do_GET(self):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
+
+        if path == "/favicon.ico":
+            self.send_response(204)
+            self.end_headers()
+            return
 
         if path == "/api/health":
             data = fetch_bootstrap_payload()
@@ -442,10 +473,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 if not row:
                     pdata = dict(body)
                     pdata["id"] = product_id
-                    if pdata.get("originalPriceINR") and pdata.get("discountPercent"):
-                        orig = float(pdata["originalPriceINR"])
-                        disc = float(pdata["discountPercent"])
-                        pdata["priceINR"] = int(round(orig * (1.0 - disc / 100.0)))
+                    pdata["sku"] = pdata.get("sku") or product_id
                     cur.execute(
                         "INSERT INTO products (id, sort_order, data_json, updated_at) VALUES (?, ?, ?, ?)",
                         (product_id, -1, json.dumps(pdata), ts)
@@ -455,16 +483,17 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     return self._send_json(200, {"ok": True, "product": pdata, "inserted": True})
                 pdata = json.loads(row["data_json"])
                 for field in (
-                    "name", "priceINR", "originalPriceINR", "discountPercent",
+                    "sku", "name", "priceINR", "originalPriceINR", "discountPercent",
+                    "isSamplePrice", "isSampleProduct", "wholesalePriceINR", "minWholesaleQty",
                     "description", "fabric", "color", "occasion",
                     "stockStatus", "stockQty", "borderAndZari", "motifs", "blousePiece", "gallery"
                 ):
                     if field in body:
                         pdata[field] = body[field]
-                if pdata.get("originalPriceINR") and pdata.get("discountPercent") is not None:
-                    orig = float(pdata["originalPriceINR"])
-                    disc = float(pdata["discountPercent"])
-                    pdata["priceINR"] = int(round(orig * (1.0 - disc / 100.0)))
+                if "priceINR" in body and body["priceINR"] is not None:
+                    pdata["priceINR"] = int(round(float(body["priceINR"])))
+                    pdata["originalPriceINR"] = pdata["priceINR"]
+                    pdata["discountPercent"] = 0
                 cur.execute(
                     "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
                     (json.dumps(pdata), ts, product_id)
@@ -473,7 +502,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 conn.close()
             return self._send_json(200, {"ok": True, "product": pdata})
 
-        # 2. Update a Product's specific Gallery View slot (0..5): PUT /api/products/<id>/gallery/<idx>
+        # 2. Update a Product's specific Gallery View slot (0..4): PUT /api/products/<id>/gallery/<idx>
         m_gal = re.match(r"^/api/products/([^/]+)/gallery/(\d+)$", path)
         if m_gal:
             product_id = urllib.parse.unquote(m_gal.group(1))
@@ -495,6 +524,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     pdata["gallery"][view_idx]["url"] = stored_url
                     if "alt" in body:
                         pdata["gallery"][view_idx]["alt"] = body["alt"]
+                    if "isSampleImage" in body:
+                        pdata["gallery"][view_idx]["isSampleImage"] = bool(body["isSampleImage"])
                 cur.execute(
                     "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
                     (json.dumps(pdata), ts, product_id)
