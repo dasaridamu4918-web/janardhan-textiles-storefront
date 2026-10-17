@@ -384,21 +384,48 @@ const RAW_SAMPLE_SAREES = [
   }
 ];
 
-const INITIAL_PRODUCTS = RAW_SAMPLE_SAREES.map((saree) => {
+const INITIAL_PRODUCTS = RAW_SAMPLE_SAREES.map((saree, idx) => {
   const sku = saree.sku || saree.id;
-  if (Array.isArray(saree.gallery) && saree.gallery.length === 5) {
-    return { ...saree, sku };
-  }
-  const gallery = REQUIRED_GALLERY_VIEWS.map((view) => ({
-    order: view.index,
-    key: view.key,
-    label: view.label,
-    shortLabel: view.shortLabel,
-    url: `/public/images/sarees/${sku}/${view.file}?v=nb2`,
-    isSampleImage: true,
-    alt: `Sample image — ${saree.name} — ${view.label} (${saree.fabric}, ${saree.color})`
-  }));
-  return { ...saree, sku, gallery };
+  const gallery = (Array.isArray(saree.gallery) && saree.gallery.length === 5)
+    ? saree.gallery
+    : REQUIRED_GALLERY_VIEWS.map((view) => ({
+        order: view.index,
+        key: view.key,
+        label: view.label,
+        shortLabel: view.shortLabel,
+        url: `/public/images/sarees/${sku}/${view.file}?v=nb2`,
+        isSampleImage: true,
+        alt: `Sample image — ${saree.name} — ${view.label} (${saree.fabric}, ${saree.color})`
+      }));
+
+  const price = Math.round(Number(saree.priceINR || 0));
+  const mrp = Math.round(Number(saree.mrp || saree.originalPriceINR || price));
+  const stock = typeof saree.stockQty === "number" ? saree.stockQty : 20;
+  const stock_status = stock <= 0 ? "out_of_stock" : (stock <= 10 ? "low_stock" : "in_stock");
+  const featuredSkus = new Set(["jt-saree-09", "jt-saree-01", "jt-saree-02", "jt-saree-06", "jt-saree-07"]);
+  const bestsellerSkus = new Set(["jt-saree-09", "jt-saree-01", "jt-saree-03", "jt-saree-05", "jt-saree-07"]);
+  const workDetails = [saree.borderAndZari, saree.motifs].filter(Boolean).join(". ");
+
+  return {
+    ...saree,
+    sku,
+    price,
+    priceINR: price,
+    mrp,
+    originalPriceINR: mrp,
+    stock,
+    stockQty: stock,
+    stock_status,
+    work_details: workDetails,
+    blouse_piece: saree.blousePiece || "",
+    care_instructions: saree.care_instructions || "",
+    featured: featuredSkus.has(sku),
+    bestseller: bestsellerSkus.has(sku),
+    active: true,
+    created_at: `2026-10-${String(10 + idx).padStart(2, "0")}T10:00:00Z`,
+    images: gallery.map((g) => g.url),
+    gallery
+  };
 });
 
 if (typeof window !== "undefined") {
@@ -410,3 +437,4 @@ if (typeof window !== "undefined") {
   window.RAW_SAMPLE_SAREES = RAW_SAMPLE_SAREES;
   window.INITIAL_PRODUCTS = INITIAL_PRODUCTS;
 }
+
