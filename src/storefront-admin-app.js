@@ -2088,6 +2088,20 @@
                   Buy Now →
                 </button>
               </div>
+
+              <a
+                id="product-detail-whatsapp-btn"
+                href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Chat with Janardan Textiles on WhatsApp at +91 96522 62173"
+                class="w-full py-3 px-5 rounded-full border border-gold/60 bg-[#F5EFE4] text-ink font-semibold text-xs sm:text-sm hover:bg-gold/25 active:scale-95 transition-all flex items-center justify-center gap-2"
+              >
+                <svg class="w-4 h-4 text-[#1E3F35] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                  <path d="M12.031 2c-5.516 0-9.999 4.486-10 10.003-.001 1.766.46 3.489 1.337 5.008L2 22l5.122-1.343a9.958 9.958 0 0 0 4.904 1.298h.004c5.515 0 9.998-4.486 10-10.002A9.963 9.963 0 0 0 19.104 4.93 9.937 9.937 0 0 0 12.031 2zm0 18.299h-.004a8.29 8.29 0 0 1-4.231-1.158l-.303-.18-3.039.797.811-2.963-.197-.314a8.293 8.293 0 0 1-1.275-4.426c.002-4.581 3.73-8.309 8.313-8.309 2.22 0 4.306.865 5.875 2.435a8.257 8.257 0 0 1 2.432 5.879c-.002 4.581-3.73 8.309-8.382 8.239zm4.56-6.219c-.25-.125-1.478-.729-1.707-.813-.229-.083-.396-.125-.562.125-.167.25-.646.813-.792.979-.146.167-.292.188-.542.063-.25-.125-1.055-.389-2.01-1.24-.743-.662-1.244-1.481-1.39-1.731-.146-.25-.015-.385.11-.51.112-.112.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.021-.438-.062-.125-.562-1.355-.771-1.855-.203-.486-.409-.42-.562-.428l-.479-.008c-.167 0-.438.063-.667.313-.229.25-.875.855-.875 2.084s.896 2.418 1.021 2.584c.125.167 1.763 2.692 4.271 3.775.597.258 1.063.412 1.426.527.599.19 1.144.163 1.575.099.48-.072 1.478-.604 1.687-1.188.208-.583.208-1.084.146-1.188-.063-.104-.229-.167-.479-.292z"/>
+                </svg>
+                <span>Enquire on WhatsApp (+91 96522 62173)</span>
+              </a>
             </div>
 
             <!-- Real Delivery Info from /api/filters -->
@@ -4268,6 +4282,17 @@
     this.parseCatalogueQueryFromUrl();
     this.syncAuthHeaderUI();
     await origInit();
+    if (this.state.settings && this.state.settings.contacts) {
+      this.state.settings.contacts.whatsappLabel = "+91 96522 62173";
+      this.state.settings.contacts.whatsappRawNumber = "919652262173";
+      this.state.settings.contacts.whatsappUrl =
+        "https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.";
+      this.state.settings.contacts.instagramHandle = "@dasari_damu";
+      this.state.settings.contacts.instagramUrl = "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==";
+      this.state.settings.contacts.facebookUrl = "https://www.facebook.com/share/1AvqDY71mi/";
+      this.state.settings.contacts.pinterestUrl = "https://pin.it/2mS5N2kh4";
+      this.renderFooterContacts();
+    }
     await Promise.all([this.fetchFiltersMeta(), this.verifyCurrentSession(), this.fetchHomeSections(), this.fetchCatalogueProducts()]);
 
     window.addEventListener("popstate", () => {
