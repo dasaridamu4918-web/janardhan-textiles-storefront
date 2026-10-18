@@ -574,7 +574,7 @@
         }
       }
 
-      html.is-scroll-driven #frames-viewport {
+      html.is-scroll-driven #frames-viewport:has(~ #saree-360-turntable-stage) {
         opacity: 0;
         pointer-events: none;
       }
@@ -1712,6 +1712,49 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const scrollCue = document.getElementById("scroll-cue");
 
         if (!showcaseSection || !stageEl || frames.length === 0) return;
+
+        if (!document.getElementById("saree-360-turntable-stage")) {
+          const basePath = window.__ASSET_BASE_PATH__ || "";
+          const stage360 = document.createElement("div");
+          stage360.id = "saree-360-turntable-stage";
+          stage360.className = "saree-360-turntable-stage";
+          stage360.setAttribute("aria-label", "360-degree Saree Turntable");
+          stage360.innerHTML = `
+            <div class="saree-360-frame-box">
+              <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
+              <img
+                id="saree-360-poster-fallback"
+                src="${basePath}/public/assets/saree-360/frames/frame-000.webp"
+                alt="Champagne Tissue Saree 360-degree turntable view"
+                class="saree-360-poster-fallback"
+                fetchpriority="high"
+                decoding="async"
+              />
+              <canvas
+                id="saree-360-canvas"
+                class="saree-360-canvas"
+                width="720"
+                height="1280"
+                aria-label="Champagne Tissue Saree 360-degree turntable view"
+              ></canvas>
+              <video
+                id="saree-360-video"
+                class="saree-360-video"
+                src="${basePath}/public/assets/saree-360/champagne-saree-360.mp4"
+                poster="${basePath}/public/assets/saree-360/poster-1-front-9x16.webp"
+                muted
+                playsinline
+                preload="auto"
+              ></video>
+            </div>
+          `;
+          const framesVp = document.getElementById("frames-viewport");
+          if (framesVp && framesVp.parentNode === stageEl) {
+            framesVp.insertAdjacentElement("afterend", stage360);
+          } else {
+            stageEl.appendChild(stage360);
+          }
+        }
 
         this.activeStepIndex = -1;
         this.lastDrawnScrubIndex = -1;
@@ -5056,7 +5099,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   </div>
 
   <!-- Storefront (Prompt 1) & Protected Admin Panel (Prompt 2) Controller Extension -->
-  <script src="src/storefront-admin-app.js"></script>
+  <script src="src/storefront-admin-app.js?v=360-v2"></script>
 </body>
 </html>
 
