@@ -50,19 +50,79 @@ import http.server
 import json
 import os
 import re
+import shutil
 import sqlite3
 import threading
+import urllib.error
 import urllib.parse
+import urllib.request
 import uuid
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(ROOT_DIR, "janardan_textiles.db")
 UPLOADS_DIR = os.path.join(ROOT_DIR, "public", "assets", "uploads")
 ROOT_UPLOADS_DIR = os.path.join(ROOT_DIR, "uploads")
+SAREES_IMAGES_DIR = os.path.join(ROOT_DIR, "public", "images", "sarees")
 os.makedirs(UPLOADS_DIR, exist_ok=True)
 os.makedirs(ROOT_UPLOADS_DIR, exist_ok=True)
+os.makedirs(SAREES_IMAGES_DIR, exist_ok=True)
 
 DB_LOCK = threading.Lock()
+GENERATION_LOCK = threading.Lock()
+
+
+def load_dotenv_if_present():
+    env_path = os.path.join(ROOT_DIR, ".env")
+    if not os.path.exists(env_path):
+        return
+    try:
+        with open(env_path, "r", encoding="utf-8") as f:
+            for raw_line in f:
+                line = raw_line.strip()
+                if not line or line.startswith("#") or "=" not in line:
+                    continue
+                k, v = line.split("=", 1)
+                k = k.strip()
+                v = v.strip().strip('"').strip("'")
+                if k and k not in os.environ:
+                    os.environ[k] = v
+    except Exception:
+        pass
+
+
+load_dotenv_if_present()
+
+
+def get_nano_banana_api_key():
+    load_dotenv_if_present()
+    return (
+        os.environ.get("GEMINI_API_KEY")
+        or os.environ.get("NANO_BANANA_API_KEY")
+        or os.environ.get("GOOGLE_API_KEY")
+        or ""
+    ).strip()
+
+
+# Reference studio photography sets (5 views each: 1-front.jpg .. 5-blouse.jpg)
+STUDIO_COLOUR_REFERENCE_MAP = {
+    "royal rose & gold": "jt-saree-10",
+    "emerald teal & gold": "jt-saree-11",
+    "champagne gold": "jt-saree-09",
+    "warm sand & gold": "jt-saree-01",
+    "ivory gold": "jt-saree-02",
+    "champagne beige": "jt-saree-03",
+    "espresso brown": "jt-saree-04",
+    "warm ochre": "jt-saree-05",
+    "champagne & bronze": "jt-saree-06",
+    "soft cream": "jt-saree-07",
+    "deep cocoa": "jt-saree-08",
+}
+
+EXTRA_REFERENCE_COLOURS = [
+    "Royal Rose & Gold",
+    "Emerald Teal & Gold",
+]
+
 
 
 def now_iso():
@@ -554,6 +614,34 @@ def init_db():
                     (norm_p["id"], idx, json.dumps(norm_p), ts)
                 )
 
+        # Ensure Janardan Textiles contact email is set to dasaridamu9418@gmail.com in settings
+        cur.execute("SELECT value_json FROM settings WHERE key = 'site_settings'")
+        row_s = cur.fetchone()
+        if row_s:
+            try:
+                s_data = json.loads(row_s["value_json"])
+            except Exception:
+                s_data = {}
+        else:
+            s_data = {}
+        if "contacts" not in s_data or not isinstance(s_data["contacts"], dict):
+            s_data["contacts"] = {}
+        s_data["contacts"]["emailAddress"] = "dasaridamu9418@gmail.com"
+        s_data["contacts"].setdefault("whatsappLabel", "+91 96522 62173")
+        s_data["contacts"].setdefault("whatsappRawNumber", "919652262173")
+        s_data["contacts"].setdefault(
+            "whatsappUrl",
+            "https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+        )
+        s_data["contacts"].setdefault("instagramHandle", "@dasari_damu")
+        s_data["contacts"].setdefault("instagramUrl", "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==")
+        s_data["contacts"].setdefault("facebookUrl", "https://www.facebook.com/share/1AvqDY71mi/")
+        s_data["contacts"].setdefault("pinterestUrl", "https://pin.it/2mS5N2kh4")
+        cur.execute(
+            "INSERT OR REPLACE INTO settings (key, value_json, updated_at) VALUES (?, ?, ?)",
+            ("site_settings", json.dumps(s_data), ts)
+        )
+
         conn.commit()
         conn.close()
 
@@ -597,6 +685,111 @@ def fetch_all_products(include_inactive=True):
     return items
 
 
+def get_catalogue_filter_options():
+    products = fetch_all_products(include_inactive=False)
+    fabrics = []
+    colors = []
+    occasions = []
+    prices = []
+    for p in products:
+        if p.get("fabric") and p["fabric"] not in fabrics:
+            fabrics.append(p["fabric"])
+        if p.get("color") and p["color"] not in colors:
+            colors.append(p["color"])
+        if p.get("occasion") and p["occasion"] not in occasions:
+            occasions.append(p["occasion"])
+        if p.get("price", 0) > 0:
+            prices.append(int(p["price"]))
+    for extra_col in EXTRA_REFERENCE_COLOURS:
+        if extra_col not in colors:
+            colors.append(extra_col)
+    return {
+        "fabrics": fabrics,
+        "colors": colors,
+        "occasions": occasions,
+        "prices": prices,
+    }
+
+
+def call_gemini_nano_banana_image(prompt_text, ref_image_path=None, api_key=None):
+    """Calls Gemini Nano Banana image-generation API on the server using the server-side API key."""
+    key = (api_key or get_nano_banana_api_key()).strip()
+    if not key:
+        return None, "GEMINI_API_KEY is not configured in server environment (.env)."
+
+    parts = [{"text": prompt_text}]
+    if ref_image_path and os.path.exists(ref_image_path):
+        try:
+            with open(ref_image_path, "rb") as rf:
+                b64_img = base64.b64encode(rf.read()).decode("ascii")
+            parts.append({
+                "inlineData": {
+                    "mimeType": "image/jpeg",
+                    "data": b64_img
+                }
+            })
+        except Exception:
+            pass
+
+    models = ["gemini-2.5-flash-image", "gemini-2.0-flash-exp-image-generation"]
+    last_err = "No image bytes returned from Gemini Nano Banana API."
+    for model_name in models:
+        endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={urllib.parse.quote(key)}"
+        payload = {
+            "contents": [{"parts": parts}],
+            "generationConfig": {"responseModalities": ["TEXT", "IMAGE"]}
+        }
+        req = urllib.request.Request(
+            endpoint,
+            data=json.dumps(payload).encode("utf-8"),
+            headers={"Content-Type": "application/json"},
+            method="POST"
+        )
+        try:
+            with urllib.request.urlopen(req, timeout=45) as resp:
+                resp_data = json.loads(resp.read().decode("utf-8"))
+            candidates = resp_data.get("candidates") or []
+            for cand in candidates:
+                c_parts = (cand.get("content") or {}).get("parts") or []
+                for cp in c_parts:
+                    inline = cp.get("inlineData") or cp.get("inline_data")
+                    if inline and inline.get("data"):
+                        return base64.b64decode(inline["data"]), None
+        except urllib.error.HTTPError as he:
+            try:
+                err_body = json.loads(he.read().decode("utf-8", errors="ignore"))
+                last_err = (err_body.get("error") or {}).get("message") or f"HTTP {he.code}"
+            except Exception:
+                last_err = f"HTTP {he.code}"
+        except Exception as ex:
+            last_err = str(ex)
+
+    return None, last_err
+
+
+def resolve_reference_source_dir_for_colour(color_name):
+    c_lower = (color_name or "").strip().lower()
+    if c_lower in STUDIO_COLOUR_REFERENCE_MAP:
+        cand_sku = STUDIO_COLOUR_REFERENCE_MAP[c_lower]
+        cand_dir = os.path.join(SAREES_IMAGES_DIR, cand_sku)
+        if os.path.exists(os.path.join(cand_dir, "1-front.jpg")):
+            return cand_sku, cand_dir
+
+    # Keyword match fallback across STUDIO_COLOUR_REFERENCE_MAP
+    for key_col, cand_sku in STUDIO_COLOUR_REFERENCE_MAP.items():
+        if key_col in c_lower or c_lower in key_col:
+            cand_dir = os.path.join(SAREES_IMAGES_DIR, cand_sku)
+            if os.path.exists(os.path.join(cand_dir, "1-front.jpg")):
+                return cand_sku, cand_dir
+
+    # Default to jt-saree-10 (Royal Rose & Gold) or jt-saree-09
+    for fallback_sku in ("jt-saree-10", "jt-saree-11", "jt-saree-09"):
+        cand_dir = os.path.join(SAREES_IMAGES_DIR, fallback_sku)
+        if os.path.exists(os.path.join(cand_dir, "1-front.jpg")):
+            return fallback_sku, cand_dir
+    return None, None
+
+
 def fetch_bootstrap_payload():
     with DB_LOCK:
         conn = get_db_connection()
@@ -604,7 +797,12 @@ def fetch_bootstrap_payload():
 
         cur.execute("SELECT value_json FROM settings WHERE key = 'site_settings'")
         row_settings = cur.fetchone()
-        settings = json.loads(row_settings["value_json"]) if row_settings else None
+        settings = json.loads(row_settings["value_json"]) if row_settings else {}
+        if not isinstance(settings, dict):
+            settings = {}
+        if "contacts" not in settings or not isinstance(settings["contacts"], dict):
+            settings["contacts"] = {}
+        settings["contacts"]["emailAddress"] = "dasaridamu9418@gmail.com"
 
         cur.execute("SELECT sort_order, data_json FROM products ORDER BY sort_order ASC, id ASC")
         products = [normalize_product(json.loads(r["data_json"]), idx) for idx, r in enumerate(cur.fetchall())]
@@ -776,24 +974,12 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
         # GET /api/filters -> {fabrics, colors, occasions, price:{min,max}, shipping:{flat,free_above}}
         if path == "/api/filters":
-            products = fetch_all_products(include_inactive=False)
-            fabrics = []
-            colors = []
-            occasions = []
-            prices = []
-            for p in products:
-                if p.get("fabric") and p["fabric"] not in fabrics:
-                    fabrics.append(p["fabric"])
-                if p.get("color") and p["color"] not in colors:
-                    colors.append(p["color"])
-                if p.get("occasion") and p["occasion"] not in occasions:
-                    occasions.append(p["occasion"])
-                if p.get("price", 0) > 0:
-                    prices.append(int(p["price"]))
+            opts = get_catalogue_filter_options()
+            prices = opts["prices"]
             return self._send_json(200, {
-                "fabrics": fabrics,
-                "colors": colors,
-                "occasions": occasions,
+                "fabrics": opts["fabrics"],
+                "colors": opts["colors"],
+                "occasions": opts["occasions"],
                 "price": {
                     "min": min(prices) if prices else 1200,
                     "max": max(prices) if prices else 7500
@@ -803,6 +989,32 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     "free_above": 0
                 }
             })
+
+        # GET /api/sarees/generate/status -> Server-side Nano Banana configuration & storage status
+        if path == "/api/sarees/generate/status":
+            opts = get_catalogue_filter_options()
+            api_key = get_nano_banana_api_key()
+            storage_ok = os.path.isdir(SAREES_IMAGES_DIR) and os.path.isdir(ROOT_UPLOADS_DIR) and os.path.exists(DB_PATH)
+            return self._send_json(200, {
+                "ok": True,
+                "apiKeyConfigured": bool(api_key),
+                "apiKeyEnvVar": "GEMINI_API_KEY",
+                "model": "gemini-2.5-flash-image (Nano Banana)",
+                "storageConfigured": storage_ok,
+                "databaseFile": "janardan_textiles.db",
+                "imagesDirectory": "/public/images/sarees/<sku>/",
+                "uploadsDirectory": "/uploads/",
+                "referencePhotos": "C:\\Users\\91965\\Downloads\\1\\1 (1.jpg - 5.jpg) & /public/images/sarees/jt-saree-01..11",
+                "availableColors": opts["colors"],
+                "availableFabrics": opts["fabrics"],
+                "availableOccasions": opts["occasions"],
+                "setupInstructions": (
+                    "Server-side Nano Banana integration is active. To enable live on-demand Gemini API calls, "
+                    "set GEMINI_API_KEY=your_api_key in .env or environment variables before starting server.py. "
+                    "The API key is kept strictly on the server and never exposed in browser code."
+                )
+            })
+
 
         # GET /api/products (Search, Multi-value filters, Sort, Pagination)
         if path == "/api/products":
@@ -1634,6 +1846,288 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 "updated": updated,
                 "errors": errors
             })
+
+        # Generate Single Saree View (Server-Side Nano Banana API — never exposes key to browser)
+        if path == "/api/sarees/generate-view":
+            api_key = get_nano_banana_api_key()
+            if not api_key:
+                return self._send_json(503, {
+                    "ok": False,
+                    "error": (
+                        "Live Nano Banana API key is not configured on the server. "
+                        "Set GEMINI_API_KEY in .env on the server and restart server.py."
+                    )
+                })
+            saree = body.get("saree") or {}
+            view_index = int(body.get("viewIndex") or 0)
+            ord_num, v_key, v_label, v_fname = (
+                REQUIRED_VIEWS[view_index] if 0 <= view_index < len(REQUIRED_VIEWS) else REQUIRED_VIEWS[0]
+            )
+            ref_sku, ref_dir = resolve_reference_source_dir_for_colour(saree.get("color"))
+            ref_path = os.path.join(ref_dir, v_fname) if ref_dir else None
+            prompt = (
+                f"Photorealistic luxury Indian saree studio photograph on a headless cream fabric mannequin with a dark walnut finial "
+                f"against a neutral warm taupe-beige studio background with soft diffused lighting. "
+                f"View: {v_label}. Saree: {saree.get('name', 'Saree')}, Colour: {saree.get('color', '')}, "
+                f"Fabric: {saree.get('fabric', '')}, Occasion: {saree.get('occasion', '')}. "
+                f"Work & Border: {saree.get('borderAndZari') or saree.get('work_details') or 'Scalloped zari cutwork border with floral and peacock embroidery'}. "
+                f"Keep colour, pattern, fabric, and embroidery strictly consistent. Do not add text, logos, watermarks, or accessories."
+            )
+            img_bytes, err = call_gemini_nano_banana_image(prompt, ref_path, api_key)
+            if not img_bytes:
+                return self._send_json(502, {"ok": False, "error": f"Nano Banana generation failed: {err}"})
+            data_uri = "data:image/jpeg;base64," + base64.b64encode(img_bytes).decode("ascii")
+            saved_url = save_data_uri_if_raster(data_uri, prefix=f"{saree.get('id', 'saree')}-v{view_index + 1}")
+            return self._send_json(200, {"ok": True, "url": saved_url})
+
+        # Generate Saree (5-View Gallery + New Catalogue Product Card): POST /api/sarees/generate
+        if path == "/api/sarees/generate":
+            if not GENERATION_LOCK.acquire(blocking=False):
+                return self._send_json(429, {
+                    "ok": False,
+                    "error": "A saree generation is already in progress. Please wait for the current design to complete."
+                })
+            try:
+                if not os.path.isdir(SAREES_IMAGES_DIR) or not os.path.isdir(ROOT_UPLOADS_DIR):
+                    return self._send_json(503, {
+                        "ok": False,
+                        "error": (
+                            "Image storage directories (/public/images/sarees/ and /uploads/) are not configured. "
+                            "Ensure writable storage directories exist on the server."
+                        )
+                    })
+
+                opts = get_catalogue_filter_options()
+                all_existing = fetch_all_products(include_inactive=True)
+                generated_count = sum(
+                    1 for p in all_existing
+                    if p.get("isGeneratedSaree") or str(p.get("sku", "")).startswith("jt-saree-gen-")
+                )
+
+                raw_color = (body.get("color") or body.get("colour") or "").strip()
+                raw_fabric = (body.get("fabric") or "").strip()
+                raw_occasion = (body.get("occasion") or "").strip()
+
+                if raw_color.upper() in ("", "AUTO", "ANY", "ALL", "RANDOM"):
+                    raw_color = ""
+                if raw_fabric.upper() in ("", "AUTO", "ANY", "ALL", "RANDOM"):
+                    raw_fabric = ""
+                if raw_occasion.upper() in ("", "AUTO", "ANY", "ALL", "RANDOM"):
+                    raw_occasion = ""
+
+                auto_selected = []
+                # Choose suitable values from existing options when left unselected
+                if not raw_color:
+                    # Cycle through the new reference colourways first (Royal Rose & Gold, Emerald Teal & Gold), then existing catalogue colours
+                    priority_colors = ["Royal Rose & Gold", "Emerald Teal & Gold"] + [
+                        c for c in opts["colors"] if c not in ("Royal Rose & Gold", "Emerald Teal & Gold")
+                    ]
+                    chosen_color = priority_colors[generated_count % len(priority_colors)]
+                    auto_selected.append("color")
+                else:
+                    chosen_color = raw_color
+
+                if not raw_fabric:
+                    avail_fabrics = opts["fabrics"] or ["Champagne Tissue", "Silk-Blend Jacquard", "Tissue Organza"]
+                    chosen_fabric = avail_fabrics[generated_count % len(avail_fabrics)]
+                    auto_selected.append("fabric")
+                else:
+                    chosen_fabric = raw_fabric
+
+                if not raw_occasion:
+                    avail_occasions = opts["occasions"] or ["Celebrations & Festive", "Wedding & Reception", "Festive & Puja"]
+                    chosen_occasion = avail_occasions[generated_count % len(avail_occasions)]
+                    auto_selected.append("occasion")
+                else:
+                    chosen_occasion = raw_occasion
+
+                # Create a unique new SKU without modifying or replacing existing products
+                seq_num = generated_count + 1
+                new_sku = f"jt-saree-gen-{seq_num:02d}"
+                existing_ids = {p["id"] for p in all_existing}
+                while new_sku in existing_ids:
+                    seq_num += 1
+                    new_sku = f"jt-saree-gen-{seq_num:02d}"
+
+                target_saree_dir = os.path.join(SAREES_IMAGES_DIR, new_sku)
+                os.makedirs(target_saree_dir, exist_ok=True)
+
+                ref_sku, ref_dir = resolve_reference_source_dir_for_colour(chosen_color)
+                if not ref_dir or not os.path.isdir(ref_dir):
+                    return self._send_json(503, {
+                        "ok": False,
+                        "error": (
+                            "Reference studio photography and image generation credentials are not configured. "
+                            "Please configure GEMINI_API_KEY in .env on the server and ensure reference images exist in /public/images/sarees/."
+                        )
+                    })
+
+                api_key = get_nano_banana_api_key()
+                used_live_gemini = False
+                saved_image_paths = []
+                saved_upload_paths = []
+                gallery_items = []
+
+                saree_title = f"{chosen_color} {chosen_fabric} Saree with Scalloped Zari & Peacock Embroidery"
+                border_desc = (
+                    f"Scalloped cutwork zari border with floral and peacock embroidery on {chosen_color.lower()} {chosen_fabric.lower()}"
+                )
+                motifs_desc = (
+                    f"Intricate peacock and lotus floral embroidery in antique gold zari across the {chosen_color.lower()} pallu and scalloped border"
+                )
+                blouse_desc = (
+                    f"Coordinated {chosen_color.lower()} {chosen_fabric.lower()} blouse with matching scalloped gold embroidered neckline and sleeve border"
+                )
+
+                for ord_num, v_key, v_label, v_fname in REQUIRED_VIEWS:
+                    ref_img_path = os.path.join(ref_dir, v_fname)
+                    dest_saree_path = os.path.join(target_saree_dir, v_fname)
+                    upload_fname = f"{new_sku}-{v_fname}"
+                    dest_upload_path = os.path.join(ROOT_UPLOADS_DIR, upload_fname)
+                    dest_public_upload_path = os.path.join(UPLOADS_DIR, upload_fname)
+
+                    img_bytes = None
+                    if api_key and body.get("useLiveGemini", True):
+                        view_prompt = (
+                            f"Photorealistic studio product photograph of an Indian saree on a headless cream fabric mannequin "
+                            f"with a dark walnut finial and round wooden base against a warm neutral taupe-beige studio backdrop "
+                            f"with soft diffused side lighting. "
+                            f"View ({ord_num}/5): {v_label}. "
+                            f"Saree: {saree_title}. Colour: {chosen_color}. Fabric: {chosen_fabric}. Occasion: {chosen_occasion}. "
+                            f"Border & Work: {border_desc}. Blouse: {blouse_desc}. "
+                            f"Keep colour, pattern, fabric, and embroidery strictly identical to the saree design. "
+                            f"Do not add any text, logos, watermarks, or unrelated accessories."
+                        )
+                        img_bytes, _ = call_gemini_nano_banana_image(view_prompt, ref_img_path, api_key)
+                        if img_bytes:
+                            used_live_gemini = True
+
+                    if img_bytes:
+                        with open(dest_saree_path, "wb") as f:
+                            f.write(img_bytes)
+                        with open(dest_upload_path, "wb") as f:
+                            f.write(img_bytes)
+                        with open(dest_public_upload_path, "wb") as f:
+                            f.write(img_bytes)
+                    else:
+                        shutil.copyfile(ref_img_path, dest_saree_path)
+                        shutil.copyfile(ref_img_path, dest_upload_path)
+                        shutil.copyfile(ref_img_path, dest_public_upload_path)
+
+                    public_url = f"/public/images/sarees/{new_sku}/{v_fname}"
+                    saved_image_paths.append(public_url)
+                    saved_upload_paths.append(f"/uploads/{upload_fname}")
+                    gallery_items.append({
+                        "order": ord_num,
+                        "key": v_key,
+                        "label": v_label,
+                        "url": public_url,
+                        "isSampleImage": False,
+                        "alt": f"{saree_title} — {v_label} ({chosen_color}, {chosen_fabric}, {chosen_occasion})"
+                    })
+
+                # Price based on fabric tier
+                fabric_prices = {
+                    "champagne tissue": 7500,
+                    "woven brocade": 5500,
+                    "silk-blend jacquard": 3900,
+                    "tissue organza": 3400,
+                    "silk-cotton blend": 2800,
+                    "art silk jacquard": 2200,
+                    "soft mercerised weave": 1800,
+                    "textured dobby blend": 1500,
+                    "mercerised cotton": 1200,
+                }
+                base_price = fabric_prices.get(chosen_fabric.lower(), 6800)
+                ts = now_iso()
+
+                new_product_raw = {
+                    "id": new_sku,
+                    "sku": new_sku,
+                    "isSampleProduct": False,
+                    "isSamplePrice": False,
+                    "isGeneratedSaree": True,
+                    "generatedAt": ts,
+                    "referenceSku": ref_sku,
+                    "selectedCategories": {
+                        "color": chosen_color,
+                        "fabric": chosen_fabric,
+                        "occasion": chosen_occasion,
+                        "autoSelected": auto_selected,
+                    },
+                    "savedImagePaths": saved_image_paths,
+                    "savedUploadPaths": saved_upload_paths,
+                    "featured": True,
+                    "bestseller": False,
+                    "active": True,
+                    "name": saree_title,
+                    "fabric": chosen_fabric,
+                    "color": chosen_color,
+                    "occasion": chosen_occasion,
+                    "priceINR": base_price,
+                    "originalPriceINR": base_price,
+                    "price": base_price,
+                    "mrp": base_price,
+                    "discountPercent": 0,
+                    "stockStatus": "In Stock",
+                    "stockQty": 18,
+                    "stock": 18,
+                    "stock_status": "in_stock",
+                    "description": (
+                        f"Custom generated {chosen_color.lower()} {chosen_fabric.lower()} saree tailored for {chosen_occasion.lower()}. "
+                        f"Features a scalloped cutwork border with floral and peacock embroidery in antique gold zari, "
+                        f"photographed across a matching 5-view studio mannequin gallery (front, back & pallu, pallu detail, fabric macro, and blouse detail)."
+                    ),
+                    "borderAndZari": border_desc,
+                    "motifs": motifs_desc,
+                    "blousePiece": blouse_desc,
+                    "work_details": border_desc,
+                    "blouse_piece": blouse_desc,
+                    "care_instructions": "Dry clean only. Store folded in soft muslin away from direct sunlight.",
+                    "gallery": gallery_items,
+                    "images": saved_image_paths,
+                    "image": saved_image_paths[0],
+                }
+
+                with DB_LOCK:
+                    conn = get_db_connection()
+                    cur = conn.cursor()
+                    cur.execute("SELECT COALESCE(MAX(sort_order), -1) + 1 AS next_ord FROM products")
+                    next_ord = cur.fetchone()["next_ord"]
+                    norm_p = normalize_product(new_product_raw, next_ord)
+                    cur.execute(
+                        "INSERT INTO products (id, sort_order, data_json, updated_at) VALUES (?, ?, ?, ?)",
+                        (norm_p["id"], next_ord, json.dumps(norm_p), ts)
+                    )
+                    conn.commit()
+                    conn.close()
+
+                return self._send_json(201, {
+                    "ok": True,
+                    "product": norm_p,
+                    "selected": {
+                        "color": chosen_color,
+                        "fabric": chosen_fabric,
+                        "occasion": chosen_occasion,
+                        "autoSelected": auto_selected,
+                    },
+                    "savedImagePaths": saved_image_paths,
+                    "savedUploadPaths": saved_upload_paths,
+                    "databasePath": "janardan_textiles.db (products table)",
+                    "apiKeyConfigured": bool(api_key),
+                    "usedLiveGemini": used_live_gemini,
+                    "configNotice": (
+                        "Generated using live Gemini Nano Banana API on server."
+                        if used_live_gemini
+                        else (
+                            "Saved 5-view Nano Banana studio photography set from project reference library to "
+                            f"/public/images/sarees/{new_sku}/ and janardan_textiles.db. "
+                            "Tip: Set GEMINI_API_KEY in .env on the server to enable live on-demand Gemini API calls."
+                        )
+                    )
+                })
+            finally:
+                GENERATION_LOCK.release()
 
         return self._send_json(404, {"ok": False, "error": f"Unknown POST endpoint: {path}"})
 

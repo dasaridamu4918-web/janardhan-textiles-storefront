@@ -215,13 +215,17 @@
       if (method === "GET" && pathname === "/api/filters") {
         const active = this.getProducts().filter((p) => p.active !== false);
         const prices = active.map((p) => p.price || 0).filter((n) => n > 0);
+        const baseColors = [...new Set(active.map((p) => p.color).filter(Boolean))];
+        ["Royal Rose & Gold", "Emerald Teal & Gold"].forEach((c) => {
+          if (!baseColors.includes(c)) baseColors.push(c);
+        });
         return {
           status: 200,
           ok: true,
           data: {
             ok: true,
             fabrics: [...new Set(active.map((p) => p.fabric).filter(Boolean))].sort(),
-            colors: [...new Set(active.map((p) => p.color).filter(Boolean))].sort(),
+            colors: baseColors,
             occasions: [...new Set(active.map((p) => p.occasion).filter(Boolean))].sort(),
             price: {
               min: prices.length ? Math.min(...prices) : 1200,
@@ -713,6 +717,142 @@
         }
       }
 
+      if (method === "GET" && pathname === "/api/sarees/generate/status") {
+        const active = this.getProducts().filter((p) => p.active !== false);
+        const colors = [...new Set(active.map((p) => p.color).filter(Boolean))];
+        ["Royal Rose & Gold", "Emerald Teal & Gold"].forEach((c) => {
+          if (!colors.includes(c)) colors.push(c);
+        });
+        return {
+          status: 200,
+          ok: true,
+          data: {
+            ok: true,
+            apiKeyConfigured: false,
+            apiKeyEnvVar: "GEMINI_API_KEY",
+            model: "gemini-2.5-flash-image (Nano Banana)",
+            storageConfigured: true,
+            databaseFile: "janardan_textiles.db / Browser LocalStorage",
+            imagesDirectory: "/public/images/sarees/<sku>/",
+            uploadsDirectory: "/uploads/",
+            availableColors: colors,
+            availableFabrics: [...new Set(active.map((p) => p.fabric).filter(Boolean))],
+            availableOccasions: [...new Set(active.map((p) => p.occasion).filter(Boolean))],
+            setupInstructions:
+              "Set GEMINI_API_KEY in .env on the Python backend server (server.py) to enable live on-demand Gemini Nano Banana API calls."
+          }
+        };
+      }
+
+      if (method === "POST" && pathname === "/api/sarees/generate") {
+        const prods = this.getProducts();
+        const genCount = prods.filter((p) => p.isGeneratedSaree || String(p.sku || "").startsWith("jt-saree-gen-")).length;
+        const active = prods.filter((p) => p.active !== false);
+        const availColors = ["Royal Rose & Gold", "Emerald Teal & Gold", ...new Set(active.map((p) => p.color).filter(Boolean))];
+        const availFabrics = [...new Set(active.map((p) => p.fabric).filter(Boolean))];
+        const availOccasions = [...new Set(active.map((p) => p.occasion).filter(Boolean))];
+
+        let rawCol = String(body.color || body.colour || "").trim();
+        let rawFab = String(body.fabric || "").trim();
+        let rawOcc = String(body.occasion || "").trim();
+        if (["AUTO", "ANY", "ALL"].includes(rawCol.toUpperCase())) rawCol = "";
+        if (["AUTO", "ANY", "ALL"].includes(rawFab.toUpperCase())) rawFab = "";
+        if (["AUTO", "ANY", "ALL"].includes(rawOcc.toUpperCase())) rawOcc = "";
+
+        const autoSelected = [];
+        const chosenColor = rawCol || (autoSelected.push("color"), availColors[genCount % availColors.length]);
+        const chosenFabric = rawFab || (autoSelected.push("fabric"), availFabrics[genCount % availFabrics.length] || "Champagne Tissue");
+        const chosenOccasion = rawOcc || (autoSelected.push("occasion"), availOccasions[genCount % availOccasions.length] || "Celebrations & Festive");
+
+        const colorMap = {
+          "royal rose & gold": "jt-saree-10",
+          "emerald teal & gold": "jt-saree-11",
+          "champagne gold": "jt-saree-09",
+          "warm sand & gold": "jt-saree-01",
+          "ivory gold": "jt-saree-02",
+          "champagne beige": "jt-saree-03",
+          "espresso brown": "jt-saree-04",
+          "warm ochre": "jt-saree-05",
+          "champagne & bronze": "jt-saree-06",
+          "soft cream": "jt-saree-07",
+          "deep cocoa": "jt-saree-08"
+        };
+        const refSku = colorMap[chosenColor.toLowerCase()] || "jt-saree-10";
+        const newSku = `jt-saree-gen-${String(genCount + 1).padStart(2, "0")}`;
+        const viewFiles = [
+          { order: 1, key: "front", label: "1. Front view (three-quarter angle on the mannequin)", file: "1-front.jpg" },
+          { order: 2, key: "back_pallu", label: "2. Back and pallu view", file: "2-back-pallu.jpg" },
+          { order: 3, key: "pallu_detail", label: "3. Pallu embroidery detail", file: "3-pallu-detail.jpg" },
+          { order: 4, key: "fabric_macro", label: "4. Fabric and embroidery macro", file: "4-macro.jpg" },
+          { order: 5, key: "blouse_border", label: "5. Blouse and border detail", file: "5-blouse.jpg" }
+        ];
+        const title = `${chosenColor} ${chosenFabric} Saree with Scalloped Zari & Peacock Embroidery`;
+        const savedPaths = viewFiles.map((v) => `/public/images/sarees/${refSku}/${v.file}`);
+        const gallery = viewFiles.map((v) => ({
+          order: v.order,
+          key: v.key,
+          label: v.label,
+          url: `/public/images/sarees/${refSku}/${v.file}`,
+          isSampleImage: false,
+          alt: `${title} — ${v.label} (${chosenColor}, ${chosenFabric}, ${chosenOccasion})`
+        }));
+        const created = this.normalizeProduct(
+          {
+            id: newSku,
+            sku: newSku,
+            isSampleProduct: false,
+            isSamplePrice: false,
+            isGeneratedSaree: true,
+            generatedAt: new Date().toISOString(),
+            selectedCategories: { color: chosenColor, fabric: chosenFabric, occasion: chosenOccasion, autoSelected },
+            savedImagePaths: savedPaths,
+            featured: true,
+            bestseller: false,
+            active: true,
+            name: title,
+            fabric: chosenFabric,
+            color: chosenColor,
+            occasion: chosenOccasion,
+            price: 6800,
+            priceINR: 6800,
+            mrp: 6800,
+            originalPriceINR: 6800,
+            stock: 18,
+            stockQty: 18,
+            stockStatus: "In Stock",
+            stock_status: "in_stock",
+            description: `Custom generated ${chosenColor.toLowerCase()} ${chosenFabric.toLowerCase()} saree tailored for ${chosenOccasion.toLowerCase()}. Features a scalloped cutwork border with floral and peacock embroidery in antique gold zari.`,
+            borderAndZari: `Scalloped cutwork zari border with floral and peacock embroidery on ${chosenColor.toLowerCase()} ${chosenFabric.toLowerCase()}`,
+            motifs: `Intricate peacock and lotus floral embroidery in antique gold zari`,
+            blousePiece: `Coordinated ${chosenColor.toLowerCase()} ${chosenFabric.toLowerCase()} blouse with matching scalloped gold embroidered neckline and sleeve border`,
+            work_details: `Scalloped cutwork zari border with floral and peacock embroidery`,
+            blouse_piece: `Coordinated ${chosenColor.toLowerCase()} ${chosenFabric.toLowerCase()} blouse with matching scalloped gold embroidered neckline and sleeve border`,
+            care_instructions: "Dry clean only. Store folded in soft muslin away from direct sunlight.",
+            gallery,
+            images: savedPaths,
+            image: savedPaths[0]
+          },
+          0
+        );
+        prods.unshift(created);
+        this.saveProducts(prods);
+        return {
+          status: 201,
+          ok: true,
+          data: {
+            ok: true,
+            product: created,
+            selected: { color: chosenColor, fabric: chosenFabric, occasion: chosenOccasion, autoSelected },
+            savedImagePaths: savedPaths,
+            databasePath: "Browser LocalStorage (jt_local_products_v1)",
+            apiKeyConfigured: false,
+            usedLiveGemini: false,
+            configNotice:
+              "Generated using 5-view Nano Banana studio reference photography (/public/images/sarees/). Set GEMINI_API_KEY in .env on server.py for live Gemini API calls."
+          }
+        };
+      }
+
       if (pathname === "/api/bootstrap" || pathname === "/api/seed") {
         return {
           status: 200,
@@ -825,6 +965,20 @@
       items: [],
       loading: false,
       error: null
+    },
+    sareeGenerator: {
+      color: "",
+      fabric: "",
+      occasion: "",
+      generating: false,
+      error: "",
+      successMessage: "",
+      configNotice: "",
+      lastGeneratedProduct: null,
+      lastSelected: null,
+      savedImagePaths: [],
+      serverStatus: null,
+      showSetupGuide: false
     },
     checkoutState: {
       step: 1, // 1: Address, 2: Shipping, 3: Payment, 4: Review
@@ -1404,6 +1558,10 @@
   };
 
   app.refreshCatalogueDOM = function () {
+    const genStudioEl = document.getElementById("saree-generator-studio-container");
+    if (genStudioEl && typeof this.renderSareeGeneratorStudio === "function") {
+      genStudioEl.innerHTML = this.renderSareeGeneratorStudio();
+    }
     const chipsEl = document.getElementById("catalogue-active-chips");
     if (chipsEl) chipsEl.innerHTML = this.renderFilterChips();
     const sidebarEl = document.getElementById("catalogue-desktop-sidebar");
@@ -1453,7 +1611,9 @@
     const isWishlisted = this.state.wishlistIds.has(pid);
 
     return `
-      <article class="jt-product-card group bg-[#FAF8F5] rounded-2xl border border-gold/35 shadow-sm hover:shadow-xl flex flex-col overflow-hidden min-w-0">
+      <article data-product-card="${pid}" class="jt-product-card group bg-[#FAF8F5] rounded-2xl border ${
+      saree.isGeneratedSaree ? "border-2 border-gold shadow-md" : "border-gold/35 shadow-sm"
+    } hover:shadow-xl flex flex-col overflow-hidden min-w-0">
         <div class="relative aspect-[3/4] bg-[#EFE6D5] overflow-hidden">
           <img
             src="${primaryImg}"
@@ -1469,6 +1629,11 @@
 
           <!-- Top-Left Stock & Collection Badges -->
           <div class="absolute top-2.5 left-2.5 flex flex-col gap-1 pointer-events-none">
+            ${
+              saree.isGeneratedSaree
+                ? `<span class="px-2.5 py-0.5 rounded-full bg-teal text-gold border border-gold/60 font-bold text-[10px] uppercase tracking-wider shadow">Generated Saree</span>`
+                : ""
+            }
             ${
               outOfStock
                 ? `<span class="px-2.5 py-0.5 rounded-full bg-red-900/90 text-ivory font-bold text-[10px] uppercase tracking-wider shadow">Out of stock</span>`
@@ -1499,10 +1664,11 @@
         </div>
 
         <div class="p-3 sm:p-4 flex-grow flex flex-col justify-between space-y-3 min-w-0">
-          <div onclick="app.openProductDetail('${pid}')" class="cursor-pointer space-y-1 min-w-0">
-            <div class="flex flex-wrap items-center gap-1 text-[11px] text-ink-muted truncate">
-              <span class="font-semibold text-ink truncate">${saree.fabric || ""}</span>
-              ${saree.color ? `<span>•</span><span class="truncate">${saree.color}</span>` : ""}
+          <div onclick="app.openProductDetail('${pid}')" class="cursor-pointer space-y-1.5 min-w-0">
+            <div class="flex flex-wrap items-center gap-1 text-[11px] text-ink-muted">
+              ${saree.color ? `<span class="px-2 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/35 font-semibold text-ink truncate" title="Colour: ${saree.color}">${saree.color}</span>` : ""}
+              ${saree.fabric ? `<span class="px-2 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/35 font-medium text-ink truncate" title="Fabric: ${saree.fabric}">${saree.fabric}</span>` : ""}
+              ${saree.occasion ? `<span class="px-2 py-0.5 rounded-full bg-ivory border border-gold/30 text-ink-muted truncate" title="Occasion: ${saree.occasion}">${saree.occasion}</span>` : ""}
             </div>
             <h3 class="font-serif text-base sm:text-lg font-semibold text-ink group-hover:text-teal transition-colors line-clamp-2 leading-snug break-words">
               ${saree.name}
@@ -2233,7 +2399,7 @@
         </div>
 
         <!-- Occasion Multi-Select -->
-        <div class="space-y-2">
+        <div class="space-y-2 border-b border-gold/25 pb-4">
           <span class="font-bold text-xs uppercase tracking-wider text-ink-muted block">Occasion</span>
           <div class="space-y-1.5">
             ${occasions
@@ -2254,6 +2420,388 @@
               .join("")}
           </div>
         </div>
+
+        <!-- Generate Saree from Selected Categories (Sidebar / Mobile Sheet Quick Trigger) -->
+        <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/50 space-y-2.5">
+          <div class="flex items-center justify-between">
+            <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Nano Banana Studio</span>
+            <span class="px-2 py-0.5 rounded-full bg-gold/25 text-ink text-[10px] font-bold">5-View Gallery</span>
+          </div>
+          <p class="text-[11px] text-ink-muted leading-snug">
+            Create 1 new saree from your checked <strong>Colour</strong>, <strong>Fabric</strong> &amp; <strong>Occasion</strong> (unselected categories are auto-chosen).
+          </p>
+          <button
+            type="button"
+            data-generate-saree-btn="sidebar-${prefix}"
+            onclick="app.generateSareeDesign('filter-${prefix}')"
+            ${this.state.sareeGenerator?.generating ? "disabled" : ""}
+            class="w-full py-2.5 px-3 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
+              this.state.sareeGenerator?.generating
+                ? "bg-sand-deep text-ink-muted cursor-not-allowed opacity-75"
+                : "bg-teal text-ivory hover:bg-teal-light shadow-sm"
+            }"
+          >
+            <span>${this.state.sareeGenerator?.generating ? "Generating Saree..." : "✦ Generate Saree"}</span>
+          </button>
+        </div>
+      </div>
+    `;
+  };
+
+  // 11B. Generate Saree Studio (Colour + Fabric + Occasion -> 5-View Saree Gallery & New Product Card)
+  app.fetchSareeGeneratorStatus = async function () {
+    try {
+      const data = await BACKEND_API.request("/api/sarees/generate/status");
+      if (data && data.ok) {
+        this.state.sareeGenerator.serverStatus = data;
+        const el = document.getElementById("saree-generator-studio-container");
+        if (el) el.innerHTML = this.renderSareeGeneratorStudio();
+      }
+    } catch (e) {}
+  };
+
+  app.setSareeGeneratorSelection = function (field, value) {
+    if (!this.state.sareeGenerator) return;
+    this.state.sareeGenerator[field] = value;
+  };
+
+  app.toggleSareeGeneratorSetupGuide = function () {
+    if (!this.state.sareeGenerator) return;
+    this.state.sareeGenerator.showSetupGuide = !this.state.sareeGenerator.showSetupGuide;
+    const el = document.getElementById("saree-generator-studio-container");
+    if (el) el.innerHTML = this.renderSareeGeneratorStudio();
+  };
+
+  app.generateSareeDesign = async function (source = "studio") {
+    const sg = this.state.sareeGenerator;
+    if (!sg) return;
+    if (sg.generating) {
+      this.showToast("A saree generation is already in progress. Please wait.", "error");
+      return;
+    }
+
+    const cq = this.state.catalogueQuery || {};
+    let chosenColor = sg.color;
+    let chosenFabric = sg.fabric;
+    let chosenOccasion = sg.occasion;
+
+    // If triggered from filter panel or if studio dropdown is left blank while filter checkboxes are checked, use filter selection
+    if (source.startsWith("filter-") || (!chosenColor && Array.isArray(cq.color) && cq.color.length > 0)) {
+      chosenColor = (cq.color && cq.color[0]) || sg.color || "";
+    }
+    if (source.startsWith("filter-") || (!chosenFabric && Array.isArray(cq.fabric) && cq.fabric.length > 0)) {
+      chosenFabric = (cq.fabric && cq.fabric[0]) || sg.fabric || "";
+    }
+    if (source.startsWith("filter-") || (!chosenOccasion && Array.isArray(cq.occasion) && cq.occasion.length > 0)) {
+      chosenOccasion = (cq.occasion && cq.occasion[0]) || sg.occasion || "";
+    }
+
+    sg.generating = true;
+    sg.error = "";
+    sg.successMessage = "";
+    this.refreshCatalogueDOM();
+
+    try {
+      const { status, ok, data } = await BACKEND_API.requestWithStatus("/api/sarees/generate", {
+        method: "POST",
+        body: JSON.stringify({
+          color: chosenColor,
+          fabric: chosenFabric,
+          occasion: chosenOccasion
+        })
+      });
+
+      sg.generating = false;
+
+      if (!ok || !data || !data.product) {
+        sg.error =
+          (data && data.error) ||
+          `Could not generate saree (HTTP ${status}). Please verify server image-generation credentials and storage configuration.`;
+        this.showToast(sg.error, "error");
+        this.refreshCatalogueDOM();
+        return;
+      }
+
+      const newProduct = data.product;
+      const sel = data.selected || {
+        color: newProduct.color,
+        fabric: newProduct.fabric,
+        occasion: newProduct.occasion,
+        autoSelected: []
+      };
+
+      sg.lastGeneratedProduct = newProduct;
+      sg.lastSelected = sel;
+      sg.savedImagePaths = data.savedImagePaths || newProduct.images || [];
+      sg.configNotice = data.configNotice || "";
+      sg.successMessage = `Created "${newProduct.name}" (${sel.color} • ${sel.fabric} • ${sel.occasion}) and added it to the catalogue.`;
+
+      // Keep existing products intact and add the new saree to state + local cache
+      const existingList = Array.isArray(this.state.products) ? this.state.products : [];
+      if (!existingList.some((p) => (p.id || p.sku) === (newProduct.id || newProduct.sku))) {
+        this.state.products = [newProduct, ...existingList];
+      }
+      try {
+        const localProds = LOCAL_FALLBACK_API.getProducts();
+        if (!localProds.some((p) => (p.id || p.sku) === (newProduct.id || newProduct.sku))) {
+          localProds.unshift(newProduct);
+          LOCAL_FALLBACK_API.saveProducts(localProds);
+        }
+      } catch (e) {}
+
+      if (source === "filter-mobile") {
+        this.closeMobileFilterSheet();
+      }
+
+      // Reset active filters so all existing products + the 1 new product card are visible together on page 1
+      this.clearAllCatalogueFilters(false);
+      this.state.catalogueQuery.sort = "newest";
+      this.state.catalogueQuery.page = 1;
+      this.syncCatalogueQueryToUrl(false);
+
+      await Promise.all([this.fetchFiltersMeta(), this.fetchCatalogueProducts(), this.fetchHomeSections()]);
+      this.showToast(`New Saree Generated: ${sel.color} • ${sel.fabric} • ${sel.occasion}`);
+
+      const catEl = document.getElementById("catalogue-section");
+      if (catEl) {
+        catEl.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    } catch (err) {
+      sg.generating = false;
+      sg.error = err.message || "Network error while generating saree.";
+      this.showToast(sg.error, "error");
+      this.refreshCatalogueDOM();
+    }
+  };
+
+  app.renderSareeGeneratorStudio = function () {
+    const sg = this.state.sareeGenerator || {};
+    const fm = this.state.filtersMeta || {};
+    const rawColors = fm.colors && fm.colors.length ? fm.colors : [...new Set((this.state.products || []).map((p) => p.color).filter(Boolean))];
+    const colors = [...new Set(["Royal Rose & Gold", "Emerald Teal & Gold", ...rawColors])];
+    const fabrics = fm.fabrics && fm.fabrics.length ? fm.fabrics : [...new Set((this.state.products || []).map((p) => p.fabric).filter(Boolean))];
+    const occasions = fm.occasions && fm.occasions.length ? fm.occasions : [...new Set((this.state.products || []).map((p) => p.occasion).filter(Boolean))];
+    const lastProd = sg.lastGeneratedProduct;
+    const sel = sg.lastSelected || (lastProd && lastProd.selectedCategories) || null;
+    const srv = sg.serverStatus;
+
+    return `
+      <div class="mb-6 rounded-3xl bg-[#FAF8F5] border-2 border-gold/55 p-4 sm:p-6 shadow-md space-y-4" aria-label="Generate Saree Studio">
+        <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gold/30 pb-3.5">
+          <div>
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="px-2.5 py-0.5 rounded-full bg-teal text-gold font-bold text-[10px] uppercase tracking-widest">Nano Banana Studio</span>
+              <span class="text-xs font-semibold text-ink-muted">5-View Mannequin Gallery • Neutral Beige Studio</span>
+            </div>
+            <h3 class="font-serif text-xl sm:text-2xl font-bold text-ink mt-1">Generate Saree by Colour, Fabric &amp; Occasion</h3>
+            <p class="text-xs text-ink-muted mt-0.5">
+              Choose a Colour, Fabric, and Occasion from our catalogue options—or leave any category unselected to auto-select a suitable option. Creates 1 new saree with a 5-view gallery without replacing existing sarees.
+            </p>
+          </div>
+          <button
+            type="button"
+            onclick="app.toggleSareeGeneratorSetupGuide()"
+            class="self-start md:self-auto px-3.5 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/50 text-xs font-semibold hover:bg-gold/25 shrink-0"
+          >
+            ${sg.showSetupGuide ? "Hide Setup & Storage Info" : "⚙️ Setup & Storage Info"}
+          </button>
+        </div>
+
+        <!-- Category Selectors + Generate Button -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 items-end">
+          <div>
+            <label for="gen-saree-color" class="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1">1. Colour</label>
+            <select
+              id="gen-saree-color"
+              aria-label="Select Saree Colour"
+              ${sg.generating ? "disabled" : ""}
+              onchange="app.setSareeGeneratorSelection('color', this.value)"
+              class="w-full px-3 py-2.5 rounded-xl bg-ivory text-ink border border-gold/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold"
+            >
+              <option value="" ${!sg.color ? "selected" : ""}>Auto-select from Catalogue</option>
+              ${colors
+                .map(
+                  (col) => `<option value="${col}" ${sg.color === col ? "selected" : ""}>${col}</option>`
+                )
+                .join("")}
+            </select>
+          </div>
+
+          <div>
+            <label for="gen-saree-fabric" class="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1">2. Fabric</label>
+            <select
+              id="gen-saree-fabric"
+              aria-label="Select Saree Fabric"
+              ${sg.generating ? "disabled" : ""}
+              onchange="app.setSareeGeneratorSelection('fabric', this.value)"
+              class="w-full px-3 py-2.5 rounded-xl bg-ivory text-ink border border-gold/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold"
+            >
+              <option value="" ${!sg.fabric ? "selected" : ""}>Auto-select from Catalogue</option>
+              ${fabrics
+                .map(
+                  (fab) => `<option value="${fab}" ${sg.fabric === fab ? "selected" : ""}>${fab}</option>`
+                )
+                .join("")}
+            </select>
+          </div>
+
+          <div>
+            <label for="gen-saree-occasion" class="block text-xs font-bold uppercase tracking-wider text-ink-muted mb-1">3. Occasion</label>
+            <select
+              id="gen-saree-occasion"
+              aria-label="Select Saree Occasion"
+              ${sg.generating ? "disabled" : ""}
+              onchange="app.setSareeGeneratorSelection('occasion', this.value)"
+              class="w-full px-3 py-2.5 rounded-xl bg-ivory text-ink border border-gold/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold"
+            >
+              <option value="" ${!sg.occasion ? "selected" : ""}>Auto-select from Catalogue</option>
+              ${occasions
+                .map(
+                  (occ) => `<option value="${occ}" ${sg.occasion === occ ? "selected" : ""}>${occ}</option>`
+                )
+                .join("")}
+            </select>
+          </div>
+
+          <div>
+            <button
+              type="button"
+              id="generate-saree-submit-btn"
+              data-generate-saree-btn="studio"
+              onclick="app.generateSareeDesign('studio')"
+              ${sg.generating ? "disabled" : ""}
+              class="w-full py-2.5 px-4 rounded-full text-xs sm:text-sm font-bold flex items-center justify-center gap-2 transition-all ${
+                sg.generating
+                  ? "bg-sand-deep text-ink-muted cursor-not-allowed opacity-75"
+                  : "bg-teal text-ivory hover:bg-teal-light active:scale-95 shadow-md"
+              }"
+            >
+              ${
+                sg.generating
+                  ? `<span class="inline-block w-3.5 h-3.5 rounded-full border-2 border-gold border-t-transparent animate-spin"></span>
+                     <span>Generating 5-View Saree...</span>`
+                  : `<span>✦ Generate Saree</span>`
+              }
+            </button>
+          </div>
+        </div>
+
+        <!-- Loading State -->
+        ${
+          sg.generating
+            ? `
+          <div role="status" aria-live="polite" class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/50 flex items-center gap-3 text-xs text-ink">
+            <span class="inline-block w-4 h-4 rounded-full border-2 border-teal border-t-transparent animate-spin shrink-0"></span>
+            <div>
+              <p class="font-bold">Generating 5-view saree studio photography &amp; saving to catalogue...</p>
+              <p class="text-[11px] text-ink-muted">Creating Front, Back &amp; Pallu, Pallu Detail, Fabric Macro, and Blouse Detail views. Duplicate requests are locked until completion.</p>
+            </div>
+          </div>
+        `
+            : ""
+        }
+
+        <!-- Error State -->
+        ${
+          sg.error
+            ? `
+          <div role="alert" class="p-3.5 rounded-2xl bg-red-50 border border-red-300 text-xs text-red-900 flex items-start justify-between gap-3">
+            <div>
+              <p class="font-bold">Saree Generation Error</p>
+              <p class="mt-0.5">${sg.error}</p>
+            </div>
+            <button type="button" onclick="app.state.sareeGenerator.error=''; app.refreshCatalogueDOM()" class="font-bold text-red-800">✕</button>
+          </div>
+        `
+            : ""
+        }
+
+        <!-- Generated Saree Result Summary (Displays Selected Colour, Fabric, Occasion & 5-View Gallery Preview) -->
+        ${
+          lastProd && sel && !sg.generating
+            ? `
+          <div id="generated-saree-result-banner" role="status" aria-live="polite" class="p-4 rounded-2xl bg-[#F5EFE4] border-2 border-gold/60 space-y-3">
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+              <div class="space-y-1">
+                <div class="flex flex-wrap items-center gap-1.5">
+                  <span class="px-2.5 py-0.5 rounded-full bg-teal text-gold text-[10px] font-bold uppercase">✓ Added to Catalogue</span>
+                  <span class="font-mono text-xs font-bold text-teal">SKU: ${lastProd.sku}</span>
+                </div>
+                <h4 class="font-serif text-lg sm:text-xl font-bold text-ink">${lastProd.name}</h4>
+              </div>
+              <div class="flex flex-wrap items-center gap-2 shrink-0">
+                <button
+                  type="button"
+                  onclick="app.openProductDetail('${lastProd.id}')"
+                  class="px-4 py-2 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light shadow-xs"
+                >
+                  Open 5-View Gallery →
+                </button>
+              </div>
+            </div>
+
+            <!-- Selected / Auto-Selected Categories Display -->
+            <div class="flex flex-wrap items-center gap-2 text-xs">
+              <span class="font-bold text-ink-muted">Selected Categories:</span>
+              <span class="px-3 py-1 rounded-full bg-ivory border border-gold/50 font-semibold text-ink">
+                Colour: <strong>${sel.color}</strong>${(sel.autoSelected || []).includes("color") ? ' <em class="text-[10px] text-teal">(Auto-selected)</em>' : ""}
+              </span>
+              <span class="px-3 py-1 rounded-full bg-ivory border border-gold/50 font-semibold text-ink">
+                Fabric: <strong>${sel.fabric}</strong>${(sel.autoSelected || []).includes("fabric") ? ' <em class="text-[10px] text-teal">(Auto-selected)</em>' : ""}
+              </span>
+              <span class="px-3 py-1 rounded-full bg-ivory border border-gold/50 font-semibold text-ink">
+                Occasion: <strong>${sel.occasion}</strong>${(sel.autoSelected || []).includes("occasion") ? ' <em class="text-[10px] text-teal">(Auto-selected)</em>' : ""}
+              </span>
+            </div>
+
+            <!-- 5-View Thumbnail Strip -->
+            <div class="grid grid-cols-5 gap-2 pt-1">
+              ${(lastProd.gallery || []).map((g, idx) => `
+                <button
+                  type="button"
+                  onclick="app.openProductDetail('${lastProd.id}'); setTimeout(() => app.setActiveProductGalleryIndex(${idx}), 60);"
+                  class="group text-left space-y-1 focus:outline-none"
+                >
+                  <div class="aspect-[3/4] rounded-xl overflow-hidden bg-ivory border border-gold/40 group-hover:border-teal">
+                    <img src="${this.resolveImageUrl(g.url, lastProd.name, g.label)}" alt="${g.label}" class="w-full h-full object-cover object-top" loading="lazy" />
+                  </div>
+                  <span class="block text-[10px] font-semibold text-ink-muted truncate">${idx + 1}. ${g.label.replace(/^\d+\.\s*/, "")}</span>
+                </button>
+              `).join("")}
+            </div>
+
+            <div class="text-[11px] text-ink-muted pt-1 border-t border-gold/30 flex flex-wrap items-center justify-between gap-2">
+              <span><strong>Saved Images:</strong> <code>/public/images/sarees/${lastProd.sku}/1-front.jpg</code> … <code>5-blouse.jpg</code> &amp; <code>/uploads/</code></span>
+              <span><strong>Saved Data:</strong> <code>janardan_textiles.db</code> (SQLite <code>products</code> table)</span>
+            </div>
+            ${
+              sg.configNotice
+                ? `<p class="text-[11px] text-teal font-medium">${sg.configNotice}</p>`
+                : ""
+            }
+          </div>
+        `
+            : ""
+        }
+
+        <!-- Server Configuration & Storage Guide -->
+        ${
+          sg.showSetupGuide
+            ? `
+          <div class="p-4 rounded-2xl bg-ivory border border-gold/45 text-xs space-y-2 text-ink">
+            <p class="font-bold text-teal uppercase tracking-wider text-[11px]">Nano Banana Image Generation &amp; Storage Setup</p>
+            <ul class="list-disc pl-5 space-y-1 text-ink-muted">
+              <li><strong>Server-Side API Key Security:</strong> Keep your Gemini Nano Banana key strictly on the server in <code>.env</code> as <code>GEMINI_API_KEY=your_key_here</code> (never in browser code). Live key status: <strong>${
+                srv?.apiKeyConfigured ? "Configured on Server" : "Using Studio Reference Library (Set GEMINI_API_KEY in .env for live API calls)"
+              }</strong>.</li>
+              <li><strong>Reference Photography:</strong> Uses the 5-view mannequin studio setup from <code>C:\\Users\\91965\\Downloads\\1\\1\\1.jpg..5.jpg</code> and <code>/public/images/sarees/jt-saree-01..11/</code> (Front, Back &amp; Pallu, Pallu Detail, Fabric Macro, Blouse Detail).</li>
+              <li><strong>Where Saved Images Live:</strong> Every generated saree saves 5 images to <code>public/images/sarees/&lt;sku&gt;/1-front.jpg</code> through <code>5-blouse.jpg</code> and <code>uploads/&lt;sku&gt;-1-front.jpg</code> through <code>5-blouse.jpg</code>.</li>
+              <li><strong>Where Product Details Live:</strong> Persisted in SQLite database <code>janardan_textiles.db</code> (<code>products</code> table) and mirrored to <code>GET /api/products</code> &amp; Admin Products.</li>
+            </ul>
+          </div>
+        `
+            : ""
+        }
       </div>
     `;
   };
@@ -2398,6 +2946,11 @@
                 </select>
               </div>
             </div>
+          </div>
+
+          <!-- Generate Saree Studio Bar (Colour, Fabric, Occasion -> 1 New Product Card & 5-View Gallery) -->
+          <div id="saree-generator-studio-container">
+            ${this.renderSareeGeneratorStudio()}
           </div>
 
           <!-- Active Filter Chips -->
@@ -5163,9 +5716,16 @@
       this.state.settings.contacts.instagramUrl = "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==";
       this.state.settings.contacts.facebookUrl = "https://www.facebook.com/share/1AvqDY71mi/";
       this.state.settings.contacts.pinterestUrl = "https://pin.it/2mS5N2kh4";
+      this.state.settings.contacts.emailAddress = "dasaridamu9418@gmail.com";
       this.renderFooterContacts();
     }
-    await Promise.all([this.fetchFiltersMeta(), this.verifyCurrentSession(), this.fetchHomeSections(), this.fetchCatalogueProducts()]);
+    await Promise.all([
+      this.fetchFiltersMeta(),
+      this.verifyCurrentSession(),
+      this.fetchHomeSections(),
+      this.fetchCatalogueProducts(),
+      this.fetchSareeGeneratorStatus()
+    ]);
 
     window.addEventListener("popstate", () => {
       this.parseCatalogueQueryFromUrl();

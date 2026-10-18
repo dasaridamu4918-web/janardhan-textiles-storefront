@@ -1207,7 +1207,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         instagramUrl: "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==",
         facebookUrl: "https://www.facebook.com/share/1AvqDY71mi/",
         pinterestUrl: "https://pin.it/2mS5N2kh4",
-        emailAddress: "[PLACEHOLDER: enquiries@janardantextiles.example.com]",
+        emailAddress: "dasaridamu9418@gmail.com",
         millAddress: "[PLACEHOLDER: Plot / Shed No., Textile Industrial Estate, City, State, PIN - 000000, India]",
         businessHours: "[PLACEHOLDER: Monday to Saturday, 10:00 AM – 7:00 PM IST]"
       },
@@ -1938,10 +1938,11 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const c = this.state.settings.contacts || {};
         const waLabel = (!c.whatsappLabel || c.whatsappLabel.includes("PLACEHOLDER")) ? "+91 96522 62173" : c.whatsappLabel;
         const igHandle = (!c.instagramHandle || c.instagramHandle.includes("PLACEHOLDER")) ? "@dasari_damu" : c.instagramHandle;
+        const emailAddr = (!c.emailAddress || c.emailAddress.includes("PLACEHOLDER")) ? "dasaridamu9418@gmail.com" : c.emailAddress;
         el.innerHTML = `
           <p><strong class="text-ink">WhatsApp:</strong> <a href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees." target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${waLabel}</a></p>
           <p><strong class="text-ink">Instagram:</strong> <a href="https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==" target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${igHandle}</a></p>
-          <p><strong class="text-ink">Email:</strong> ${c.emailAddress}</p>
+          <p><strong class="text-ink">Email:</strong> <a id="footer-contact-email" href="mailto:${emailAddr}" class="underline hover:text-ink">${emailAddr}</a></p>
           <p><strong class="text-ink">Address:</strong> ${c.millAddress}</p>
         `;
       },
@@ -3807,8 +3808,8 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     </div>
                   </div>
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
-                    <span class="text-xs font-bold uppercase text-ink-muted block">Email Address Placeholder</span>
-                    <p class="font-medium text-ink mt-0.5 break-all">${c.emailAddress}</p>
+                    <span class="text-xs font-bold uppercase text-ink-muted block">Email Address</span>
+                    <a id="contact-page-email-link" href="mailto:${(!c.emailAddress || c.emailAddress.includes('PLACEHOLDER')) ? 'dasaridamu9418@gmail.com' : c.emailAddress}" class="font-semibold text-ink underline hover:text-teal mt-0.5 inline-block break-all">${(!c.emailAddress || c.emailAddress.includes('PLACEHOLDER')) ? 'dasaridamu9418@gmail.com' : c.emailAddress}</a>
                   </div>
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
                     <span class="text-xs font-bold uppercase text-ink-muted block">Mill &amp; Office Address Placeholder</span>
@@ -4459,46 +4460,30 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
         this.state.aiStudioGeneratingView = `${productId}_${viewIdx}`;
         this.renderCurrentPage();
 
-        const apiKey = "";
-        const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite-image:generateContent?key=${apiKey}`;
-        const payload = {
-          contents: [{ parts: [{ text: singleViewPrompt }] }],
-          generationConfig: { responseModalities: ["TEXT", "IMAGE"] }
-        };
-
         try {
-          let response = null;
-          let delay = 1000;
-          for (let attempt = 0; attempt < 3; attempt++) {
-            response = await fetch(apiUrl, {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify(payload)
-            });
-            if (response.ok) break;
-            await new Promise((r) => setTimeout(r, delay));
-            delay *= 2;
-          }
+          const { status, data } = await BACKEND_API.requestWithStatus("/api/sarees/generate-view", {
+            method: "POST",
+            body: JSON.stringify({
+              productId,
+              viewIndex: viewIdx,
+              prompt: singleViewPrompt
+            })
+          });
 
-          if (response && response.ok) {
-            const result = await response.json();
-            const base64Data = result?.candidates?.[0]?.content?.parts?.find((p) => p.inlineData)?.inlineData?.data;
-            if (base64Data) {
-              const dataUri = `data:image/png;base64,${base64Data}`;
-              const slotLabel = saree.gallery[viewIdx]?.label || REQUIRED_GALLERY_VIEWS[viewIdx].label;
-              await this.persistGallerySlotToBackend(productId, viewIdx, dataUri, {
-                isSampleImage: false,
-                alt: `${saree.name} (${saree.fabric}, ${saree.color}) — ${slotLabel}`
-              });
-              this.showToast(`Generated & Saved Studio Image ${viewIdx + 1} for "${saree.name}"!`);
-            } else {
-              this.showToast("AI response did not contain image data. Kept existing catalogue view.", "error");
-            }
+          if (status === 200 && data && data.ok && data.url) {
+            const slotLabel = saree.gallery[viewIdx]?.label || REQUIRED_GALLERY_VIEWS[viewIdx].label;
+            saree.gallery[viewIdx].url = data.url;
+            saree.gallery[viewIdx].isSampleImage = false;
+            saree.gallery[viewIdx].alt = `${saree.name} (${saree.fabric}, ${saree.color}) — ${slotLabel}`;
+            this.showToast(data.message || `Generated & Saved Studio Image ${viewIdx + 1} for "${saree.name}"!`);
           } else {
-            this.showToast("Could not reach external AI service without API key. Upload custom files in Tab 1.", "error");
+            this.showToast(
+              (data && data.error) || "Nano Banana API key not configured on server (set GEMINI_API_KEY in server environment).",
+              "error"
+            );
           }
         } catch (err) {
-          this.showToast("AI generation requires API key. Use Tab 1 to upload custom photos to SQLite.", "error");
+          this.showToast(err.message || "Server Nano Banana generation endpoint unreachable.", "error");
         } finally {
           this.state.aiStudioGeneratingView = null;
           this.renderCurrentPage();
