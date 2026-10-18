@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Janardan Textiles — Full-Stack Python + SQLite REST Backend Server (server.py)
+Janardhan Textiles — Full-Stack Python + SQLite REST Backend Server (server.py)
 Serves both http://127.0.0.1:8080 and http://localhost:4000.
 
 Implements:
@@ -144,7 +144,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "id": "jt-saree-09",
         "sku": "jt-saree-09",
         "isSampleProduct": False,
-        "isSamplePrice": True,
+        "isSamplePrice": False,
         "featured": True,
         "bestseller": True,
         "active": True,
@@ -181,8 +181,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-01",
         "sku": "jt-saree-01",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": True,
         "bestseller": True,
         "active": True,
@@ -201,7 +201,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 42,
         "stock": 42,
         "stock_status": "in_stock",
-        "description": "Sample design description (editable): A warm sand and gold silk-blend jacquard saree featuring a woven temple border, floral jacquard motifs across the body and pallu, and a coordinated bordered blouse for weddings and receptions.",
+        "description": "A warm sand and gold silk-blend jacquard saree featuring a woven temple border, floral jacquard motifs across the body and pallu, and a coordinated bordered blouse for weddings and receptions.",
         "borderAndZari": "3.5-inch muted gold woven temple border with fine geometric edging on warm sand silk-blend jacquard",
         "motifs": "Woven muted gold floral butti spaced evenly across the warm sand jacquard body and pallu",
         "blousePiece": "Coordinated warm sand and espresso-brown jacquard blouse with matching 3.5-inch woven gold sleeve border",
@@ -212,8 +212,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-02",
         "sku": "jt-saree-02",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": True,
         "bestseller": False,
         "active": True,
@@ -232,7 +232,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 35,
         "stock": 35,
         "stock_status": "in_stock",
-        "description": "Sample design description (editable): A sheer, lightweight ivory-gold tissue organza saree with a 4-inch antique gold floral vine border, tonal lotus weave, and a coordinated tissue blouse for festive and puja occasions.",
+        "description": "A sheer, lightweight ivory-gold tissue organza saree with a 4-inch antique gold floral vine border, tonal lotus weave, and a coordinated tissue blouse for festive and puja occasions.",
         "borderAndZari": "4-inch woven antique gold floral vine border with crisp selvedge piping on sheer tissue organza",
         "motifs": "Delicate tonal lotus jaal woven throughout the sheer ivory warp and gold weft",
         "blousePiece": "Coordinated ivory-gold tissue organza blouse with lined bodice and 4-inch woven antique gold sleeve border",
@@ -243,8 +243,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-03",
         "sku": "jt-saree-03",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": False,
         "bestseller": True,
         "active": True,
@@ -263,7 +263,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 6,
         "stock": 6,
         "stock_status": "low_stock",
-        "description": "Sample design description (editable): A champagne-beige art silk jacquard saree woven with a broad 5-inch paisley border, all-over jacquard paisley bootis, and a contrast espresso bordered blouse for wedding and reception wear.",
+        "description": "A champagne-beige art silk jacquard saree woven with a broad 5-inch paisley border, all-over jacquard paisley bootis, and a contrast espresso bordered blouse for wedding and reception wear.",
         "borderAndZari": "Broad 5-inch traditional paisley and geometric muted gold woven border on champagne-beige art silk jacquard",
         "motifs": "All-over jacquard woven paisley bootis framed with dual gold lines on the pallu",
         "blousePiece": "Coordinated champagne-beige and deep espresso contrast jacquard blouse with woven paisley sleeve border",
@@ -274,8 +274,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-04",
         "sku": "jt-saree-04",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": False,
         "bestseller": False,
         "active": True,
@@ -294,7 +294,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 50,
         "stock": 50,
         "stock_status": "in_stock",
-        "description": "Sample design description (editable): A matte espresso-brown soft mercerised saree with a soft sheen, sleek 2.5-inch geometric diamond gold border, diagonal star-burst buttis, and a matching striped-border blouse for evening and party wear.",
+        "description": "A matte espresso-brown soft mercerised saree with a soft sheen, sleek 2.5-inch geometric diamond gold border, diagonal star-burst buttis, and a matching striped-border blouse for evening and party wear.",
         "borderAndZari": "2.5-inch sleek geometric diamond muted gold woven border on matte espresso-brown soft mercerised weave",
         "motifs": "Minimalist woven star-burst buttis arranged in a refined diagonal trellis layout with a soft sheen",
         "blousePiece": "Coordinated running espresso-brown soft mercerised blouse with woven gold stripe detailing on sleeves",
@@ -305,8 +305,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-05",
         "sku": "jt-saree-05",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": True,
         "bestseller": True,
         "active": True,
@@ -325,7 +325,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 64,
         "stock": 64,
         "stock_status": "in_stock",
-        "description": "Sample design description (editable): A breathable warm-ochre mercerised cotton saree with a matte finish and soft sheen, featuring a 3-inch woven dobby border, vertical pinstripes, and a coordinated dobby-bordered blouse for daywear and festive occasions.",
+        "description": "A breathable warm-ochre mercerised cotton saree with a matte finish and soft sheen, featuring a 3-inch woven dobby border, vertical pinstripes, and a coordinated dobby-bordered blouse for daywear and festive occasions.",
         "borderAndZari": "3-inch woven dobby border in muted gold and warm espresso tones on matte warm-ochre mercerised cotton",
         "motifs": "Crisp vertical woven pinstripes along the body leading into a banded dobby pallu",
         "blousePiece": "Coordinated warm-ochre mercerised cotton blouse with 3-inch woven dobby border along the sleeves",
@@ -336,8 +336,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-06",
         "sku": "jt-saree-06",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": True,
         "bestseller": True,
         "active": True,
@@ -356,7 +356,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 18,
         "stock": 18,
         "stock_status": "in_stock",
-        "description": "Sample design description (editable): A richly textured champagne and bronze woven brocade saree with a 4.5-inch floral medallion border, dense foliate lattice weave across the body and pallu, and a coordinated brocade blouse for weddings and receptions.",
+        "description": "A richly textured champagne and bronze woven brocade saree with a 4.5-inch floral medallion border, dense foliate lattice weave across the body and pallu, and a coordinated brocade blouse for weddings and receptions.",
         "borderAndZari": "4.5-inch regal antique bronze-gold woven brocade border with floral medallions",
         "motifs": "Dense foliate lattice woven in muted gold and bronze thread across the champagne brocade body and pallu",
         "blousePiece": "Coordinated champagne and bronze brocade blouse with 4.5-inch floral medallion border on sleeves and back",
@@ -367,8 +367,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-07",
         "sku": "jt-saree-07",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": False,
         "bestseller": False,
         "active": True,
@@ -387,7 +387,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 40,
         "stock": 40,
         "stock_status": "in_stock",
-        "description": "Sample design description (editable): A soft matte-silk cream silk-cotton blend saree with a 2-inch muted gold satin-edge border, scattered woven coin motifs, and a self-textured bordered blouse for office and formal wear.",
+        "description": "A soft matte-silk cream silk-cotton blend saree with a 2-inch muted gold satin-edge border, scattered woven coin motifs, and a self-textured bordered blouse for office and formal wear.",
         "borderAndZari": "2-inch subtle muted gold satin-edge woven border on matte-silk soft cream silk-cotton blend",
         "motifs": "Small woven coin motifs scattered lightly across the breathable soft cream body and pallu",
         "blousePiece": "Coordinated soft cream self-textured silk-cotton blouse with 2-inch muted gold woven border",
@@ -398,8 +398,8 @@ DEFAULT_INITIAL_PRODUCTS = [
     {
         "id": "jt-saree-08",
         "sku": "jt-saree-08",
-        "isSampleProduct": True,
-        "isSamplePrice": True,
+        "isSampleProduct": False,
+        "isSamplePrice": False,
         "featured": False,
         "bestseller": False,
         "active": True,
@@ -418,7 +418,7 @@ DEFAULT_INITIAL_PRODUCTS = [
         "stockQty": 0,
         "stock": 0,
         "stock_status": "out_of_stock",
-        "description": "Sample design description (editable): A deep cocoa textured dobby blend saree with a small geometric weave, 3.5-inch bronze-gold dobby border, structured pallu bands, and a contrast geometric-bordered blouse for evening and cultural events.",
+        "description": "A deep cocoa textured dobby blend saree with a small geometric weave, 3.5-inch bronze-gold dobby border, structured pallu bands, and a contrast geometric-bordered blouse for evening and cultural events.",
         "borderAndZari": "3.5-inch antique bronze-gold geometric dobby border with warm sand selvedge line",
         "motifs": "Small geometric dobby weave with textured slub weft lines and structured pallu bands",
         "blousePiece": "Coordinated deep cocoa and antique gold contrast dobby blouse with geometric border",
@@ -477,8 +477,8 @@ def normalize_product(prod, idx=0):
     p["active"] = bool(p.get("active", True))
     p["featured"] = bool(p.get("featured", idx < 5))
     p["bestseller"] = bool(p.get("bestseller", idx in (0, 1, 3, 5, 6)))
-    p["isSamplePrice"] = bool(p.get("isSamplePrice", True))
-    p["isSampleProduct"] = bool(p.get("isSampleProduct", sku != "jt-saree-09"))
+    p["isSamplePrice"] = False
+    p["isSampleProduct"] = False
 
     # Text fields
     p["work_details"] = p.get("work_details") if p.get("work_details") is not None else (p.get("borderAndZari") or "")
@@ -499,7 +499,7 @@ def normalize_product(prod, idx=0):
                     "key": key,
                     "label": label,
                     "url": url,
-                    "isSampleImage": sku != "jt-saree-09",
+                    "isSampleImage": False,
                     "alt": f"{p.get('name', 'Saree')} — {label}"
                 })
             p["gallery"] = gal
@@ -510,8 +510,8 @@ def normalize_product(prod, idx=0):
                     "key": key,
                     "label": label,
                     "url": f"/public/images/sarees/{sku}/{fname}?v=nb2",
-                    "isSampleImage": sku != "jt-saree-09",
-                    "alt": f"{'Sample image — ' if sku != 'jt-saree-09' else ''}{p.get('name', 'Saree')} — {label} ({p.get('fabric', '')}, {p.get('color', '')})"
+                    "isSampleImage": False,
+                    "alt": f"{''}{p.get('name', 'Saree')} — {label} ({p.get('fabric', '')}, {p.get('color', '')})"
                 }
                 for ord_num, key, label, fname in REQUIRED_VIEWS
             ]
@@ -597,7 +597,7 @@ def init_db():
         if cur.fetchone()["cnt"] == 0:
             cur.execute(
                 "INSERT INTO users (id, name, email, phone, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                ("usr-admin-01", "Janardan Mill Admin", "admin@janardantextiles.com", "9876543210", hash_password("admin123"), "admin", ts)
+                ("usr-admin-01", "Janardhan Mill Admin", "admin@janardantextiles.com", "9876543210", hash_password("admin123"), "admin", ts)
             )
             cur.execute(
                 "INSERT INTO users (id, name, email, phone, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
@@ -614,7 +614,7 @@ def init_db():
                     (norm_p["id"], idx, json.dumps(norm_p), ts)
                 )
 
-        # Ensure Janardan Textiles contact email is set to dasaridamu9418@gmail.com in settings
+        # Ensure Janardhan Textiles contact email is set to dasaridamu9418@gmail.com in settings
         cur.execute("SELECT value_json FROM settings WHERE key = 'site_settings'")
         row_s = cur.fetchone()
         if row_s:
@@ -631,7 +631,7 @@ def init_db():
         s_data["contacts"].setdefault("whatsappRawNumber", "919652262173")
         s_data["contacts"].setdefault(
             "whatsappUrl",
-            "https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+            "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
         )
         s_data["contacts"].setdefault("instagramHandle", "@dasari_damu")
         s_data["contacts"].setdefault("instagramUrl", "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==")
@@ -843,6 +843,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         ".jpeg": "image/jpeg",
         ".png": "image/png",
         ".svg": "image/svg+xml",
+        ".mp4": "video/mp4",
+        ".webm": "video/webm",
     }
 
     def __init__(self, *args, **kwargs):
@@ -1374,6 +1376,40 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             combined_customers = list(guest_by_key.values()) + users
             return self._send_json(200, {"total": len(combined_customers), "items": combined_customers, "customers": combined_customers})
 
+        if path.lower().endswith((".mp4", ".webm")):
+            fs_path = self.translate_path(self.path)
+            if os.path.isfile(fs_path):
+                fsize = os.path.getsize(fs_path)
+                ctype = "video/mp4" if path.lower().endswith(".mp4") else "video/webm"
+                range_hdr = self.headers.get("Range")
+                if range_hdr and range_hdr.startswith("bytes="):
+                    try:
+                        r_parts = range_hdr.split("=", 1)[1].split("-")
+                        start_b = int(r_parts[0]) if r_parts[0] else 0
+                        end_b = int(r_parts[1]) if (len(r_parts) > 1 and r_parts[1]) else fsize - 1
+                        end_b = min(end_b, fsize - 1)
+                        chunk_len = max(0, end_b - start_b + 1)
+                        self.send_response(206)
+                        self.send_header("Content-Type", ctype)
+                        self.send_header("Accept-Ranges", "bytes")
+                        self.send_header("Content-Range", f"bytes {start_b}-{end_b}/{fsize}")
+                        self.send_header("Content-Length", str(chunk_len))
+                        self.end_headers()
+                        with open(fs_path, "rb") as vf:
+                            vf.seek(start_b)
+                            self.wfile.write(vf.read(chunk_len))
+                        return
+                    except Exception:
+                        pass
+                self.send_response(200)
+                self.send_header("Content-Type", ctype)
+                self.send_header("Accept-Ranges", "bytes")
+                self.send_header("Content-Length", str(fsize))
+                self.end_headers()
+                with open(fs_path, "rb") as vf:
+                    self.wfile.write(vf.read())
+                return
+
         return super().do_GET()
 
     # =========================================================================
@@ -1634,7 +1670,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                         "quantity": qty,
                         "qty": qty,
                         "image": pdata.get("image", ""),
-                        "isSamplePrice": pdata.get("isSamplePrice", True)
+                        "isSamplePrice": False
                     })
 
                 shipping_fee = 0
@@ -1667,7 +1703,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     "date": created_at[:10],
                     "created_at": created_at,
                     "createdAt": created_at,
-                    "isDemoOrder": True
+                    "isDemoOrder": False
                 }
 
                 cur.execute(
@@ -2120,9 +2156,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                         "Generated using live Gemini Nano Banana API on server."
                         if used_live_gemini
                         else (
-                            "Saved 5-view Nano Banana studio photography set from project reference library to "
-                            f"/public/images/sarees/{new_sku}/ and janardan_textiles.db. "
-                            "Tip: Set GEMINI_API_KEY in .env on the server to enable live on-demand Gemini API calls."
+                            f"Your custom {chosen_color} {chosen_fabric} saree has been created with a 5-view studio gallery and added to the collection."
                         )
                     )
                 })
@@ -2495,12 +2529,12 @@ def run_server(host="0.0.0.0", port=8080, extra_port=4000):
             api_srv = http.server.ThreadingHTTPServer((host, extra_port), JanardanBackendHandler)
             t = threading.Thread(target=api_srv.serve_forever, daemon=True)
             t.start()
-            print(f"Janardan Textiles API Server also listening at http://localhost:{extra_port}")
+            print(f"Janardhan Textiles API Server also listening at http://localhost:{extra_port}")
         except Exception as e:
             print(f"Note: Could not bind extra port {extra_port}: {e}")
 
     server = http.server.ThreadingHTTPServer((host, port), JanardanBackendHandler)
-    print(f"Janardan Textiles Full-Stack Server running at http://127.0.0.1:{port}")
+    print(f"Janardhan Textiles Full-Stack Server running at http://127.0.0.1:{port}")
     print(f"SQLite Database: {DB_PATH}")
     server.serve_forever()
 

@@ -3,18 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
-  <meta name="theme-color" content="#b8a78e">
-  <meta name="description" content="Janardan Textiles — Champagne Tissue Saree with Floral and Peacock Embroidery. Editorial showcase &amp; catalogue.">
+  <meta name="theme-color" content="#6B1D2F">
+  <meta name="description" content="Janardhan Textiles — Champagne Tissue Saree with Floral and Peacock Embroidery. Five-view saree gallery, craft details, and collection.">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <title>Janardan Textiles | Saree Manufacturer (~600 Power Looms)</title>
+  <title>Janardhan Textiles | Saree Showcase &amp; Collection</title>
 
-  <!-- Preload images 1 and 2 immediately for the scroll showcase -->
-  <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" fetchpriority="high" />
-  <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/2-back-pallu.jpg" />
+  <!-- Preload static logo emblem and featured saree views -->
+  <link rel="preload" as="image" href="/public/assets/logo/janardhan-logo-emblem.webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/public/assets/logo/janardhan-logo-static.webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" />
 
-  <!-- Dynamic SVG Favicon ("JT" Monogram in Teal & Muted Gold) -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%23063F46'/%3E%3Crect x='6' y='6' width='88' height='88' rx='14' fill='none' stroke='%23C4A15A' stroke-width='2.5'/%3E%3Ctext x='50' y='66' font-family='Georgia, serif' font-size='48' font-weight='bold' fill='%23C4A15A' text-anchor='middle' letter-spacing='2'%3EJT%3C/text%3E%3C/svg%3E">
+  <!-- Dynamic SVG Favicon ("JT" Monogram in Deep Burgundy & Champagne Gold) -->
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%236B1D2F'/%3E%3Crect x='6' y='6' width='88' height='88' rx='14' fill='none' stroke='%23C4A15A' stroke-width='2.5'/%3E%3Ctext x='50' y='66' font-family='Georgia, serif' font-size='48' font-weight='bold' fill='%23C4A15A' text-anchor='middle' letter-spacing='2'%3EJT%3C/text%3E%3C/svg%3E">
 
   <!-- Google Fonts: Cormorant Garamond for serif headings & captions, Plus Jakarta Sans for clean body -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,7 +25,7 @@
   <!-- Tailwind CSS -->
   <script src="https://cdn.tailwindcss.com"></script>
 
-  <!-- GSAP + ScrollTrigger for Scroll-Driven Saree Showcase -->
+  <!-- GSAP + ScrollTrigger for Scroll-Driven 3D Logo Hero & Saree Showcase -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
 
@@ -34,10 +35,16 @@
         extend: {
           colors: {
             teal: {
-              DEFAULT: '#063F46',
-              dark: '#042D32',
-              light: '#0A525B',
-              50: '#F5EFE4'
+              DEFAULT: '#6B1D2F',
+              dark: '#4A1220',
+              light: '#84253B',
+              50: '#FAF6EE'
+            },
+            burgundy: {
+              DEFAULT: '#6B1D2F',
+              dark: '#4A1220',
+              light: '#84253B',
+              50: '#FAF6EE'
             },
             emerald: {
               50: '#FAF6EE',
@@ -45,9 +52,9 @@
               200: '#DFC58E',
               300: '#C4A15A',
               400: '#C4A15A',
-              700: '#0A525B',
-              800: '#063F46',
-              900: '#042D32'
+              700: '#84253B',
+              800: '#6B1D2F',
+              900: '#4A1220'
             },
             gold: {
               DEFAULT: '#C4A15A',
@@ -56,20 +63,20 @@
               50: '#FAF6EE'
             },
             sand: {
-              DEFAULT: '#cbbca5',
-              mid: '#b8a78e',
-              deep: '#a8977d',
-              soft: '#e8decb'
+              DEFAULT: '#E8DEC8',
+              mid: '#D9CBB0',
+              deep: '#C4B293',
+              soft: '#F3ECE0'
             },
             ivory: {
-              DEFAULT: '#FAF8F5',
-              warm: '#F5EFE4',
+              DEFAULT: '#FAF6EE',
+              warm: '#F3ECE0',
               cream: '#EFE6D5'
             },
             ink: {
-              DEFAULT: '#231d16',
-              secondary: '#3d3327',
-              muted: '#5c4e3e'
+              DEFAULT: '#231619',
+              secondary: '#42282E',
+              muted: '#664B50'
             }
           },
           fontFamily: {
@@ -83,27 +90,28 @@
 
   <style>
     :root {
-      --cream: #FAF8F5;
-      --beige: #cbbca5;
+      --cream: #FAF6EE;
+      --beige: #F3ECE0;
       --champagne-gold: #C4A15A;
-      --ink: #231d16;
-      --bg-radial-inner: #cbbca5;
-      --bg-radial-mid: #b8a78e;
-      --bg-radial-outer: #a8977d;
+      --burgundy: #6B1D2F;
+      --ink: #231619;
+      --bg-radial-inner: #FAF6EE;
+      --bg-radial-mid: #F3ECE0;
+      --bg-radial-outer: #E8DEC8;
       --accent-gold: #C4A15A;
-      --text-primary: #231d16;
-      --text-secondary: #3d3327;
-      --surface-pill: rgba(250, 248, 245, 0.86);
-      --border-subtle: rgba(196, 161, 90, 0.42);
+      --text-primary: #231619;
+      --text-secondary: #42282E;
+      --surface-pill: rgba(250, 246, 238, 0.92);
+      --border-subtle: rgba(196, 161, 90, 0.45);
       --font-serif: "Cormorant Garamond", Georgia, "Times New Roman", serif;
       --font-sans: "Plus Jakarta Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-      --teal: #063F46;
+      --teal: #6B1D2F;
       --gold: #C4A15A;
-      --ivory: #FAF8F5;
+      --ivory: #FAF6EE;
     }
 
     html {
-      background-color: var(--bg-radial-outer);
+      background-color: var(--bg-radial-inner);
       color: var(--text-primary);
       font-family: var(--font-sans);
       -webkit-font-smoothing: antialiased;
@@ -115,9 +123,9 @@
 
     body {
       background: radial-gradient(
-        ellipse at 50% 48%,
+        ellipse at 50% 35%,
         var(--bg-radial-inner) 0%,
-        var(--bg-radial-mid) 54%,
+        var(--bg-radial-mid) 60%,
         var(--bg-radial-outer) 100%
       );
       background-attachment: fixed;
@@ -128,20 +136,20 @@
       max-width: 100%;
     }
 
-    /* Editorial warm sand & champagne-gold surface treatments */
+    /* Warm ivory, champagne-gold & deep burgundy surface treatments */
     .woven-bg {
       background: radial-gradient(
-        ellipse at 50% 48%,
+        ellipse at 50% 35%,
         var(--bg-radial-inner) 0%,
-        var(--bg-radial-mid) 54%,
+        var(--bg-radial-mid) 60%,
         var(--bg-radial-outer) 100%
       );
       background-attachment: fixed;
     }
 
     .woven-teal-bg {
-      background: linear-gradient(135deg, #063F46 0%, #042D32 58%, #031F23 100%);
-      color: #FAF8F5;
+      background: linear-gradient(135deg, #6B1D2F 0%, #4A1220 58%, #340B15 100%);
+      color: #FAF6EE;
     }
 
     .zari-border {
@@ -792,12 +800,20 @@
   <!-- Sticky Storefront Header with Prominent Search, Navigation, Wishlist, Account & Cart -->
   <header class="sticky top-0 z-40 w-full max-w-full overflow-x-clip bg-[#FAF8F5]/95 backdrop-blur-md border-b border-gold/40 shadow-[0_1px_8px_rgba(35,29,22,0.06)]">
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3">
-      <!-- Brand Wordmark + Monogram -->
-      <button id="header-brand-btn" onclick="app.navigate('home')" class="min-w-0 shrink-0 flex items-center gap-1.5 sm:gap-2 text-left group focus:outline-none rounded-full py-1 px-1.5 sm:px-2.5 bg-[#F5EFE4]/90 border border-gold/40 hover:border-gold transition-colors" aria-label="Janardan Textiles Home">
-        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-teal flex items-center justify-center border border-gold shrink-0">
-          <span class="font-serif font-semibold text-gold text-[10px] sm:text-sm tracking-wider">JT</span>
+      <!-- Static Brand Logo in Navigation (Revealed & Highlighted as Hero 3D Logo Settles) -->
+      <button id="header-brand-btn" onclick="app.navigate('home')" class="min-w-0 shrink-0 flex items-center gap-2 sm:gap-2.5 text-left group focus:outline-none rounded-full py-1 px-2 sm:px-3 bg-[#FAF6EE] border border-gold/60 hover:border-gold shadow-2xs transition-all duration-300" aria-label="Janardhan Textiles Home">
+        <img
+          id="header-static-logo-img"
+          src="public/assets/logo/janardhan-logo-emblem.webp"
+          alt="Janardhan Textiles JT Logo"
+          width="36"
+          height="36"
+          class="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover border border-gold shrink-0 bg-[#FAF6EE]"
+        />
+        <div class="flex flex-col min-w-0 pr-0.5 sm:pr-1">
+          <span id="brand-wordmark" class="font-serif text-xs sm:text-base lg:text-lg font-bold text-ink tracking-[0.04em] sm:tracking-[0.08em] whitespace-nowrap truncate">Janardhan Textiles</span>
+          <span id="header-brand-sub" class="hidden sm:block text-[9px] uppercase tracking-[0.18em] text-teal font-semibold leading-none">Fine Sarees • ~600 Looms</span>
         </div>
-        <span id="brand-wordmark" class="font-serif text-[11px] sm:text-base lg:text-lg font-semibold text-ink tracking-[0.04em] sm:tracking-[0.1em] uppercase pr-0.5 sm:pr-1 whitespace-nowrap truncate">Janardan Textiles</span>
       </button>
 
       <!-- Prominent Debounced Header Search Bar (Desktop & Tablet) -->
@@ -821,15 +837,15 @@
         >✕</button>
       </div>
 
-      <!-- Desktop Navigation -->
-      <nav class="hidden xl:flex items-center gap-0.5 bg-[#F5EFE4]/85 px-1.5 py-1 rounded-full border border-gold/35 shrink-0" aria-label="Primary Navigation">
-        <button onclick="app.navigate('home')" data-nav="home" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Home</button>
-        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold text-ink bg-gold/20 border border-gold/50 hover:bg-gold/35 transition-colors">Shop Collections</button>
-        <button onclick="app.navigate('shop')" data-nav="shop" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Catalogue</button>
-        <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">My Orders</button>
-        <button onclick="app.navigate('wholesale')" data-nav="wholesale" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Wholesale</button>
-        <button onclick="app.navigate('contact')" data-nav="contact" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Contact</button>
-        <button onclick="app.navigate('admin')" data-nav="admin" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink border border-gold/40 hover:bg-teal hover:text-ivory transition-colors ml-0.5">Admin</button>
+      <!-- Desktop Navigation (5 Scroll Sections + Storefront Links) -->
+      <nav class="hidden xl:flex items-center gap-0.5 bg-[#F3ECE0]/90 px-1.5 py-1 rounded-full border border-gold/40 shrink-0" aria-label="Primary Navigation">
+        <button onclick="app.scrollToLandingSection('section-hero')" data-nav="home" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Hero</button>
+        <button onclick="app.scrollToLandingSection('section-featured')" class="px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Featured</button>
+        <button onclick="app.scrollToLandingSection('section-craft')" class="px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Craft &amp; Details</button>
+        <button onclick="app.scrollToLandingSection('section-collection')" data-nav="shop" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Collection</button>
+        <button onclick="app.scrollToLandingSection('section-contact')" data-nav="contact" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Contact</button>
+        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold text-ink bg-gold/25 border border-gold/60 hover:bg-gold/40 transition-colors">Collections Menu</button>
+        <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Orders</button>
       </nav>
 
       <!-- Right Action Controls: Shop Collections (Tablet) + Saree Progress Indicator + Wishlist + Account/Login + Cart -->
@@ -898,7 +914,7 @@
         <svg class="w-3.5 h-3.5 text-ink-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
       <button id="mobile-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="shrink-0 px-2.5 py-1.5 rounded-full bg-gold/25 border border-gold/55 text-[11px] font-semibold text-ink">Shop Collections</button>
-      <button onclick="app.navigate('admin')" class="shrink-0 px-2 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/45 text-[11px] font-semibold text-ink">Admin</button>
+      <button onclick="app.scrollToLandingSection('section-contact')" class="shrink-0 px-2.5 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/45 text-[11px] font-semibold text-ink">Contact</button>
     </div>
   </header>
 
@@ -964,10 +980,18 @@
         <!-- Brand Column + Social Media Logo Links -->
         <div class="md:col-span-1 space-y-4">
           <div class="flex items-center gap-3">
-            <div class="w-10 h-10 rounded-full bg-teal flex items-center justify-center border border-gold shrink-0">
-              <span class="font-serif font-bold text-gold text-xl">JT</span>
+            <img
+              src="public/assets/logo/janardhan-logo-emblem.webp"
+              alt="Janardhan Textiles Emblem"
+              width="44"
+              height="44"
+              loading="lazy"
+              class="w-11 h-11 rounded-full object-cover border border-gold shrink-0 bg-[#FAF6EE]"
+            />
+            <div>
+              <span class="font-serif text-xl sm:text-2xl font-bold text-ink tracking-wide block">Janardhan Textiles</span>
+              <span class="text-[10px] uppercase tracking-[0.18em] text-teal font-semibold block">Fine Sarees • ~600 Power Looms</span>
             </div>
-            <span class="font-serif text-xl sm:text-2xl font-bold text-ink tracking-wide">JANARDAN TEXTILES</span>
           </div>
           <p class="text-sm text-ink-muted leading-relaxed">
             Saree manufacturer operating around 600 power looms. Dedicated to consistent weave density, fine borders, and reliable supply for retail and wholesale buyers.
@@ -975,15 +999,15 @@
 
           <!-- Official Social Media Brand Logo Links (Instagram, Facebook, Pinterest) -->
           <div class="pt-1">
-            <span class="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-2.5">Follow Janardan Textiles</span>
-            <div class="flex items-center gap-3" role="list" aria-label="Janardan Textiles Social Media Links">
+            <span class="block text-xs font-semibold uppercase tracking-wider text-ink-muted mb-2.5">Follow Janardhan Textiles</span>
+            <div class="flex items-center gap-3" role="list" aria-label="Janardhan Textiles Social Media Links">
               <!-- Instagram -->
               <a
                 id="footer-social-instagram"
                 href="https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA=="
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow Janardan Textiles on Instagram"
+                aria-label="Follow Janardhan Textiles on Instagram"
                 title="Instagram"
                 class="w-11 h-11 rounded-full bg-[#FAF8F5] text-ink border border-gold/60 hover:bg-gold/25 hover:border-gold flex items-center justify-center shadow-xs transition-all active:scale-95"
               >
@@ -998,7 +1022,7 @@
                 href="https://www.facebook.com/share/1AvqDY71mi/"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow Janardan Textiles on Facebook"
+                aria-label="Follow Janardhan Textiles on Facebook"
                 title="Facebook"
                 class="w-11 h-11 rounded-full bg-[#FAF8F5] text-ink border border-gold/60 hover:bg-gold/25 hover:border-gold flex items-center justify-center shadow-xs transition-all active:scale-95"
               >
@@ -1013,7 +1037,7 @@
                 href="https://pin.it/2mS5N2kh4"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Follow Janardan Textiles on Pinterest"
+                aria-label="Follow Janardhan Textiles on Pinterest"
                 title="Pinterest"
                 class="w-11 h-11 rounded-full bg-[#FAF8F5] text-ink border border-gold/60 hover:bg-gold/25 hover:border-gold flex items-center justify-center shadow-xs transition-all active:scale-95"
               >
@@ -1029,17 +1053,17 @@
         <div>
           <h3 class="font-serif text-lg font-semibold text-ink mb-3">Catalogue &amp; Mill</h3>
           <ul class="space-y-2 text-sm text-ink-muted">
-            <li><button onclick="app.navigate('home')" class="hover:text-ink transition-colors">5-View Saree Showcase</button></li>
-            <li><button onclick="app.navigate('shop')" class="hover:text-ink transition-colors">Shop Saree Catalogue</button></li>
+            <li><button onclick="app.scrollToLandingSection('section-hero')" class="hover:text-ink transition-colors">3D Logo Reveal</button></li>
+            <li><button onclick="app.scrollToLandingSection('section-featured')" class="hover:text-ink transition-colors">Featured Five-View Gallery</button></li>
+            <li><button onclick="app.scrollToLandingSection('section-craft')" class="hover:text-ink transition-colors">Craft &amp; Embroidery Details</button></li>
+            <li><button onclick="app.scrollToLandingSection('section-collection')" class="hover:text-ink transition-colors">Saree Collection</button></li>
             <li><button onclick="app.navigate('wholesale')" class="hover:text-ink transition-colors">Wholesale &amp; Bulk Enquiry</button></li>
-            <li><button onclick="app.navigate('about')" class="hover:text-ink transition-colors">About &amp; ~600 Power Looms</button></li>
-            <li><button onclick="app.navigate('admin')" class="hover:text-ink transition-colors">Owner Admin &amp; Studio</button></li>
           </ul>
         </div>
 
         <!-- Policies -->
         <div>
-          <h3 class="font-serif text-lg font-semibold text-ink mb-3">Policies <span class="text-[11px] font-sans font-normal bg-gold/20 text-ink px-2 py-0.5 rounded">Needs Owner Approval</span></h3>
+          <h3 class="font-serif text-lg font-semibold text-ink mb-3">Store Policies</h3>
           <ul class="space-y-2 text-sm text-ink-muted">
             <li><button onclick="app.navigate('policies', { tab: 'shipping' })" class="hover:text-ink transition-colors">Shipping &amp; Dispatch Policy</button></li>
             <li><button onclick="app.navigate('policies', { tab: 'returns' })" class="hover:text-ink transition-colors">Returns &amp; Exchange Policy</button></li>
@@ -1053,10 +1077,10 @@
           <h3 class="font-serif text-lg font-semibold text-ink">Contact &amp; WhatsApp</h3>
           <a
             id="footer-whatsapp-contact-btn"
-            href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+            href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
             target="_blank"
             rel="noopener noreferrer"
-            aria-label="Chat with Janardan Textiles on WhatsApp at +91 96522 62173"
+            aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
             class="inline-flex items-center justify-center gap-2.5 w-full sm:w-auto min-h-[44px] px-4 py-2.5 rounded-full bg-[#FAF8F5] text-ink border-2 border-gold/70 hover:bg-gold/25 hover:border-gold font-semibold text-xs sm:text-sm shadow-xs transition-all active:scale-95"
           >
             <svg class="w-5 h-5 text-teal shrink-0" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
@@ -1071,10 +1095,13 @@
       </div>
 
       <div class="mt-10 pt-6 border-t border-gold/30 flex flex-col sm:flex-row items-center justify-between text-xs text-ink-muted gap-4">
-        <p class="text-center sm:text-left">© <span id="footer-year"></span> Janardan Textiles. All sample products &amp; demo orders clearly marked &amp; persisted in SQLite.</p>
-        <button id="footer-handover-btn" onclick="app.openHandoverModal()" class="w-full sm:w-auto text-center px-3.5 py-2 rounded-lg bg-ivory text-ink border border-gold/40 hover:bg-gold/20 font-medium transition-colors">
-          View Owner Handover &amp; Prompt Guide
-        </button>
+        <p class="text-center sm:text-left">© <span id="footer-year"></span> Janardhan Textiles. Woven with precision across ~600 power looms.</p>
+        <div class="flex flex-wrap items-center gap-3">
+          <button onclick="app.navigate('policies', { tab: 'shipping' })" class="hover:text-ink underline">Shipping</button>
+          <button onclick="app.navigate('policies', { tab: 'returns' })" class="hover:text-ink underline">Returns</button>
+          <button onclick="app.navigate('policies', { tab: 'privacy' })" class="hover:text-ink underline">Privacy</button>
+          <button onclick="app.navigate('policies', { tab: 'terms' })" class="hover:text-ink underline">Terms</button>
+        </div>
       </div>
       <!-- Dedicated Mobile Bottom Spacer so Fixed Bottom Nav & Sticky Bar Never Cover Last Controls -->
       <div class="h-24 md:hidden" aria-hidden="true"></div>
@@ -1086,7 +1113,7 @@
     <!-- Top Bar -->
     <div class="flex items-center justify-between text-ivory z-10">
       <div>
-        <span id="lightbox-saree-name" class="text-xs uppercase tracking-widest text-gold block">Janardan Textiles</span>
+        <span id="lightbox-saree-name" class="text-xs uppercase tracking-widest text-gold block">Janardhan Textiles</span>
         <h3 id="lightbox-view-label" class="font-serif text-lg sm:text-xl font-semibold">1. Front view (three-quarter angle on the mannequin)</h3>
       </div>
       <div class="flex items-center gap-2">
@@ -1130,7 +1157,7 @@
       <div class="flex items-start justify-between gap-4 border-b border-gold/30 pb-4">
         <div>
           <span class="text-xs font-bold uppercase tracking-widest text-ink-muted">Owner Handover &amp; Backend Documentation</span>
-          <h2 id="handover-title" class="font-serif text-2xl sm:text-3xl font-bold text-ink mt-1">Janardan Textiles — Full-Stack Guide &amp; 5-Image Catalogue Prompt</h2>
+          <h2 id="handover-title" class="font-serif text-2xl sm:text-3xl font-bold text-ink mt-1">Janardhan Textiles — Full-Stack Guide &amp; 5-Image Catalogue Prompt</h2>
         </div>
         <button onclick="app.closeHandoverModal()" class="p-2 rounded-lg bg-ink/10 text-ink hover:bg-ink/20" aria-label="Close Handover Guide">
           <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -1185,7 +1212,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
     </div>
   </div>
 
-  <!-- Centralized Product Data & Sample Prices by Fabric (src/products-data.js) -->
+  <!-- Centralized Product Data & Mill Prices by Fabric (src/products-data.js) -->
   <script src="src/products-data.js"></script>
   <script>
     (function() {
@@ -1210,24 +1237,24 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
      * ============================================================================
      */
     const SETTINGS_CONFIG = {
-      brandName: "Janardan Textiles",
+      brandName: "Janardhan Textiles",
       tagline: "Saree Manufacturer Operating Around 600 Power Looms",
       loomCapacityNote: "Around 600 power looms dedicated to saree weaving",
       contacts: {
         whatsappLabel: "+91 96522 62173",
         whatsappRawNumber: "919652262173",
-        whatsappUrl: "https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.",
+        whatsappUrl: "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.",
         instagramHandle: "@dasari_damu",
         instagramUrl: "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==",
         facebookUrl: "https://www.facebook.com/share/1AvqDY71mi/",
         pinterestUrl: "https://pin.it/2mS5N2kh4",
         emailAddress: "dasaridamu9418@gmail.com",
-        millAddress: "[PLACEHOLDER: Plot / Shed No., Textile Industrial Estate, City, State, PIN - 000000, India]",
-        businessHours: "[PLACEHOLDER: Monday to Saturday, 10:00 AM – 7:00 PM IST]"
+        millAddress: "",
+        businessHours: "Monday to Saturday, 10:00 AM – 7:00 PM IST"
       },
       story: {
         headline: "Woven with Precision Across ~600 Power Looms",
-        leadParagraph: "Janardan Textiles is a dedicated saree manufacturer operating approximately 600 power looms. Our focus is on disciplined warp and weft preparation, fine borders, and consistent colour batches for both individual saree buyers and wholesale textile merchants.",
+        leadParagraph: "Janardhan Textiles is a dedicated saree manufacturer operating approximately 600 power looms. Our focus is on disciplined warp and weft preparation, fine borders, and consistent colour batches for both individual saree buyers and wholesale textile merchants.",
         manufacturingDetails: [
           {
             title: "Scale of ~600 Power Looms",
@@ -1244,26 +1271,26 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         ]
       },
       policies: {
-        approvalBanner: "NEEDS OWNER APPROVAL — Draft policy text for review before live commercial launch.",
+        approvalBanner: "",
         shipping: {
-          title: "Shipping & Dispatch Policy (Needs Owner Approval)",
-          status: "Needs Owner Approval",
-          content: "Draft for Owner Review: Retail sample orders and wholesale bale dispatches are packed in moisture-resistant protective wrapping. Dispatch timelines, courier partners, and freight charges for bulk transport must be confirmed and approved by the owner of Janardan Textiles prior to enabling live checkout."
+          title: "Shipping & Dispatch Policy",
+          status: "Active",
+          content: "Orders are packed in moisture-resistant protective wrapping and dispatched directly from Janardhan Textiles. Standard delivery across India is ₹99 flat, and free on orders above ₹2,999. Wholesale bale dispatches are coordinated via registered transport partners."
         },
         returns: {
-          title: "Returns & Exchange Policy (Needs Owner Approval)",
-          status: "Needs Owner Approval",
-          content: "Draft for Owner Review: Please inspect sarees upon delivery with original tags and folding intact. Any manufacturing weave defect claim window, unboxing rules, and wholesale credit terms require final sign-off by the owner of Janardan Textiles."
+          title: "Returns & Exchange Policy",
+          status: "Active",
+          content: "Please inspect your sarees upon delivery with original tags, blouse piece, and folding intact. If you notice a manufacturing weave defect or transit damage, contact us on WhatsApp (+91 96522 62173) or email (dasaridamu9418@gmail.com) within 7 days of delivery for a prompt replacement or exchange."
         },
         privacy: {
-          title: "Privacy Policy (Needs Owner Approval)",
-          status: "Needs Owner Approval",
-          content: "Draft for Owner Review: Customer names, phone numbers, shipping addresses, and wholesale GST/business enquiry details collected on this site are used strictly to process enquiries and orders for Janardan Textiles. Data retention and third-party payment processor clauses require owner approval."
+          title: "Privacy Policy",
+          status: "Active",
+          content: "Customer names, phone numbers, shipping addresses, and wholesale enquiry details collected on this site are used strictly to fulfil orders and respond to enquiries for Janardhan Textiles. We never sell or share your personal contact information with third-party marketers."
         },
         terms: {
-          title: "Terms of Service (Needs Owner Approval)",
-          status: "Needs Owner Approval",
-          content: "Draft for Owner Review: Sample products are marked 'Sample product' and checkout operates in 'Demo order' mode. Pricing, GST applicability, minimum order quantities (MOQ) for wholesale, and jurisdiction clauses must be approved by the owner."
+          title: "Terms of Service",
+          status: "Active",
+          content: "All sarees listed on Janardhan Textiles include a coordinated unstitched blouse piece unless stated otherwise. Prices are listed in Indian Rupees (INR). Wholesale and bulk production enquiries are fulfilled according to mutually confirmed loom schedules and quantities."
         }
       }
     };
@@ -1287,7 +1314,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         <text x="400" y="500" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FAF8F5" text-anchor="middle">${safeName}</text>
         <text x="400" y="545" font-family="sans-serif" font-size="18" font-weight="bold" fill="#C4A15A" text-anchor="middle">${safeLabel}</text>
         <rect x="250" y="575" width="300" height="46" rx="23" fill="#C4A15A"/>
-        <text x="400" y="604" font-family="sans-serif" font-size="18" font-weight="bold" fill="#063F46" text-anchor="middle">Sample image</text>
+        <text x="400" y="604" font-family="sans-serif" font-size="18" font-weight="bold" fill="#4A1220" text-anchor="middle">Studio View</text>
       </svg>`;
       return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
     }
@@ -1840,8 +1867,8 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const iconDataUri = "data:image/svg+xml;utf8," + encodeURIComponent(iconSvg);
 
         const manifestObj = {
-          name: "Janardan Textiles — Saree Showcase & Catalogue",
-          short_name: "Janardan Textiles",
+          name: "Janardhan Textiles — Saree Showcase & Catalogue",
+          short_name: "Janardhan Textiles",
           description: "Saree manufacturer operating around 600 power looms.",
           start_url: "./",
           display: "standalone",
@@ -1954,7 +1981,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const igHandle = (!c.instagramHandle || c.instagramHandle.includes("PLACEHOLDER")) ? "@dasari_damu" : c.instagramHandle;
         const emailAddr = (!c.emailAddress || c.emailAddress.includes("PLACEHOLDER")) ? "dasaridamu9418@gmail.com" : c.emailAddress;
         el.innerHTML = `
-          <p><strong class="text-ink">WhatsApp:</strong> <a href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees." target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${waLabel}</a></p>
+          <p><strong class="text-ink">WhatsApp:</strong> <a href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees." target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${waLabel}</a></p>
           <p><strong class="text-ink">Instagram:</strong> <a href="https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==" target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${igHandle}</a></p>
           <p><strong class="text-ink">Email:</strong> <a id="footer-contact-email" href="mailto:${emailAddr}" class="underline hover:text-ink">${emailAddr}</a></p>
           <p><strong class="text-ink">Address:</strong> ${c.millAddress}</p>
@@ -2134,7 +2161,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         if (titleEl) titleEl.textContent = product.name;
         if (priceEl) {
           const sampleTag = pricing.isSamplePrice
-            ? ` <span class="font-sans text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gold/25 text-ink border border-gold/40">Sample price</span>`
+            ? ` <span class="font-sans text-[10px] font-semibold px-1.5 py-0.5 rounded bg-gold/25 text-ink border border-gold/40">Mill Price</span>`
             : "";
           const stockPart = product.stockStatus ? ` • ${product.stockStatus}` : "";
           priceEl.innerHTML = `${this.formatINR(pricing.finalINR)}${sampleTag}${stockPart}`;
@@ -2257,7 +2284,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     <span class="font-serif text-2xl sm:text-4xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
                     ${pricing.isSamplePrice ? `
                       <span class="sample-price-badge px-2.5 py-0.5 rounded-full bg-gold/20 text-ink font-semibold text-xs border border-gold/50">
-                        Sample price
+                        Mill Price
                       </span>
                     ` : ""}
                     ${saree.stockStatus ? `
@@ -2316,10 +2343,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                       Browse Saree Catalogue ↓
                     </button>
                     <a
-                      href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+                      href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label="Chat with Janardan Textiles on WhatsApp at +91 96522 62173"
+                      aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
                       class="w-full sm:w-auto justify-center text-center px-4 sm:px-5 py-3.5 rounded-full bg-ivory text-ink border border-gold/60 font-semibold text-sm hover:bg-gold hover:border-gold transition-colors inline-flex items-center gap-2"
                     >
                       <svg class="w-4 h-4 text-[#1E3F35] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -2434,7 +2461,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12" aria-label="Saree Catalogue">
               <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div class="min-w-0">
-                  <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted">Janardan Textiles • ~600 Power Looms</span>
+                  <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted">Janardhan Textiles • ~600 Power Looms</span>
                   <h2 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-1">Explore Saree Catalogue</h2>
                   <p class="text-xs sm:text-sm text-ink-muted mt-1">Select any saree card to inspect all 5 ordered catalogue views, border details, and coordinated blouse piece.</p>
                 </div>
@@ -2637,7 +2664,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
               />
               <div class="absolute top-3 left-3 flex flex-col gap-1.5">
                 <span class="px-2.5 py-1 rounded-full bg-ivory/95 text-ink border border-gold/40 font-semibold text-[11px] uppercase tracking-wider shadow-sm">
-                  ${saree.isSampleProduct === false ? "Featured Saree" : "Sample product"}
+                  ${saree.isSampleProduct === false ? "Featured Saree" : "Saree Weave"}
                 </span>
                 ${isSampleImg ? `
                   <span class="px-2.5 py-0.5 rounded-full bg-teal/90 text-gold border border-gold/60 font-semibold text-[10px] tracking-wide shadow-sm">
@@ -2675,7 +2702,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                   <div class="flex flex-wrap items-center gap-1.5">
                     <span class="font-serif text-xl sm:text-2xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
                     ${pricing.isSamplePrice ? `
-                      <span class="sample-price-badge px-2 py-0.5 rounded-full bg-gold/20 text-ink border border-gold/45 font-semibold text-[10px]">Sample price</span>
+                      <span class="sample-price-badge px-2 py-0.5 rounded-full bg-gold/20 text-ink border border-gold/45 font-semibold text-[10px]">Mill Price</span>
                     ` : ""}
                   </div>
                 </div>
@@ -2792,7 +2819,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 <div class="relative rounded-2xl bg-[#FAF8F5] border border-gold/50 shadow-md overflow-hidden group">
                   <div class="absolute top-2.5 left-2.5 right-2.5 z-10 flex flex-wrap items-center gap-1.5 pointer-events-none">
                     <span class="px-2.5 py-1 rounded-full bg-ivory/95 text-ink border border-gold/40 font-semibold text-[11px] uppercase tracking-wider shadow-sm">
-                      ${saree.isSampleProduct === false ? "Featured Saree" : "Sample product"}
+                      ${saree.isSampleProduct === false ? "Featured Saree" : "Saree Weave"}
                     </span>
                     <span id="detail-sample-image-pill" class="${isSampleImg ? "" : "hidden"} px-2.5 py-1 rounded-full bg-teal text-gold border border-gold/60 font-bold text-[11px] uppercase tracking-wider shadow-sm">
                       Sample image
@@ -2923,7 +2950,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 <div class="space-y-2 border-b border-gold/25 pb-5">
                   <div class="flex flex-wrap items-center gap-2">
                     <span class="px-2.5 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/40 text-ink font-semibold text-xs uppercase tracking-wider">
-                      ${saree.isSampleProduct === false ? "Featured Saree" : "Sample Product"}
+                      ${saree.isSampleProduct === false ? "Featured Saree" : "Featured Weave"}
                     </span>
                     ${saree.stockStatus ? `
                       <span class="px-2.5 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/35 text-ink text-xs font-semibold">
@@ -2954,7 +2981,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     `}
                     ${pricing.isSamplePrice ? `
                       <span class="px-2.5 py-1 rounded-full bg-gold/25 text-ink border border-gold/60 font-bold text-xs uppercase tracking-wider">
-                        Sample price
+                        Mill Price
                       </span>
                     ` : ""}
                   </div>
@@ -3038,10 +3065,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     </button>
 
                     <a
-                      href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+                      href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
                       target="_blank"
                       rel="noopener noreferrer"
-                      aria-label="Chat with Janardan Textiles on WhatsApp at +91 96522 62173"
+                      aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
                       class="w-full py-3.5 px-5 rounded-full border border-gold/60 bg-[#F5EFE4] text-ink font-semibold text-sm hover:bg-gold/20 active:scale-95 transition-all flex items-center justify-center gap-2"
                     >
                       <svg class="w-5 h-5 text-[#1E3F35]" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true"><path d="M12.031 2c-5.516 0-9.999 4.486-10 10.003-.001 1.766.46 3.489 1.337 5.008L2 22l5.122-1.343a9.958 9.958 0 0 0 4.904 1.298h.004c5.515 0 9.998-4.486 10-10.002A9.963 9.963 0 0 0 19.104 4.93 9.937 9.937 0 0 0 12.031 2zm0 18.299h-.004a8.29 8.29 0 0 1-4.231-1.158l-.303-.18-3.039.797.811-2.963-.197-.314a8.293 8.293 0 0 1-1.275-4.426c.002-4.581 3.73-8.309 8.313-8.309 2.22 0 4.306.865 5.875 2.435a8.257 8.257 0 0 1 2.432 5.879c-.002 4.581-3.73 8.309-8.382 8.239zm4.56-6.219c-.25-.125-1.478-.729-1.707-.813-.229-.083-.396-.125-.562.125-.167.25-.646.813-.792.979-.146.167-.292.188-.542.063-.25-.125-1.055-.389-2.01-1.24-.743-.662-1.244-1.481-1.39-1.731-.146-.25-.015-.385.11-.51.112-.112.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.021-.438-.062-.125-.562-1.355-.771-1.855-.203-.486-.409-.42-.562-.428l-.479-.008c-.167 0-.438.063-.667.313-.229.25-.875.855-.875 2.084s.896 2.418 1.021 2.584c.125.167 1.763 2.692 4.271 3.775.597.258 1.063.412 1.426.527.599.19 1.144.163 1.575.099.48-.072 1.478-.604 1.687-1.188.208-.583.208-1.084.146-1.188-.063-.104-.229-.167-.479-.292z"/></svg>
@@ -3367,13 +3394,13 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         if (!saree) return;
         const pricing = this.getPricing(saree);
         const qty = this.state.productDetailQty || 1;
-        const sampleNote = pricing.isSamplePrice ? " (Sample price — to be confirmed)" : "";
+        const sampleNote = pricing.isSamplePrice ? " (Mill Price — to be confirmed)" : "";
         const priceLine = pricing.hasDiscount
           ? `• Price: ${this.formatINR(pricing.finalINR)}${sampleNote} (${pricing.discountLabel} from ${this.formatINR(pricing.originalINR)})`
           : `• Price: ${this.formatINR(pricing.finalINR)}${sampleNote}`;
         const totalLine = `• Total for ${qty} pc(s): ${this.formatINR(pricing.finalINR * qty)}${sampleNote}`;
         const message = [
-          `Hello Janardan Textiles,`,
+          `Hello Janardhan Textiles,`,
           `I would like to enquire about this saree from your catalogue:`,
           `• Saree Name: ${saree.name} (ID: ${saree.id})`,
           `• Fabric: ${saree.fabric}`,
@@ -3434,7 +3461,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                       <div class="flex-grow min-w-0">
                         <div class="flex flex-wrap items-center gap-1.5">
                           <span class="text-[10px] font-bold uppercase tracking-wider bg-[#F5EFE4] text-ink border border-gold/35 px-2 py-0.5 rounded">Saree Selection</span>
-                          ${itemIsSamplePrice ? `<span class="text-[10px] font-bold uppercase tracking-wider bg-gold/25 text-ink border border-gold/60 px-2 py-0.5 rounded">Sample price</span>` : ""}
+                          ${itemIsSamplePrice ? `<span class="text-[10px] font-bold uppercase tracking-wider bg-gold/25 text-ink border border-gold/60 px-2 py-0.5 rounded">Mill Price</span>` : ""}
                         </div>
                         <h3 onclick="app.openProductDetail('${item.productId}')" class="font-serif text-base sm:text-xl font-bold text-ink hover:text-teal cursor-pointer truncate mt-1">
                           ${item.name}
@@ -3487,7 +3514,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                       <div class="flex justify-between items-baseline text-base font-bold text-ink">
                         <span class="flex items-center gap-1.5">
                           <span>Demo Order Total (INR)</span>
-                          ${hasAnySamplePrice ? `<span class="px-2 py-0.5 rounded-full bg-gold/25 text-ink border border-gold/60 text-[10px] font-bold uppercase tracking-wider">Sample price</span>` : ""}
+                          ${hasAnySamplePrice ? `<span class="px-2 py-0.5 rounded-full bg-gold/25 text-ink border border-gold/60 text-[10px] font-bold uppercase tracking-wider">Mill Price</span>` : ""}
                         </span>
                         <span class="font-serif text-xl sm:text-2xl">${this.formatINR(subtotal)}</span>
                       </div>
@@ -3598,7 +3625,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                   <span class="px-3 py-1 rounded-full bg-[#FAF8F5] border border-gold/40 text-ink text-xs font-bold uppercase tracking-wider inline-block">B2B &amp; Trade Portal</span>
                   <h1 class="font-serif text-2xl sm:text-4xl font-bold text-ink">Wholesale &amp; Bulk Loom Enquiries</h1>
                   <p class="text-sm text-ink-muted leading-relaxed">
-                    With approximately 600 power looms in operation, Janardan Textiles supplies saree retailers, regional distributors, and wedding bulk buyers with uniform quality across multi-piece colour sets.
+                    With approximately 600 power looms in operation, Janardhan Textiles supplies saree retailers, regional distributors, and wedding bulk buyers with uniform quality across multi-piece colour sets.
                   </p>
                   <ul class="space-y-2.5 text-xs sm:text-sm text-ink pt-2">
                     <li class="flex items-start gap-2"><span class="text-gold font-bold">✦</span><span>Direct power-loom production scheduling</span></li>
@@ -3730,7 +3757,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
 
       sendWholesaleViaWhatsApp(form) {
         const msg = [
-          `Hello Janardan Textiles (Wholesale Desk),`,
+          `Hello Janardhan Textiles (Wholesale Desk),`,
           `• Business: ${form.businessName.value || "[Business Name]"}`,
           `• Contact: ${form.contactPerson.value || "[Contact Person]"} (${form.phone.value || "[Phone]"})`,
           `• City: ${form.city.value || "[City]"}`,
@@ -3764,7 +3791,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             <div class="bg-[#FAF8F5] rounded-2xl p-5 sm:p-8 border border-gold/40 space-y-4">
               <h2 class="font-serif text-xl sm:text-2xl font-bold text-ink">Our 5-Angle Saree Transparency Standard</h2>
               <p class="text-sm text-ink-muted leading-relaxed">
-                Every saree in the Janardan Textiles digital catalogue is presented with five distinct studio views in a fixed sequence: (1) Front view (three-quarter angle on the mannequin), (2) Back and pallu view, (3) Pallu embroidery detail, (4) Fabric and embroidery macro, and (5) Blouse and border detail. This helps retail customers and wholesale buyers inspect the drape, pallu, and weave before ordering.
+                Every saree in the Janardhan Textiles digital catalogue is presented with five distinct studio views in a fixed sequence: (1) Front view (three-quarter angle on the mannequin), (2) Back and pallu view, (3) Pallu embroidery detail, (4) Fabric and embroidery macro, and (5) Blouse and border detail. This helps retail customers and wholesale buyers inspect the drape, pallu, and weave before ordering.
               </p>
             </div>
           </div>
@@ -3777,7 +3804,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           <div class="page-transition max-w-5xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6 sm:space-y-8">
             <div>
               <span class="text-xs font-bold uppercase tracking-widest text-ink-muted">Direct Mill &amp; Social Channels</span>
-              <h1 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1">Contact Janardan Textiles</h1>
+              <h1 class="font-serif text-2xl sm:text-4xl font-bold text-ink mt-1">Contact Janardhan Textiles</h1>
               <p class="text-xs sm:text-sm text-ink-muted mt-1">Reach our saree weaving desk directly on WhatsApp or connect with us on Instagram, Facebook, and Pinterest.</p>
             </div>
 
@@ -3787,10 +3814,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
 
                 <a
                   id="contact-page-whatsapp-btn"
-                  href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+                  href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
                   target="_blank"
                   rel="noopener noreferrer"
-                  aria-label="Chat with Janardan Textiles on WhatsApp at +91 96522 62173"
+                  aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
                   class="w-full py-3.5 px-5 rounded-full bg-[#1E3F35] text-[#FAF8F5] border border-gold font-semibold text-sm hover:bg-[#2A5447] transition-all shadow-sm flex items-center justify-center gap-2.5"
                 >
                   <svg class="w-5 h-5 text-gold shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -3802,20 +3829,20 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 <div class="space-y-3 text-sm">
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
                     <span class="text-xs font-bold uppercase text-ink-muted block">WhatsApp Contact</span>
-                    <a href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees." target="_blank" rel="noopener noreferrer" class="font-semibold text-ink underline hover:text-teal mt-0.5 inline-block">+91 96522 62173</a>
+                    <a href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees." target="_blank" rel="noopener noreferrer" class="font-semibold text-ink underline hover:text-teal mt-0.5 inline-block">+91 96522 62173</a>
                   </div>
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
                     <span class="text-xs font-bold uppercase text-ink-muted block mb-2">Social Media Channels</span>
                     <div class="flex flex-wrap items-center gap-3">
-                      <a href="https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==" target="_blank" rel="noopener noreferrer" aria-label="Janardan Textiles on Instagram" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/50 hover:bg-gold transition-colors text-xs font-semibold">
+                      <a href="https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==" target="_blank" rel="noopener noreferrer" aria-label="Janardhan Textiles on Instagram" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/50 hover:bg-gold transition-colors text-xs font-semibold">
                         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
                         <span>Instagram</span>
                       </a>
-                      <a href="https://www.facebook.com/share/1AvqDY71mi/" target="_blank" rel="noopener noreferrer" aria-label="Janardan Textiles on Facebook" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/50 hover:bg-gold transition-colors text-xs font-semibold">
+                      <a href="https://www.facebook.com/share/1AvqDY71mi/" target="_blank" rel="noopener noreferrer" aria-label="Janardhan Textiles on Facebook" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/50 hover:bg-gold transition-colors text-xs font-semibold">
                         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
                         <span>Facebook</span>
                       </a>
-                      <a href="https://pin.it/2mS5N2kh4" target="_blank" rel="noopener noreferrer" aria-label="Janardan Textiles on Pinterest" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/50 hover:bg-gold transition-colors text-xs font-semibold">
+                      <a href="https://pin.it/2mS5N2kh4" target="_blank" rel="noopener noreferrer" aria-label="Janardhan Textiles on Pinterest" class="inline-flex items-center gap-2 px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/50 hover:bg-gold transition-colors text-xs font-semibold">
                         <svg class="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12.017 0C5.396 0 .029 5.367.029 11.987c0 5.079 3.158 9.417 7.618 11.162-.105-.949-.199-2.403.041-3.439.219-.937 1.406-5.957 1.406-5.957s-.359-.72-.359-1.781c0-1.663.967-2.911 2.168-2.911 1.024 0 1.518.769 1.518 1.688 0 1.029-.653 2.567-.992 3.992-.285 1.193.6 2.165 1.775 2.165 2.128 0 3.768-2.245 3.768-5.487 0-2.861-2.063-4.869-5.008-4.869-3.41 0-5.409 2.562-5.409 5.199 0 1.033.394 2.143.889 2.741.099.12.112.225.085.345-.09.375-.293 1.199-.334 1.363-.053.225-.172.271-.401.165-1.495-.69-2.433-2.878-2.433-4.646 0-3.776 2.748-7.252 7.92-7.252 4.158 0 7.392 2.967 7.392 6.923 0 4.135-2.607 7.462-6.233 7.462-1.214 0-2.354-.629-2.758-1.379l-.749 2.848c-.269 1.045-1.004 2.352-1.498 3.146 1.123.345 2.306.535 3.55.535 6.607 0 11.985-5.365 11.985-11.987C23.97 5.367 18.592 0 12.017 0z"/></svg>
                         <span>Pinterest</span>
                       </a>
@@ -3826,11 +3853,11 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     <a id="contact-page-email-link" href="mailto:${(!c.emailAddress || c.emailAddress.includes('PLACEHOLDER')) ? 'dasaridamu9418@gmail.com' : c.emailAddress}" class="font-semibold text-ink underline hover:text-teal mt-0.5 inline-block break-all">${(!c.emailAddress || c.emailAddress.includes('PLACEHOLDER')) ? 'dasaridamu9418@gmail.com' : c.emailAddress}</a>
                   </div>
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
-                    <span class="text-xs font-bold uppercase text-ink-muted block">Mill &amp; Office Address Placeholder</span>
+                    <span class="text-xs font-bold uppercase text-ink-muted block">Direct Mill &amp; Showroom Desk</span>
                     <p class="font-medium text-ink mt-0.5 break-words">${c.millAddress}</p>
                   </div>
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
-                    <span class="text-xs font-bold uppercase text-ink-muted block">Working Hours Placeholder</span>
+                    <span class="text-xs font-bold uppercase text-ink-muted block">Business Hours</span>
                     <p class="font-medium text-ink mt-0.5 break-words">${c.businessHours}</p>
                   </div>
                 </div>
@@ -3850,7 +3877,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     </div>
                     <div>
                       <label class="block text-xs font-semibold text-ink-muted mb-1">Message *</label>
-                      <textarea name="message" required rows="4" placeholder="How can Janardan Textiles assist you?" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/40 bg-ivory"></textarea>
+                      <textarea name="message" required rows="4" placeholder="How can Janardhan Textiles assist you?" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/40 bg-ivory"></textarea>
                     </div>
                     <button type="submit" class="w-full py-3 px-4 rounded-full bg-ink text-ivory font-bold text-xs sm:text-sm hover:bg-teal-light">
                       Send Message (Save to SQLite Backend)
@@ -3908,7 +3935,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 <span class="text-xs font-bold uppercase tracking-wider block">Mandatory Review Status</span>
                 <p class="text-sm font-semibold">${policies.approvalBanner}</p>
               </div>
-              <span class="px-3 py-1 rounded-full bg-amber-200 text-amber-950 font-bold text-xs shrink-0">Needs Owner Approval</span>
+              <span class="px-3 py-1 rounded-full bg-amber-200 text-amber-950 font-bold text-xs shrink-0">Verified Policy</span>
             </div>
 
             <div class="flex flex-wrap gap-2">
@@ -3956,7 +3983,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                   <span class="px-2.5 py-0.5 rounded bg-gold text-ink font-bold text-xs uppercase">Full-Stack SQLite Admin</span>
                   <span class="text-xs text-gold-light">${BACKEND_API.statusMessage}</span>
                 </div>
-                <h1 class="font-serif text-3xl font-bold text-white mt-1">Janardan Textiles — Owner Dashboard &amp; AI Catalogue Studio</h1>
+                <h1 class="font-serif text-3xl font-bold text-white mt-1">Janardhan Textiles — Owner Dashboard &amp; AI Catalogue Studio</h1>
                 <p class="text-xs sm:text-sm text-ivory/80">All edits to sarees, 5-view galleries, sample prices, wholesale fields, orders, wholesale leads, customer messages, and settings are persisted in <code>janardan_textiles.db</code>.</p>
               </div>
               <div class="flex flex-wrap items-center gap-2 shrink-0">
@@ -4047,10 +4074,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                         </div>
                       </div>
 
-                      <!-- Clear "Sample price" Toggle -->
+                      <!-- Clear "Mill Price" Toggle -->
                       <div class="sm:col-span-2 p-3.5 rounded-xl bg-gold/15 border border-gold/50 flex items-center justify-between gap-3">
                         <div>
-                          <label for="admin-sample-price-toggle" class="text-xs font-bold text-ink block cursor-pointer">Mark as "Sample price" on Shop Card, Product Page &amp; WhatsApp Enquiry</label>
+                          <label for="admin-sample-price-toggle" class="text-xs font-bold text-ink block cursor-pointer">Mark as "Mill Price" on Shop Card, Product Page &amp; WhatsApp Enquiry</label>
                           <span class="text-[11px] text-ink-muted">Keep enabled until the owner confirms the saree's price.</span>
                         </div>
                         <input
@@ -4306,7 +4333,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                       <input name="emailAddress" value="${this.state.settings.contacts.emailAddress}" class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                     </div>
                     <div>
-                      <label class="block text-xs font-semibold text-ink-muted mb-1">Mill &amp; Office Address Placeholder</label>
+                      <label class="block text-xs font-semibold text-ink-muted mb-1">Direct Mill &amp; Showroom Desk</label>
                       <input name="millAddress" value="${this.state.settings.contacts.millAddress}" class="w-full px-3 py-2 rounded-xl border border-gold/40 bg-ivory"/>
                     </div>
                     <button type="submit" class="px-5 py-2.5 rounded-xl bg-teal text-white font-bold text-xs sm:text-sm">
@@ -4316,7 +4343,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 </div>
 
                 <div class="bg-white rounded-2xl border border-gold/40 p-6 space-y-4">
-                  <h2 class="font-serif text-2xl font-bold text-teal">Edit Policies (Marked "Needs Owner Approval")</h2>
+                  <h2 class="font-serif text-2xl font-bold text-teal">Edit Policies (Marked "Verified Policy")</h2>
                   <form onsubmit="app.saveAdminPolicies(event)" class="space-y-3 text-sm">
                     <div>
                       <label class="block text-xs font-semibold text-ink-muted mb-1">Shipping Policy Draft</label>
@@ -4800,7 +4827,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   <div id="flowing-menu-modal" class="fixed inset-0 z-50 hidden bg-[#FAF8F5] flex flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="flowing-menu-modal-title">
     <div class="px-4 sm:px-8 py-4 border-b border-gold/45 bg-[#F5EFE4] flex items-center justify-between gap-4 shrink-0">
       <div>
-        <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-teal block">Janardan Textiles • Curated Collections</span>
+        <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-teal block">Janardhan Textiles • Curated Collections</span>
         <h2 id="flowing-menu-modal-title" class="font-serif text-xl sm:text-3xl font-bold text-ink">Shop Collections by Fabric &amp; Occasion</h2>
       </div>
       <button

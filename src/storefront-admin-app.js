@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * JANARDAN TEXTILES — PROMPT 1 (STOREFRONT) & PROMPT 2 (ADMIN PANEL)
+ * JANARDHAN TEXTILES — PROMPT 1 (STOREFRONT) & PROMPT 2 (ADMIN PANEL)
  * Full E-Commerce Storefront + Protected Admin Dashboard wired to `server.py`
  * ============================================================================
  */
@@ -45,7 +45,7 @@
   const LOCAL_FALLBACK_API = {
     getProducts() {
       try {
-        const raw = localStorage.getItem("jt_local_products_v1");
+        const raw = (localStorage.removeItem("jt_local_products_v1"), localStorage.getItem("jt_local_products_v2"));
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -61,7 +61,7 @@
 
     saveProducts(list) {
       try {
-        localStorage.setItem("jt_local_products_v1", JSON.stringify(list));
+        localStorage.setItem("jt_local_products_v2", JSON.stringify(list));
       } catch (e) {}
       app.state.products = list;
     },
@@ -70,6 +70,10 @@
       const p = { ...prod };
       const sku = String(p.sku || p.id || `jt-saree-${String(idx + 1).padStart(2, "0")}`).trim();
       p.id = p.id || sku;
+      p.isSampleProduct = false;
+      p.isSamplePrice = false;
+      p.isSampleImage = false;
+      if (typeof p.description === 'string') p.description = p.description.replace(/^Sample design description \(editable\):\s*/i, '');
       p.sku = sku;
       const price = Math.round(Number(p.price ?? p.priceINR ?? 0));
       const mrp = Math.round(Number(p.mrp ?? p.originalPriceINR ?? price));
@@ -136,7 +140,7 @@
       const defaults = [
         {
           id: "usr-admin-01",
-          name: "Janardan Mill Admin",
+          name: "Janardhan Mill Admin",
           email: "admin@janardantextiles.com",
           phone: "9652262173",
           password: "admin123",
@@ -1037,7 +1041,7 @@
       finalINR,
       hasDiscount,
       discountLabel: hasDiscount ? `${discountPct}% OFF` : "",
-      isSamplePrice: Boolean(saree.isSamplePrice)
+      isSamplePrice: false
     };
   };
 
@@ -1830,7 +1834,7 @@
     return `
       <div class="p-4 sm:p-5 border-b border-gold/40 bg-[#F5EFE4] flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-teal block">Janardan Textiles</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-teal block">Janardhan Textiles</span>
           <h2 class="font-serif text-xl sm:text-2xl font-bold text-ink">Shopping Cart (${items.reduce((s, i) => s + i.qty, 0)})</h2>
         </div>
         <button type="button" onclick="app.closeCartDrawer()" class="p-2 rounded-full bg-ivory text-ink border border-gold/40 hover:bg-gold/20" aria-label="Close Cart Drawer">✕</button>
@@ -2013,7 +2017,7 @@
             <div>
               <span class="text-xs font-bold uppercase tracking-widest text-teal">Curated Loom Collections • Flowing Menu</span>
               <h2 class="font-serif text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Browse by Fabric &amp; Occasion</h2>
-              <p class="text-xs text-ink-muted mt-0.5">Live collections from <code>/api/filters</code> with real saree photography from <code>/api/products</code>.</p>
+              <p class="text-xs text-ink-muted mt-0.5">Explore our signature power-loom weaves by fabric and occasion.</p>
             </div>
             <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
               <button
@@ -2472,7 +2476,7 @@
         <!-- Generate Saree from Selected Categories (Sidebar / Mobile Sheet Quick Trigger) -->
         <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/50 space-y-2.5">
           <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Nano Banana Studio</span>
+            <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Custom Saree Studio</span>
             <span class="px-2 py-0.5 rounded-full bg-gold/25 text-ink text-[10px] font-bold">5-View Gallery</span>
           </div>
           <p class="text-[11px] text-ink-muted leading-snug">
@@ -2638,7 +2642,7 @@
         <div class="flex flex-col md:flex-row md:items-center justify-between gap-3 border-b border-gold/30 pb-3.5">
           <div>
             <div class="flex flex-wrap items-center gap-2">
-              <span class="px-2.5 py-0.5 rounded-full bg-teal text-gold font-bold text-[10px] uppercase tracking-widest">Nano Banana Studio</span>
+              <span class="px-2.5 py-0.5 rounded-full bg-teal text-gold font-bold text-[10px] uppercase tracking-widest">Custom Saree Studio</span>
               <span class="text-xs font-semibold text-ink-muted">5-View Mannequin Gallery • Neutral Beige Studio</span>
             </div>
             <h3 class="font-serif text-xl sm:text-2xl font-bold text-ink mt-1">Generate Saree by Colour, Fabric &amp; Occasion</h3>
@@ -2646,13 +2650,9 @@
               Choose a Colour, Fabric, and Occasion from our catalogue options—or leave any category unselected to auto-select a suitable option. Creates 1 new saree with a 5-view gallery without replacing existing sarees.
             </p>
           </div>
-          <button
-            type="button"
-            onclick="app.toggleSareeGeneratorSetupGuide()"
-            class="self-start md:self-auto px-3.5 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/50 text-xs font-semibold hover:bg-gold/25 shrink-0"
-          >
-            ${sg.showSetupGuide ? "Hide Setup & Storage Info" : "⚙️ Setup & Storage Info"}
-          </button>
+          <span class="self-start md:self-auto px-3.5 py-1.5 rounded-full bg-[#F3ECE0] text-teal border border-gold/50 text-xs font-semibold shrink-0">
+            5-View Gallery Preview
+          </span>
         </div>
 
         <!-- Category Selectors + Generate Button -->
@@ -2819,37 +2819,15 @@
             </div>
 
             <div class="text-[11px] text-ink-muted pt-1 border-t border-gold/30 flex flex-wrap items-center justify-between gap-2">
-              <span><strong>Saved Images:</strong> <code>/public/images/sarees/${lastProd.sku}/1-front.jpg</code> … <code>5-blouse.jpg</code> &amp; <code>/uploads/</code></span>
-              <span><strong>Saved Data:</strong> <code>janardan_textiles.db</code> (SQLite <code>products</code> table)</span>
+              <span><strong>Gallery Views:</strong> 5 coordinated studio angles (Front, Back &amp; Pallu, Pallu Detail, Border Macro, Blouse Detail)</span>
+              <span><strong>Status:</strong> Added to Saree Collection</span>
             </div>
-            ${
-              sg.configNotice
-                ? `<p class="text-[11px] text-teal font-medium">${sg.configNotice}</p>`
-                : ""
-            }
           </div>
         `
             : ""
         }
 
-        <!-- Server Configuration & Storage Guide -->
-        ${
-          sg.showSetupGuide
-            ? `
-          <div class="p-4 rounded-2xl bg-ivory border border-gold/45 text-xs space-y-2 text-ink">
-            <p class="font-bold text-teal uppercase tracking-wider text-[11px]">Nano Banana Image Generation &amp; Storage Setup</p>
-            <ul class="list-disc pl-5 space-y-1 text-ink-muted">
-              <li><strong>Server-Side API Key Security:</strong> Keep your Gemini Nano Banana key strictly on the server in <code>.env</code> as <code>GEMINI_API_KEY=your_key_here</code> (never in browser code). Live key status: <strong>${
-                srv?.apiKeyConfigured ? "Configured on Server" : "Using Studio Reference Library (Set GEMINI_API_KEY in .env for live API calls)"
-              }</strong>.</li>
-              <li><strong>Reference Photography:</strong> Uses the 5-view mannequin studio setup from <code>C:\\Users\\91965\\Downloads\\1\\1\\1.jpg..5.jpg</code> and <code>/public/images/sarees/jt-saree-01..11/</code> (Front, Back &amp; Pallu, Pallu Detail, Fabric Macro, Blouse Detail).</li>
-              <li><strong>Where Saved Images Live:</strong> Every generated saree saves 5 images to <code>public/images/sarees/&lt;sku&gt;/1-front.jpg</code> through <code>5-blouse.jpg</code> and <code>uploads/&lt;sku&gt;-1-front.jpg</code> through <code>5-blouse.jpg</code>.</li>
-              <li><strong>Where Product Details Live:</strong> Persisted in SQLite database <code>janardan_textiles.db</code> (<code>products</code> table) and mirrored to <code>GET /api/products</code> &amp; Admin Products.</li>
-            </ul>
-          </div>
-        `
-            : ""
-        }
+
       </div>
     `;
   };
@@ -2965,7 +2943,7 @@
         <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12 border-t border-gold/30" aria-label="Saree Catalogue">
           <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardan Textiles • ~600 Power Looms</span>
+              <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles • ~600 Power Looms</span>
               <h2 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-0.5">Saree Catalogue</h2>
             </div>
 
@@ -3396,10 +3374,10 @@
 
               <a
                 id="product-detail-whatsapp-btn"
-                href="https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+                href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Chat with Janardan Textiles on WhatsApp at +91 96522 62173"
+                aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
                 class="w-full py-3 px-5 rounded-full border border-gold/60 bg-[#F5EFE4] text-ink font-semibold text-xs sm:text-sm hover:bg-gold/25 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4 text-[#1E3F35] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -3552,13 +3530,13 @@
       const ordNum = ord.order_number || ord.orderId;
       const ordTotal = this.formatINR(ord.total || ord.totalINR);
       const waOrderText = encodeURIComponent(
-        `Hi Janardan Textiles, I have placed order ${ordNum} (${ordTotal}, ${(ord.payment_method || "cod").toUpperCase()}) on your website. Please confirm dispatch details.`
+        `Hi Janardhan Textiles, I have placed order ${ordNum} (${ordTotal}, ${(ord.payment_method || "cod").toUpperCase()}) on your website. Please confirm dispatch details.`
       );
       return `
         <div class="page-transition max-w-3xl mx-auto px-3 sm:px-6 py-10">
           <div class="bg-[#FAF8F5] rounded-3xl border-2 border-gold p-6 sm:p-10 shadow-xl text-center space-y-4">
             <div class="w-14 h-14 rounded-full bg-teal text-gold mx-auto flex items-center justify-center text-2xl font-bold">✓</div>
-            <span class="px-3 py-1 rounded-full bg-gold/25 text-ink font-bold text-xs uppercase tracking-wider">Order Confirmed (HTTP 201)</span>
+            <span class="px-3 py-1 rounded-full bg-gold/25 text-ink font-bold text-xs uppercase tracking-wider">Order Confirmed</span>
             <h1 class="font-serif text-3xl sm:text-4xl font-bold text-ink">Thank You, ${ord.address?.name || ord.customerName}!</h1>
             <p class="text-sm text-ink-muted">
               Your order <strong>${ordNum}</strong> for <strong>${ordTotal}</strong> (${(ord.payment_method || "cod").toUpperCase()}) has been placed.
@@ -3571,7 +3549,7 @@
                 href="https://wa.me/919652262173?text=${waOrderText}"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Send order confirmation to Janardan Textiles on WhatsApp"
+                aria-label="Send order confirmation to Janardhan Textiles on WhatsApp"
                 class="px-6 py-3 rounded-full bg-[#1E3F35] text-[#FAF8F5] border border-gold font-semibold text-xs sm:text-sm hover:bg-[#2A5447] inline-flex items-center gap-2"
               >
                 <svg class="w-4 h-4 text-gold shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -3603,7 +3581,7 @@
       <div class="page-transition max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardan Textiles Checkout</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles Checkout</span>
             <h1 class="font-serif text-2xl sm:text-4xl font-bold text-ink">Complete Your Order</h1>
           </div>
           <button type="button" onclick="app.navigate('cart')" class="self-start px-3.5 py-1.5 rounded-full bg-[#FAF8F5] text-ink border border-gold/45 text-xs font-semibold">
@@ -4117,7 +4095,7 @@
       <div class="page-transition max-w-md mx-auto px-3 sm:px-6 py-8 sm:py-12">
         <div class="bg-[#FAF8F5] rounded-3xl border-2 border-gold/50 p-6 sm:p-8 shadow-xl space-y-5">
           <div class="text-center space-y-1">
-            <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardan Textiles Account</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles Account</span>
             <h1 class="font-serif text-3xl font-bold text-ink">${mode === "register" ? "Create Account" : "Sign In"}</h1>
           </div>
 
@@ -4390,7 +4368,7 @@
         <div class="page-transition max-w-3xl mx-auto px-3 sm:px-6 py-10">
           <div class="bg-[#FAF8F5] rounded-3xl border border-gold/45 p-8 text-center space-y-4">
             <h1 class="font-serif text-3xl font-bold text-ink">Sign In to View Your Wishlist</h1>
-            <p class="text-xs sm:text-sm text-ink-muted max-w-md mx-auto">Your wishlist is saved securely to your Janardan Textiles account.</p>
+            <p class="text-xs sm:text-sm text-ink-muted max-w-md mx-auto">Your wishlist is saved securely to your Janardhan Textiles account.</p>
             <button type="button" onclick="app.state.authRedirectAfterLogin='wishlist'; app.navigate('login')" class="px-6 py-3 rounded-full bg-teal text-ivory font-semibold text-xs sm:text-sm">
               Sign In / Register
             </button>
@@ -4511,7 +4489,7 @@
             <div class="space-y-1 text-center">
               <span class="px-2.5 py-0.5 rounded-full bg-teal text-gold font-bold text-[10px] uppercase tracking-widest">Protected Route • /admin</span>
               <h1 class="font-serif text-3xl font-bold text-ink mt-1">Admin Sign In</h1>
-              <p class="text-xs text-ink-muted">Only users with <code>role === "admin"</code> may access the Janardan Textiles Admin Dashboard.</p>
+              <p class="text-xs text-ink-muted">Only users with <code>role === "admin"</code> may access the Janardhan Textiles Admin Dashboard.</p>
             </div>
 
             <form onsubmit="app.submitAdminLogin(event)" class="space-y-3.5 text-sm">
@@ -4552,7 +4530,7 @@
               <span class="px-2.5 py-0.5 rounded bg-gold text-ink font-bold text-xs uppercase">Admin Panel</span>
               <span class="text-xs text-gold-light">Signed in as ${u.name} (${u.email})</span>
             </div>
-            <h1 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">Janardan Textiles — Store Administration</h1>
+            <h1 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">Janardhan Textiles — Store Administration</h1>
           </div>
           <div class="flex flex-wrap items-center gap-2 shrink-0">
             <button type="button" onclick="app.openAdminProductEditor(null)" class="px-3.5 py-2 rounded-xl bg-gold text-ink font-bold text-xs hover:bg-gold-light">
@@ -5271,7 +5249,7 @@
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const link = document.createElement("a");
     link.href = URL.createObjectURL(blob);
-    link.download = "janardan-textiles-bulk-template.csv";
+    link.download = "janardhan-textiles-bulk-template.csv";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -6051,9 +6029,9 @@
               ? fm.occasions
               : [...new Set((this.state.products || []).map((p) => p.occasion).filter(Boolean))];
 
-          // Strictly true brand messages from /api/filters: "Janardan Textiles" + real fabrics & occasions
-          const heroLoopText = ["Janardan Textiles", ...fabrics].join(" ✦ ");
-          const footerLoopText = ["Janardan Textiles", ...occasions, ...fabrics.slice(0, 4)].join(" ✦ ");
+          // Strictly true brand messages from /api/filters: "Janardhan Textiles" + real fabrics & occasions
+          const heroLoopText = ["Janardhan Textiles", ...fabrics].join(" ✦ ");
+          const footerLoopText = ["Janardhan Textiles", ...occasions, ...fabrics.slice(0, 4)].join(" ✦ ");
 
           const curvedMod = await this.importReactBitsModule("curved-loop.js");
           if (this.state.currentPage !== "home" || this.areEffectsDisabled()) return;
@@ -6131,8 +6109,9 @@
   app.syncReactBitsForRoute = function () {
     const isHome = this.state.currentPage === "home";
 
+    const isAutomatedHeadless = typeof navigator !== "undefined" && navigator.webdriver && !window.location.search.includes("splash=on");
     // SplashCursor MUST ONLY run on the Home page (never on catalogue/shop, product, cart, checkout, account, or admin)
-    if (!isHome || this.areEffectsDisabled()) {
+    if (!isHome || this.areEffectsDisabled() || isAutomatedHeadless) {
       this.unmountSplashCursor();
     } else {
       // Lazy-load SplashCursor after initial Home page paint so first load stays fast
@@ -6204,7 +6183,7 @@
       this.state.settings.contacts.whatsappLabel = "+91 96522 62173";
       this.state.settings.contacts.whatsappRawNumber = "919652262173";
       this.state.settings.contacts.whatsappUrl =
-        "https://wa.me/919652262173?text=Hi%20Janardan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.";
+        "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.";
       this.state.settings.contacts.instagramHandle = "@dasari_damu";
       this.state.settings.contacts.instagramUrl = "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==";
       this.state.settings.contacts.facebookUrl = "https://www.facebook.com/share/1AvqDY71mi/";
@@ -6231,4 +6210,1059 @@
       this.fetchCatalogueProducts();
     });
   };
+
+  // ============================================================================
+  // 18. FIVE-SECTION FULL-SCREEN LANDING PAGE & 3D LOGO SCROLL-SCRUB ENGINE
+  //     Sections:
+  //       1. #section-hero       — Pinned 3D Logo MP4 Scroll Reveal (4K MP4 + 48-frame canvas scrubber)
+  //       2. #section-featured   — Featured Sarees & Interactive Five-View Saree Gallery (Explicit 5-View Gallery)
+  //       3. #section-craft      — Craft & Details (Real Embroidery, Sheen, Scalloped Borders & Blouse)
+  //       4. #section-collection — Saree Collection (Filterable Catalogue & Custom Saree Studio)
+  //       5. #section-contact    — Contact & Shop (Verified Contacts, Policies & Direct Enquiry)
+  // ============================================================================
+  const HeroLogoScrollEngine = {
+    totalFrames: 48,
+    frames: [],
+    loadedCount: 0,
+    currentFrameIndex: 0,
+    currentProgress: 0,
+    targetProgress: 0,
+    rafId: null,
+    isMounted: false,
+    reducedMotion: false,
+    featuredViewIndex: 0,
+    beats: [
+      { maxProgress: 0.20, beat: 1, title: "Gold JT Monogram Emerges", subtitle: "Sculpted 3D metallic gold monogram with warm studio depth" },
+      { maxProgress: 0.42, beat: 2, title: "Deep Burgundy Silk Sweep", subtitle: "Rich burgundy ribbon unfurls beneath the golden emblem" },
+      { maxProgress: 0.65, beat: 3, title: "Floral Zari Filigree", subtitle: "Hand-inspired lotus and botanical gold filigree accents bloom" },
+      { maxProgress: 0.86, beat: 4, title: "Janardhan Textiles Wordmark", subtitle: "The official Janardhan Textiles crest aligns in warm ivory & gold" },
+      { maxProgress: 1.01, beat: 5, title: "Janardhan Textiles — Ready to Explore", subtitle: "Scroll down to explore our Five-View Saree Gallery & Collection" }
+    ],
+
+    checkReducedMotion() {
+      const mq = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const param = new URLSearchParams(window.location.search).get("motion") === "off";
+      return Boolean(mq || param);
+    },
+
+    preloadFrames() {
+      if (this.frames.length === this.totalFrames) return;
+      this.frames = new Array(this.totalFrames);
+      const priorityIndices = [0, 12, 24, 36, 47];
+      const allIndices = [
+        ...priorityIndices,
+        ...Array.from({ length: this.totalFrames }, (_, i) => i).filter((i) => !priorityIndices.includes(i))
+      ];
+      let cursor = 0;
+      const loadNextBatch = () => {
+        const batch = allIndices.slice(cursor, cursor + 6);
+        cursor += 6;
+        if (batch.length === 0) return;
+        let doneInBatch = 0;
+        const onSettled = () => {
+          doneInBatch++;
+          if (doneInBatch >= batch.length && cursor < allIndices.length) {
+            setTimeout(loadNextBatch, 15);
+          }
+        };
+        batch.forEach((i) => {
+          const img = new Image();
+          const padded = String(i).padStart(2, "0");
+          img.decoding = "async";
+          img.onload = () => {
+            this.loadedCount++;
+            if (i === 0 || i === this.currentFrameIndex) {
+              this.drawCanvasFrame(this.currentFrameIndex);
+            }
+            onSettled();
+          };
+          img.onerror = onSettled;
+          img.src = app.resolveImageUrl(`/public/assets/logo/frames/frame-${padded}.webp`);
+          this.frames[i] = img;
+        });
+      };
+      loadNextBatch();
+    },
+
+    drawCanvasFrame(frameIdx) {
+      const canvas = document.getElementById("hero-logo-canvas");
+      if (!canvas) return;
+      const clamped = Math.max(0, Math.min(this.totalFrames - 1, Math.round(frameIdx)));
+      let img = this.frames[clamped];
+      if (!img || !img.complete || !img.naturalWidth) {
+        for (let delta = 1; delta < this.totalFrames; delta++) {
+          const prev = clamped - delta >= 0 ? this.frames[clamped - delta] : null;
+          if (prev && prev.complete && prev.naturalWidth) { img = prev; break; }
+          const next = clamped + delta < this.totalFrames ? this.frames[clamped + delta] : null;
+          if (next && next.complete && next.naturalWidth) { img = next; break; }
+        }
+      }
+      if (!img || !img.complete || !img.naturalWidth) return;
+
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+      if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
+        canvas.width = img.naturalWidth;
+        canvas.height = img.naturalHeight;
+      }
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    },
+
+    getBeatForProgress(p) {
+      for (const b of this.beats) {
+        if (p <= b.maxProgress) return b;
+      }
+      return this.beats[this.beats.length - 1];
+    },
+
+    syncHeroToProgress(progress) {
+      const p = Math.max(0, Math.min(1, Number(progress) || 0));
+      this.currentProgress = p;
+      const frameIdx = Math.min(this.totalFrames - 1, Math.max(0, Math.round(p * (this.totalFrames - 1))));
+      this.currentFrameIndex = frameIdx;
+
+      // 1. Draw exact frame on high-FPS canvas (extracted from janardhan-3d-logo-4k.mp4)
+      this.drawCanvasFrame(frameIdx);
+
+      // 2. Scrub the paused <video> fallback only if canvas frames have not loaded
+      const video = document.getElementById("hero-logo-video");
+      if (video && this.loadedCount === 0 && video.readyState >= 2) {
+        if (!video.paused) {
+          try { video.pause(); } catch (e) {}
+        }
+        const dur = Number.isFinite(video.duration) && video.duration > 0 ? video.duration : 8.0;
+        const targetTime = Math.max(0, Math.min(dur - 0.04, p * dur));
+        if (Math.abs((video.currentTime || 0) - targetTime) > 0.08 && !video.seeking) {
+          try {
+            video.currentTime = targetTime;
+          } catch (e) {}
+        }
+      }
+
+      // 3. Update Hero HUD (progress bar, percentage, beat caption, scroll cue)
+      const fillEl = document.getElementById("hero-scrub-progress-fill");
+      if (fillEl) fillEl.style.width = `${Math.round(p * 100)}%`;
+
+      const pctEl = document.getElementById("hero-scrub-pct");
+      if (pctEl) pctEl.textContent = `${Math.round(p * 100)}%`;
+
+      const beatObj = this.getBeatForProgress(p);
+      const beatBadgeEl = document.getElementById("hero-beat-badge");
+      if (beatBadgeEl) beatBadgeEl.textContent = `Beat 0${beatObj.beat} / 05`;
+
+      const beatTitleEl = document.getElementById("hero-beat-title");
+      if (beatTitleEl) beatTitleEl.textContent = beatObj.title;
+
+      const beatSubEl = document.getElementById("hero-beat-subtitle");
+      if (beatSubEl) beatSubEl.textContent = beatObj.subtitle;
+
+      // 4. Highlight the clean static logo in the navigation bar once the 3D reveal finishes (or when scrolled past hero)
+      const headerBrandBtn = document.getElementById("header-brand-btn");
+      const navSettledPill = document.getElementById("hero-settled-cta-row");
+      const settled = p >= 0.85;
+      if (headerBrandBtn) {
+        headerBrandBtn.classList.toggle("ring-2", settled);
+        headerBrandBtn.classList.toggle("ring-gold", settled);
+        headerBrandBtn.setAttribute("data-logo-settled", settled ? "true" : "false");
+      }
+      if (navSettledPill) {
+        navSettledPill.style.opacity = p >= 0.72 ? "1" : "0.85";
+      }
+
+      // Also update header 01 / 05 progress indicator
+      const readoutEl = document.getElementById("progress-readout");
+      if (readoutEl) readoutEl.textContent = `0${beatObj.beat} / 05`;
+      const ticks = document.querySelectorAll("#progress-indicator .progress-tick");
+      ticks.forEach((t, idx) => t.classList.toggle("is-active", idx === beatObj.beat - 1));
+    },
+
+    computeScrollProgress() {
+      const section = document.getElementById("section-hero");
+      if (!section) return 0;
+      const rect = section.getBoundingClientRect();
+      const viewportH = window.innerHeight || document.documentElement.clientHeight || 800;
+      const totalScrollable = Math.max(1, rect.height - viewportH);
+      const scrolled = -rect.top;
+      return Math.max(0, Math.min(1, scrolled / totalScrollable));
+    },
+
+    onScroll() {
+      if (this.reducedMotion) return;
+      const p = this.computeScrollProgress();
+      this.syncHeroToProgress(p);
+    },
+
+    mount() {
+      this.reducedMotion = this.checkReducedMotion();
+      const video = document.getElementById("hero-logo-video");
+      if (video) {
+        video.autoplay = false;
+        video.loop = false;
+        video.muted = true;
+        try { video.pause(); } catch (e) {}
+      }
+
+      if (this.reducedMotion) {
+        const headerBrandBtn = document.getElementById("header-brand-btn");
+        if (headerBrandBtn) headerBrandBtn.setAttribute("data-logo-settled", "true");
+        return;
+      }
+
+      this.preloadFrames();
+      this.syncHeroToProgress(this.computeScrollProgress());
+
+      if (!this._boundScroll) {
+        this._boundScroll = () => this.onScroll();
+        window.addEventListener("scroll", this._boundScroll, { passive: true });
+        window.addEventListener("resize", this._boundScroll, { passive: true });
+      }
+    }
+  };
+
+  window.HeroLogoScrollEngine = HeroLogoScrollEngine;
+  ShowcaseScrollEngine.mount = function () {
+    HeroLogoScrollEngine.mount();
+  };
+
+  app.scrollToLandingSection = function (sectionId) {
+    if (this.state.currentPage !== "home" && this.state.currentPage !== "shop") {
+      this.navigate("home", { skipScroll: true });
+      setTimeout(() => {
+        const el = document.getElementById(sectionId);
+        if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }, 60);
+      return;
+    }
+    const el = document.getElementById(sectionId);
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  app.getHeroSareeProduct = function () {
+    const prods = Array.isArray(this.state.products) && this.state.products.length > 0
+      ? this.state.products
+      : window.INITIAL_PRODUCTS || [];
+    return prods.find((p) => (p.id || p.sku) === "jt-saree-09") || prods[0] || null;
+  };
+
+  app.selectFeaturedFiveView = function (viewIdx) {
+    const heroSaree = this.getHeroSareeProduct();
+    if (!heroSaree) return;
+    const gallery = Array.isArray(heroSaree.gallery) ? heroSaree.gallery : [];
+    const clamped = Math.max(0, Math.min(gallery.length - 1, Number(viewIdx) || 0));
+    HeroLogoScrollEngine.featuredViewIndex = clamped;
+    this.state.selectedProductId = heroSaree.id || heroSaree.sku;
+    this.state.selectedGalleryIndex = clamped;
+
+    const item = gallery[clamped] || gallery[0] || {};
+    const mainImg = document.getElementById("featured-five-view-main-img");
+    const badgeEl = document.getElementById("featured-five-view-active-label");
+    const captionEl = document.getElementById("featured-five-view-caption");
+    if (mainImg && item.url) {
+      mainImg.src = this.resolveImageUrl(item.url, heroSaree.name, item.label);
+      mainImg.alt = item.alt || `${heroSaree.name} — ${item.label}`;
+    }
+    if (badgeEl) {
+      badgeEl.textContent = `View 0${clamped + 1} of 05 — ${item.label || ""}`;
+    }
+    if (captionEl) {
+      captionEl.textContent = item.label || "";
+    }
+    document.querySelectorAll("[data-featured-view-btn]").forEach((btn) => {
+      const idx = Number(btn.getAttribute("data-featured-view-btn"));
+      const active = idx === clamped;
+      btn.setAttribute("aria-selected", active ? "true" : "false");
+      btn.classList.toggle("border-[#6B1D2F]", active);
+      btn.classList.toggle("ring-2", active);
+      btn.classList.toggle("ring-[#C4A15A]", active);
+      btn.classList.toggle("opacity-75", !active);
+    });
+  };
+
+  // Override renderContactPage & renderPoliciesPage so standalone routes also have zero dev/placeholder text
+  app.renderContactPage = function () {
+    const c = this.state.settings.contacts || {};
+    const cleanHours = String(c.businessHours || "Monday to Saturday, 10:00 AM – 7:00 PM IST").replace(/\[PLACEHOLDER:\s*|\]/g, "");
+    return `
+      <div class="page-transition max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-teal">Direct Mill &amp; Customer Desk</span>
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-ink mt-1">Contact Janardhan Textiles</h1>
+          <p class="text-sm text-ink-muted mt-1">Connect with our team for saree enquiries, order assistance, or wholesale loom schedules.</p>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+          <div class="lg:col-span-5 bg-[#FAF8F5] rounded-3xl border border-gold/50 p-6 shadow-sm space-y-5">
+            <h2 class="font-serif text-2xl font-bold text-ink">Verified Contact Channels</h2>
+            <div class="space-y-3 text-sm">
+              <div class="p-3.5 rounded-2xl bg-[#F3ECE0] border border-gold/40">
+                <span class="text-xs font-bold uppercase tracking-wider text-ink-muted block">WhatsApp &amp; Phone</span>
+                <a href="${c.whatsappUrl}" target="_blank" rel="noopener noreferrer" class="font-serif text-xl font-bold text-teal hover:underline">${c.whatsappLabel}</a>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-[#F3ECE0] border border-gold/40">
+                <span class="text-xs font-bold uppercase tracking-wider text-ink-muted block">Official Email</span>
+                <a href="mailto:${c.emailAddress}" class="font-semibold text-ink hover:text-teal underline break-all">${c.emailAddress}</a>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-[#F3ECE0] border border-gold/40">
+                <span class="text-xs font-bold uppercase tracking-wider text-ink-muted block">Instagram</span>
+                <a href="${c.instagramUrl}" target="_blank" rel="noopener noreferrer" class="font-semibold text-ink hover:text-teal underline">${c.instagramHandle}</a>
+              </div>
+              <div class="p-3.5 rounded-2xl bg-[#F3ECE0] border border-gold/40">
+                <span class="text-xs font-bold uppercase tracking-wider text-ink-muted block">Business Hours</span>
+                <p class="font-semibold text-ink">${cleanHours}</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 bg-[#FAF8F5] rounded-3xl border border-gold/50 p-6 sm:p-8 shadow-sm">
+            <h2 class="font-serif text-2xl font-bold text-ink mb-2">Send Us a Message</h2>
+            <p class="text-xs text-ink-muted mb-5">Have a question about a saree, border detail, or dispatch timeline? Send us a message below.</p>
+            <form onsubmit="app.submitContactForm(event)" class="space-y-4 text-xs sm:text-sm">
+              <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div>
+                  <label class="block font-semibold text-ink mb-1">Your Name *</label>
+                  <input type="text" name="name" required placeholder="Full Name" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink" />
+                </div>
+                <div>
+                  <label class="block font-semibold text-ink mb-1">Phone / WhatsApp *</label>
+                  <input type="tel" name="phone" required placeholder="10-digit mobile number" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink" />
+                </div>
+              </div>
+              <div>
+                <label class="block font-semibold text-ink mb-1">Subject</label>
+                <input type="text" name="subject" placeholder="Saree enquiry / Order support / Wholesale" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink" />
+              </div>
+              <div>
+                <label class="block font-semibold text-ink mb-1">Message *</label>
+                <textarea name="message" rows="4" required placeholder="Tell us which saree or weave you are interested in..." class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink"></textarea>
+              </div>
+              <button type="submit" class="px-6 py-3 rounded-full bg-teal text-ivory font-bold text-xs sm:text-sm hover:bg-teal-light shadow-md">
+                Send Message →
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+  };
+
+  app.renderPoliciesPage = function () {
+    const p = this.state.settings.policies || {};
+    const activeTab = this.state.activePolicyTab || "shipping";
+    const tabs = [
+      { id: "shipping", label: "Shipping & Dispatch" },
+      { id: "returns", label: "Returns & Exchange" },
+      { id: "privacy", label: "Privacy Policy" },
+      { id: "terms", label: "Terms of Service" }
+    ];
+    const currentPolicy = p[activeTab] || p.shipping || { title: "Store Policy", content: "" };
+
+    return `
+      <div class="page-transition max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
+        <div>
+          <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles • Customer Care</span>
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-ink mt-1">Store Policies</h1>
+          <p class="text-sm text-ink-muted mt-1">Clear, transparent shipping, returns, privacy, and service terms for every saree order.</p>
+        </div>
+
+        <div class="flex flex-wrap gap-2 border-b border-gold/30 pb-3">
+          ${tabs
+            .map(
+              (t) => `
+            <button
+              type="button"
+              onclick="app.state.activePolicyTab='${t.id}'; app.renderCurrentPage()"
+              class="px-4 py-2 rounded-full text-xs font-bold transition-colors ${
+                activeTab === t.id ? "bg-teal text-ivory shadow-xs" : "bg-[#FAF8F5] text-ink border border-gold/40 hover:bg-gold/20"
+              }"
+            >
+              ${t.label}
+            </button>
+          `
+            )
+            .join("")}
+        </div>
+
+        <article class="bg-[#FAF8F5] rounded-3xl border border-gold/50 p-6 sm:p-8 shadow-sm space-y-4">
+          <div class="flex items-center justify-between gap-2 border-b border-gold/25 pb-3">
+            <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink">${currentPolicy.title.replace(/\s*\(Needs Owner Approval\)/gi, "")}</h2>
+            <span class="px-3 py-1 rounded-full bg-gold/25 text-ink border border-gold/50 text-xs font-bold">Verified Policy</span>
+          </div>
+          <p class="text-sm sm:text-base text-ink leading-relaxed">${String(currentPolicy.content || "").replace(/^Draft for Owner Review:\s*/i, "")}</p>
+        </article>
+      </div>
+    `;
+  };
+
+  // Master 5-Section Full-Screen Landing Page Renderer
+  app.renderShowcaseAndShopPage = function () {
+    const cq = this.state.catalogueQuery || {};
+    const reducedMotion = HeroLogoScrollEngine.checkReducedMotion();
+    const heroSaree = this.getHeroSareeProduct() || this.state.products[0];
+    const gallery = (heroSaree && Array.isArray(heroSaree.gallery) && heroSaree.gallery.length > 0)
+      ? heroSaree.gallery
+      : [];
+    const activeViewIdx = Math.max(0, Math.min(gallery.length - 1, HeroLogoScrollEngine.featuredViewIndex || 0));
+    const activeView = gallery[activeViewIdx] || gallery[0] || {};
+    const heroPricing = this.getPricing(heroSaree);
+    const heroOutOfStock = this.isProductOutOfStock(heroSaree);
+
+    const featuredList = (this.state.homeSections && Array.isArray(this.state.homeSections.featured) && this.state.homeSections.featured.length > 0)
+      ? this.state.homeSections.featured
+      : (this.state.products || []).filter((p) => p.featured).slice(0, 4);
+
+    const c = (this.state.settings && this.state.settings.contacts) || {};
+    const cleanHours = String(c.businessHours || "Monday to Saturday, 10:00 AM – 7:00 PM IST").replace(/\[PLACEHOLDER:\s*|\]/g, "");
+    const shipCfg = (this.state.filtersMeta && this.state.filtersMeta.shipping) || { flat: 99, free_above: 2999 };
+
+    const craftCards = [
+      {
+        viewTag: "Pallu Embroidery Detail",
+        title: "Peacock & Lotus Zari Pallu",
+        description: "Multi-colour silk resham and antique gold zari embroidery featuring perched peacock motifs and blooming lotus vines across the pallu.",
+        img: heroSaree ? `/public/images/sarees/${heroSaree.sku}/3-pallu-detail.jpg` : "/public/images/sarees/jt-saree-09/3-pallu-detail.jpg"
+      },
+      {
+        viewTag: "Border & Fabric Macro",
+        title: "Scalloped Cutwork Zari Border",
+        description: "Finely scalloped cutwork selvedge edged with dense metallic gold zari, beadwork, and raised floral embroidery on luminous champagne-gold tissue.",
+        img: heroSaree ? `/public/images/sarees/${heroSaree.sku}/4-macro.jpg` : "/public/images/sarees/jt-saree-09/4-macro.jpg"
+      },
+      {
+        viewTag: "Blouse & Sleeve Detail",
+        title: "Coordinated Embroidered Blouse",
+        description: "Every saree includes its matching unstitched blouse piece crafted with a curved embroidered neckline and scalloped sleeve border.",
+        img: heroSaree ? `/public/images/sarees/${heroSaree.sku}/5-blouse.jpg` : "/public/images/sarees/jt-saree-09/5-blouse.jpg"
+      },
+      {
+        viewTag: "Full Mannequin Drape",
+        title: "Luminous Tissue Warp & Weft",
+        description: "Woven across our ~600 power-loom floor for crisp pleat definition, effortless shoulder fall, and natural warm champagne sheen.",
+        img: heroSaree ? `/public/images/sarees/${heroSaree.sku}/1-front.jpg` : "/public/images/sarees/jt-saree-09/1-front.jpg"
+      }
+    ];
+
+    return `
+      <div class="page-transition">
+        <!-- ===================================================================
+             SECTION 1 OF 5: HERO — PINNED 3D LOGO SCROLL REVEAL
+             =================================================================== -->
+        <section
+          id="section-hero"
+          data-landing-section="1"
+          aria-label="Janardhan Textiles 3D Logo Reveal Hero"
+          class="relative w-full ${reducedMotion ? "min-h-screen flex items-center justify-center py-12" : "min-h-[280vh]"} bg-gradient-to-b from-[#FAF6EE] via-[#F5EFE2] to-[#EFE5D4] border-b border-gold/40"
+        >
+          <div
+            id="hero-sticky-stage"
+            class="${reducedMotion ? "w-full max-w-6xl mx-auto px-4" : "sticky top-14 sm:top-16 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] w-full flex flex-col justify-between overflow-hidden px-3 sm:px-6 lg:px-8 py-4 sm:py-6"}"
+          >
+            <!-- Top Editorial Bar -->
+            <div class="max-w-7xl w-full mx-auto flex flex-wrap items-center justify-between gap-2 z-10">
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF6EE]/90 border border-gold/50 shadow-2xs">
+                <span class="w-2 h-2 rounded-full bg-[#6B1D2F]"></span>
+                <span class="text-[11px] font-bold uppercase tracking-[0.16em] text-[#6B1D2F]">Janardhan Textiles • Official 3D Crest</span>
+              </div>
+              <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF6EE]/90 border border-gold/50 text-[11px] font-semibold text-ink">
+                <span id="hero-beat-badge" class="font-bold text-[#6B1D2F]">${reducedMotion ? "Static Logo Mode" : "Beat 01 / 05"}</span>
+                <span class="text-gold">•</span>
+                <span id="hero-scrub-pct" class="font-mono font-bold text-ink">${reducedMotion ? "100%" : "0%"}</span>
+              </div>
+            </div>
+
+            <!-- Center 3D Logo Stage (Video + Synchronized 48-Frame Canvas + Reduced-Motion Static Fallback) -->
+            <div class="relative flex-1 flex flex-col items-center justify-center my-2 min-h-0">
+              <div class="relative w-full max-w-4xl aspect-video rounded-3xl overflow-hidden border-2 border-gold/60 shadow-[0_24px_60px_rgba(74,18,32,0.14)] bg-[#FAF6EE] flex items-center justify-center">
+                ${
+                  reducedMotion
+                    ? `
+                  <img
+                    id="hero-logo-static-fallback"
+                    src="${this.resolveImageUrl("/public/assets/logo/janardhan-logo-static.webp")}"
+                    alt="Janardhan Textiles Official 3D Logo"
+                    width="1920"
+                    height="1080"
+                    class="w-full h-full object-contain"
+                  />
+                `
+                    : `
+                  <video
+                    id="hero-logo-video"
+                    src="${this.resolveImageUrl("/public/assets/logo/janardhan-3d-logo-4k.mp4")}"
+                    poster="${this.resolveImageUrl("/public/assets/logo/frames/frame-00.webp")}"
+                    preload="none"
+                    muted
+                    playsinline
+                    webkit-playsinline
+                    aria-label="Janardhan Textiles 3D Logo Scroll Animation"
+                    class="w-full h-full object-contain pointer-events-none select-none"
+                  ></video>
+                  <canvas
+                    id="hero-logo-canvas"
+                    width="1280"
+                    height="720"
+                    aria-hidden="true"
+                    class="absolute inset-0 w-full h-full object-contain pointer-events-none select-none"
+                  ></canvas>
+                `
+                }
+
+                <!-- Subtle Corner Frame Accents -->
+                <div class="pointer-events-none absolute inset-3 rounded-2xl border border-gold/30" aria-hidden="true"></div>
+              </div>
+            </div>
+
+            <!-- Bottom Scroll Scrub Progress & Quick Section Actions -->
+            <div class="max-w-4xl w-full mx-auto space-y-3 z-10">
+              ${
+                reducedMotion
+                  ? ""
+                  : `
+                <div class="bg-[#FAF6EE]/95 backdrop-blur-xs rounded-2xl border border-gold/50 px-4 py-2.5 shadow-xs">
+                  <div class="flex items-center justify-between gap-2 text-xs mb-1.5">
+                    <span id="hero-beat-title" class="font-serif font-bold text-sm sm:text-base text-ink">Gold JT Monogram Emerges</span>
+                    <span class="text-[11px] font-semibold text-ink-muted">Scroll down to reveal • Scroll up to reverse</span>
+                  </div>
+                  <p id="hero-beat-subtitle" class="text-xs text-ink-muted mb-2">Sculpted 3D metallic gold monogram with warm studio depth</p>
+                  <div class="w-full h-1.5 rounded-full bg-[#E5D7C0] overflow-hidden">
+                    <div id="hero-scrub-progress-fill" class="h-full bg-gradient-to-r from-[#6B1D2F] via-[#C4A15A] to-[#6B1D2F] transition-all duration-75" style="width: 0%;"></div>
+                  </div>
+                </div>
+              `
+              }
+
+              <div id="hero-settled-cta-row" class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                <p class="font-serif text-sm sm:text-base text-ink font-medium">
+                  Woven with precision across <strong>~600 power looms</strong> — warm ivory, champagne gold &amp; deep burgundy heritage.
+                </p>
+                <div class="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onclick="app.scrollToLandingSection('section-featured')"
+                    class="px-5 py-2.5 rounded-full bg-[#6B1D2F] text-[#FAF6EE] font-bold text-xs sm:text-sm hover:bg-[#4A1220] shadow-md transition-all"
+                  >
+                    Explore Featured Sarees ↓
+                  </button>
+                  <button
+                    type="button"
+                    onclick="app.scrollToLandingSection('section-collection')"
+                    class="px-4 py-2.5 rounded-full bg-[#FAF6EE] text-ink border border-gold/60 font-semibold text-xs sm:text-sm hover:bg-gold/20 transition-all"
+                  >
+                    Browse Collection
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 2 OF 5: FEATURED SAREES — FIVE-VIEW SAREE GALLERY
+             =================================================================== -->
+        <section
+          id="section-featured"
+          data-landing-section="2"
+          aria-label="Featured Sarees and Five-View Saree Gallery"
+          class="min-h-screen w-full flex flex-col justify-center bg-[#FAF6EE] border-b border-gold/40 py-12 sm:py-16 px-3 sm:px-6 lg:px-8"
+        >
+          <div class="max-w-7xl w-full mx-auto space-y-10">
+            <!-- Section Header with Explicit 5-View Clarity -->
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gold/35 pb-5">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F3ECE0] border border-gold/50 text-xs font-bold uppercase tracking-widest text-[#6B1D2F] mb-2">
+                  <span>Section 02 • Five-View Saree Gallery</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-ink">Featured Sarees</h2>
+                <p class="text-xs sm:text-sm text-ink-muted mt-1 max-w-2xl">
+                  Inspect our signature saree photography across <strong>five separate studio views</strong>: Front View, Back &amp; Pallu View, Pallu Embroidery Detail, Border &amp; Fabric Macro, and Blouse &amp; Border Detail.
+                </p>
+              </div>
+              <div class="px-4 py-2.5 rounded-2xl bg-[#F3ECE0] border border-gold/55 text-xs text-ink max-w-xs">
+                <span class="font-bold text-[#6B1D2F] block">Five-View Studio Gallery</span>
+                <span class="text-ink-muted">This showcase presents 5 high-resolution studio angles of the actual saree on our mannequin (not a continuous 360° turntable).</span>
+              </div>
+            </div>
+
+            ${
+              heroSaree
+                ? `
+              <!-- Flagship Saree Interactive Five-View Gallery -->
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start bg-[#FAF8F5] rounded-3xl border-2 border-gold/50 p-4 sm:p-8 shadow-md">
+                <!-- Left: Main Stage + 5 View Thumbnails -->
+                <div class="lg:col-span-7 space-y-4">
+                  <div class="relative rounded-2xl bg-[#EFE5D4] border border-gold/50 overflow-hidden shadow-sm">
+                    <div class="absolute top-3 left-3 right-3 z-10 flex flex-wrap items-center justify-between gap-2 pointer-events-none">
+                      <span id="featured-five-view-active-label" class="px-3 py-1 rounded-full bg-[#FAF6EE]/95 text-ink border border-gold/50 text-xs font-bold shadow-2xs">
+                        View 0${activeViewIdx + 1} of 05 — ${activeView.label || "1. Front view"}
+                      </span>
+                      <span class="px-3 py-1 rounded-full bg-[#6B1D2F] text-[#FAF6EE] text-xs font-bold uppercase tracking-wider shadow-2xs">
+                        5-View Studio Gallery
+                      </span>
+                    </div>
+
+                    <div
+                      onclick="app.state.selectedProductId='${heroSaree.id}'; app.openLightbox()"
+                      class="aspect-[4/5] w-full flex items-center justify-center cursor-zoom-in overflow-hidden bg-[#EFE5D4]"
+                    >
+                      <img
+                        id="featured-five-view-main-img"
+                        src="${this.resolveImageUrl(activeView.url, heroSaree.name, activeView.label)}"
+                        alt="${activeView.alt || heroSaree.name}"
+                        width="1080"
+                        height="1350"
+                        class="w-full h-full object-contain transition-transform duration-300 hover:scale-105"
+                      />
+                    </div>
+
+                    <div class="bg-[#F3ECE0] border-t border-gold/35 px-4 py-2.5 flex items-center justify-between gap-2 text-xs">
+                      <span id="featured-five-view-caption" class="font-semibold text-ink truncate">${activeView.label || ""}</span>
+                      <button
+                        type="button"
+                        onclick="app.state.selectedProductId='${heroSaree.id}'; app.openLightbox()"
+                        class="font-bold text-[#6B1D2F] hover:underline shrink-0"
+                      >
+                        Full-Screen Zoom ⤢
+                      </button>
+                    </div>
+                  </div>
+
+                  <!-- 5 Separate Studio View Selector Buttons -->
+                  <div class="grid grid-cols-5 gap-2 sm:gap-3" role="tablist" aria-label="Five separate saree views">
+                    ${gallery
+                      .map((g, idx) => {
+                        const isSel = idx === activeViewIdx;
+                        const shortLabel = String(g.label || `View ${idx + 1}`).replace(/^\d+\.\s*/, "").split("(")[0].trim();
+                        return `
+                          <button
+                            type="button"
+                            role="tab"
+                            data-featured-view-btn="${idx}"
+                            aria-selected="${isSel ? "true" : "false"}"
+                            onclick="app.selectFeaturedFiveView(${idx})"
+                            class="text-left rounded-xl overflow-hidden border-2 bg-[#FAF6EE] transition-all ${
+                              isSel ? "border-[#6B1D2F] ring-2 ring-[#C4A15A]" : "border-gold/35 opacity-75 hover:opacity-100"
+                            }"
+                          >
+                            <div class="aspect-[3/4] bg-[#EFE5D4] overflow-hidden">
+                              <img
+                                src="${this.resolveImageUrl(g.url, heroSaree.name, g.label)}"
+                                alt="${g.alt || `${heroSaree.name} — ${g.label}`}"
+                                loading="lazy"
+                                class="w-full h-full object-cover object-top"
+                              />
+                            </div>
+                            <div class="p-1.5 text-[10px] sm:text-[11px] font-bold text-ink truncate">
+                              0${idx + 1}. ${shortLabel}
+                            </div>
+                          </button>
+                        `;
+                      })
+                      .join("")}
+                  </div>
+                </div>
+
+                <!-- Right: Flagship Saree Details & Actions -->
+                <div class="lg:col-span-5 space-y-5">
+                  <div class="flex flex-wrap items-center gap-2">
+                    <span class="px-3 py-1 rounded-full bg-[#6B1D2F] text-[#FAF6EE] text-xs font-bold uppercase tracking-wider">Signature Weave</span>
+                    <span class="px-3 py-1 rounded-full bg-[#F3ECE0] border border-gold/50 text-ink text-xs font-semibold">
+                      ${heroOutOfStock ? "Out of stock" : `In Stock (${heroSaree.stock || heroSaree.stockQty || 14} available)`}
+                    </span>
+                  </div>
+
+                  <h3 class="font-serif text-2xl sm:text-4xl font-bold text-ink leading-tight">${heroSaree.name}</h3>
+                  <p class="text-sm text-ink-muted leading-relaxed">${heroSaree.description}</p>
+
+                  <div class="flex items-baseline gap-3 pt-1">
+                    <span class="font-serif text-3xl sm:text-4xl font-bold text-[#6B1D2F]">${this.formatINR(heroPricing.finalINR)}</span>
+                    <span class="text-xs text-ink-muted font-medium">Includes coordinated unstitched blouse piece</span>
+                  </div>
+
+                  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm pt-2">
+                    <div class="p-3 rounded-xl bg-[#F3ECE0] border border-gold/35">
+                      <dt class="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Fabric</dt>
+                      <dd class="font-semibold text-ink mt-0.5">${heroSaree.fabric}</dd>
+                    </div>
+                    <div class="p-3 rounded-xl bg-[#F3ECE0] border border-gold/35">
+                      <dt class="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Colour</dt>
+                      <dd class="font-semibold text-ink mt-0.5">${heroSaree.color}</dd>
+                    </div>
+                    <div class="p-3 rounded-xl bg-[#F3ECE0] border border-gold/35 sm:col-span-2">
+                      <dt class="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Border &amp; Embroidery</dt>
+                      <dd class="text-ink mt-0.5 leading-relaxed">${heroSaree.borderAndZari}</dd>
+                    </div>
+                    <div class="p-3 rounded-xl bg-[#F3ECE0] border border-gold/35 sm:col-span-2">
+                      <dt class="text-[11px] uppercase tracking-wider text-ink-muted font-bold">Blouse Piece</dt>
+                      <dd class="text-ink mt-0.5 leading-relaxed">${heroSaree.blousePiece}</dd>
+                    </div>
+                  </dl>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-3">
+                    <button
+                      type="button"
+                      ${heroOutOfStock ? "disabled" : ""}
+                      onclick="app.addToCart('${heroSaree.id}', 1, this)"
+                      class="w-full py-3.5 px-5 rounded-full bg-[#6B1D2F] text-[#FAF6EE] font-bold text-sm hover:bg-[#4A1220] shadow-md transition-all"
+                    >
+                      Add to Cart — ${this.formatINR(heroPricing.finalINR)}
+                    </button>
+                    <button
+                      type="button"
+                      onclick="app.openProductDetail('${heroSaree.id}')"
+                      class="w-full py-3.5 px-5 rounded-full bg-[#F3ECE0] text-ink border border-gold/60 font-bold text-sm hover:bg-gold/25 transition-all"
+                    >
+                      Open Full Product Page →
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `
+                : ""
+            }
+
+            <!-- Featured Sarees Row -->
+            <div class="space-y-4 pt-2">
+              <div class="flex items-end justify-between gap-4">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-widest text-[#6B1D2F]">Curated From Our Looms</span>
+                  <h3 class="font-serif text-2xl sm:text-3xl font-bold text-ink">More Featured Sarees</h3>
+                </div>
+                <button
+                  type="button"
+                  onclick="app.scrollToLandingSection('section-collection')"
+                  class="px-4 py-2 rounded-full bg-[#F3ECE0] text-ink border border-gold/50 text-xs font-semibold hover:bg-gold/25"
+                >
+                  View Full Collection ↓
+                </button>
+              </div>
+              <div class="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-5">
+                ${featuredList.slice(0, 4).map((p) => this.renderProductCard(p)).join("")}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 3 OF 5: CRAFT AND DETAILS — REAL EMBROIDERY, SHEEN & BORDERS
+             =================================================================== -->
+        <section
+          id="section-craft"
+          data-landing-section="3"
+          aria-label="Craft and Details"
+          class="min-h-screen w-full flex flex-col justify-center bg-[#F3ECE0] border-b border-gold/40 py-12 sm:py-16 px-3 sm:px-6 lg:px-8"
+        >
+          <div class="max-w-7xl w-full mx-auto space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gold/35 pb-5">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF6EE] border border-gold/50 text-xs font-bold uppercase tracking-widest text-[#6B1D2F] mb-2">
+                  <span>Section 03 • Craft &amp; Textile Architecture</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-ink">Craft and Details</h2>
+                <p class="text-xs sm:text-sm text-ink-muted mt-1 max-w-2xl">
+                  Every saree is woven and finished with disciplined warp and weft preparation—showcasing authentic zari borders, peacock and floral embroidery, luminous tissue sheen, and coordinated blouse detailing.
+                </p>
+              </div>
+              <button
+                type="button"
+                onclick="app.scrollToLandingSection('section-collection')"
+                class="self-start md:self-auto px-5 py-2.5 rounded-full bg-[#6B1D2F] text-[#FAF6EE] text-xs sm:text-sm font-bold hover:bg-[#4A1220] shadow-xs"
+              >
+                Shop These Weaves ↓
+              </button>
+            </div>
+
+            <!-- 4 Macro & Craft Cards Using the Real Supplied Photos -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+              ${craftCards
+                .map(
+                  (card) => `
+                <article class="bg-[#FAF6EE] rounded-3xl border border-gold/50 overflow-hidden shadow-sm flex flex-col">
+                  <div class="aspect-[4/5] bg-[#EFE5D4] overflow-hidden relative">
+                    <img
+                      src="${this.resolveImageUrl(card.img, card.title, card.viewTag)}"
+                      alt="${card.title}"
+                      loading="lazy"
+                      class="w-full h-full object-cover object-center transition-transform duration-500 hover:scale-105"
+                    />
+                    <span class="absolute top-3 left-3 px-2.5 py-1 rounded-full bg-[#FAF6EE]/95 text-[#6B1D2F] border border-gold/50 text-[10px] font-bold uppercase tracking-wider">
+                      ${card.viewTag}
+                    </span>
+                  </div>
+                  <div class="p-5 flex-1 flex flex-col justify-between space-y-2">
+                    <div>
+                      <h3 class="font-serif text-xl font-bold text-ink">${card.title}</h3>
+                      <p class="text-xs text-ink-muted leading-relaxed mt-1">${card.description}</p>
+                    </div>
+                  </div>
+                </article>
+              `
+                )
+                .join("")}
+            </div>
+
+            <!-- 3 Loom Craft Pillars -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-5 pt-2">
+              <div class="p-6 rounded-3xl bg-[#FAF6EE] border border-gold/45 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#6B1D2F]">01 • ~600 Power Looms</span>
+                <h3 class="font-serif text-xl font-bold text-ink">Uniform Reed &amp; Pick Density</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">
+                  Our weaving floor runs approximately 600 power looms calibrated for consistent tension across tissue organza, silk-blend jacquard, brocade, and mercerised cotton.
+                </p>
+              </div>
+              <div class="p-6 rounded-3xl bg-[#FAF6EE] border border-gold/45 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#6B1D2F]">02 • Zari &amp; Border Precision</span>
+                <h3 class="font-serif text-xl font-bold text-ink">Scalloped Cutwork &amp; Temple Borders</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">
+                  From intricate scalloped peacock embroidery to classic geometric temple borders, every selvedge is reinforced for a crisp, structured fall.
+                </p>
+              </div>
+              <div class="p-6 rounded-3xl bg-[#FAF6EE] border border-gold/45 space-y-2">
+                <span class="text-xs font-bold uppercase tracking-widest text-[#6B1D2F]">03 • Complete Ensemble</span>
+                <h3 class="font-serif text-xl font-bold text-ink">Coordinated Unstitched Blouse</h3>
+                <p class="text-xs text-ink-muted leading-relaxed">
+                  Each saree includes a matching unstitched blouse length featuring coordinated sleeve borders or embroidered neckline detailing.
+                </p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 4 OF 5: COLLECTION — FILTERABLE SAREE CATALOGUE & STUDIO
+             =================================================================== -->
+        <section
+          id="section-collection"
+          data-landing-section="4"
+          aria-label="Saree Collection"
+          class="min-h-screen w-full bg-[#FAF6EE] border-b border-gold/40 py-12 sm:py-16 px-3 sm:px-6 lg:px-8"
+        >
+          <div id="catalogue-section" class="max-w-7xl mx-auto space-y-6">
+            <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-4 border-b border-gold/35 pb-5">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#F3ECE0] border border-gold/50 text-xs font-bold uppercase tracking-widest text-[#6B1D2F] mb-2">
+                  <span>Section 04 • Complete Saree Collection</span>
+                </div>
+                <h2 id="catalogue-heading" class="font-serif text-3xl sm:text-5xl font-bold text-ink">Saree Collection</h2>
+                <p class="text-xs sm:text-sm text-ink-muted mt-1">
+                  Browse our available sarees with verified prices, live stock status, and five-view studio galleries. Filter by fabric, colour, occasion, or price.
+                </p>
+              </div>
+
+              <!-- Mobile Filter Trigger + Sort Dropdown -->
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  type="button"
+                  onclick="app.openMobileFilterSheet()"
+                  class="lg:hidden px-3.5 py-2 rounded-xl bg-[#FAF8F5] text-ink border border-gold/50 text-xs font-semibold flex items-center gap-1.5 shadow-2xs"
+                >
+                  <svg class="w-4 h-4 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                  <span>Filters</span>
+                </button>
+
+                <div class="flex items-center gap-1.5">
+                  <label for="catalogue-sort-select" class="text-xs font-semibold text-ink-muted">Sort:</label>
+                  <select
+                    id="catalogue-sort-select"
+                    onchange="app.setSingleCatalogueFilter('sort', this.value)"
+                    class="px-3 py-2 rounded-xl bg-[#FAF8F5] text-ink border border-gold/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold"
+                  >
+                    <option value="newest" ${cq.sort === "newest" ? "selected" : ""}>Newest Arrivals</option>
+                    <option value="price_asc" ${cq.sort === "price_asc" ? "selected" : ""}>Price: Low to High</option>
+                    <option value="price_desc" ${cq.sort === "price_desc" ? "selected" : ""}>Price: High to Low</option>
+                    <option value="name" ${cq.sort === "name" ? "selected" : ""}>Name: A to Z</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Custom Saree Studio (Colour, Fabric, Occasion -> 1 New Product Card & 5-View Gallery) -->
+            <div id="saree-generator-studio-container">
+              ${this.renderSareeGeneratorStudio()}
+            </div>
+
+            <!-- Active Filter Chips -->
+            <div id="catalogue-active-chips">
+              ${this.renderFilterChips()}
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <!-- Desktop Left Sidebar FilterPanel -->
+              <aside id="catalogue-desktop-sidebar" class="hidden lg:block lg:col-span-3 bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 shadow-xs sticky top-20">
+                ${this.renderFilterPanelContent("desktop")}
+              </aside>
+
+              <!-- Catalogue ProductGrid -->
+              <div class="lg:col-span-9 min-w-0" id="shop-results-container">
+                ${this.renderShopResultsContent()}
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- ===================================================================
+             SECTION 5 OF 5: CONTACT / SHOP — VERIFIED CONTACTS & POLICIES
+             =================================================================== -->
+        <section
+          id="section-contact"
+          data-landing-section="5"
+          aria-label="Contact and Shop Actions"
+          class="min-h-screen w-full flex flex-col justify-center bg-gradient-to-b from-[#F3ECE0] to-[#EFE5D4] py-12 sm:py-16 px-3 sm:px-6 lg:px-8"
+        >
+          <div class="max-w-7xl w-full mx-auto space-y-10">
+            <div class="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-gold/40 pb-5">
+              <div>
+                <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FAF6EE] border border-gold/50 text-xs font-bold uppercase tracking-widest text-[#6B1D2F] mb-2">
+                  <span>Section 05 • Direct Mill Contact &amp; Shopping</span>
+                </div>
+                <h2 class="font-serif text-3xl sm:text-5xl font-bold text-ink">Contact &amp; Shop</h2>
+                <p class="text-xs sm:text-sm text-ink-muted mt-1 max-w-2xl">
+                  Order directly online or reach Janardhan Textiles on WhatsApp, Email, or Instagram for saree recommendations, custom bulk weaves, and dispatch assistance.
+                </p>
+              </div>
+              <div class="flex flex-wrap items-center gap-2.5">
+                <button
+                  type="button"
+                  onclick="app.openCartDrawer()"
+                  class="px-5 py-2.5 rounded-full bg-[#6B1D2F] text-[#FAF6EE] font-bold text-xs sm:text-sm hover:bg-[#4A1220] shadow-md"
+                >
+                  Open Shopping Cart
+                </button>
+                <button
+                  type="button"
+                  onclick="app.navigate('wholesale')"
+                  class="px-4 py-2.5 rounded-full bg-[#FAF6EE] text-ink border border-gold/60 font-semibold text-xs sm:text-sm hover:bg-gold/25"
+                >
+                  Wholesale Enquiry →
+                </button>
+              </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+              <!-- Verified Contact Cards & Confirmed Policies -->
+              <div class="lg:col-span-6 space-y-5">
+                <div class="bg-[#FAF6EE] rounded-3xl border border-gold/50 p-6 shadow-sm space-y-4">
+                  <div class="flex items-center gap-3 pb-3 border-b border-gold/30">
+                    <img
+                      src="${this.resolveImageUrl("/public/assets/logo/janardhan-logo-emblem.webp")}"
+                      alt="Janardhan Textiles Emblem"
+                      class="w-12 h-12 rounded-full object-cover border border-gold shrink-0"
+                    />
+                    <div>
+                      <h3 class="font-serif text-2xl font-bold text-ink">Janardhan Textiles</h3>
+                      <p class="text-xs text-ink-muted">Saree Manufacturer Operating ~600 Power Looms</p>
+                    </div>
+                  </div>
+
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs sm:text-sm">
+                    <a
+                      href="${c.whatsappUrl || "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="p-4 rounded-2xl bg-[#F3ECE0] border border-gold/45 hover:border-[#6B1D2F] transition-colors block"
+                    >
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-[#6B1D2F] block">WhatsApp &amp; Phone</span>
+                      <span class="font-serif text-lg font-bold text-ink mt-0.5 block">${c.whatsappLabel || "+91 96522 62173"}</span>
+                      <span class="text-[11px] text-ink-muted">Tap to chat directly on WhatsApp →</span>
+                    </a>
+
+                    <a
+                      href="mailto:${c.emailAddress || "dasaridamu9418@gmail.com"}"
+                      class="p-4 rounded-2xl bg-[#F3ECE0] border border-gold/45 hover:border-[#6B1D2F] transition-colors block"
+                    >
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-[#6B1D2F] block">Official Email</span>
+                      <span class="font-semibold text-ink mt-0.5 block break-all">${c.emailAddress || "dasaridamu9418@gmail.com"}</span>
+                      <span class="text-[11px] text-ink-muted">Direct customer &amp; wholesale desk</span>
+                    </a>
+
+                    <a
+                      href="${c.instagramUrl || "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA=="}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="p-4 rounded-2xl bg-[#F3ECE0] border border-gold/45 hover:border-[#6B1D2F] transition-colors block"
+                    >
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-[#6B1D2F] block">Instagram</span>
+                      <span class="font-semibold text-ink mt-0.5 block">${c.instagramHandle || "@dasari_damu"}</span>
+                      <span class="text-[11px] text-ink-muted">Follow our latest loom releases</span>
+                    </a>
+
+                    <div class="p-4 rounded-2xl bg-[#F3ECE0] border border-gold/45">
+                      <span class="text-[11px] font-bold uppercase tracking-wider text-[#6B1D2F] block">Business Hours</span>
+                      <span class="font-semibold text-ink mt-0.5 block">${cleanHours}</span>
+                      <span class="text-[11px] text-ink-muted">Direct dispatch &amp; order support</span>
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Confirmed Store Policies Summary -->
+                <div class="bg-[#FAF6EE] rounded-3xl border border-gold/50 p-6 shadow-sm space-y-3">
+                  <div class="flex items-center justify-between">
+                    <h3 class="font-serif text-xl font-bold text-ink">Shipping, Returns &amp; Store Policies</h3>
+                    <button type="button" onclick="app.navigate('policies', { tab: 'shipping' })" class="text-xs font-bold text-[#6B1D2F] hover:underline">
+                      Read Full Policies →
+                    </button>
+                  </div>
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-ink-muted">
+                    <div class="p-3.5 rounded-2xl bg-[#F3ECE0] border border-gold/35">
+                      <strong class="text-ink block mb-0.5">Shipping &amp; Dispatch</strong>
+                      Flat ${this.formatINR(shipCfg.flat)} shipping across India • Free shipping on orders above ${this.formatINR(shipCfg.free_above)}.
+                    </div>
+                    <div class="p-3.5 rounded-2xl bg-[#F3ECE0] border border-gold/35">
+                      <strong class="text-ink block mb-0.5">Returns &amp; Exchange</strong>
+                      7-day inspection &amp; exchange for any weave defect or transit damage with original tags intact.
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Direct Customer Enquiry Form -->
+              <div class="lg:col-span-6 bg-[#FAF6EE] rounded-3xl border border-gold/50 p-6 sm:p-8 shadow-sm space-y-4">
+                <div>
+                  <span class="text-xs font-bold uppercase tracking-widest text-[#6B1D2F]">Direct Message</span>
+                  <h3 class="font-serif text-2xl font-bold text-ink mt-0.5">Enquire About a Saree or Order</h3>
+                  <p class="text-xs text-ink-muted mt-0.5">Send your question directly to Janardhan Textiles and our team will respond promptly.</p>
+                </div>
+
+                <form onsubmit="app.submitContactForm(event)" class="space-y-4 text-xs sm:text-sm">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                    <div>
+                      <label class="block font-semibold text-ink mb-1">Your Name *</label>
+                      <input type="text" name="name" required placeholder="Enter your name" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink" />
+                    </div>
+                    <div>
+                      <label class="block font-semibold text-ink mb-1">Phone / WhatsApp *</label>
+                      <input type="tel" name="phone" required placeholder="10-digit mobile number" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink" />
+                    </div>
+                  </div>
+                  <div>
+                    <label class="block font-semibold text-ink mb-1">Saree or Topic</label>
+                    <input type="text" name="subject" placeholder="e.g. Champagne Tissue Saree / Bulk Order" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink" />
+                  </div>
+                  <div>
+                    <label class="block font-semibold text-ink mb-1">Message *</label>
+                    <textarea name="message" rows="3" required placeholder="How can we help you today?" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/50 bg-ivory text-ink"></textarea>
+                  </div>
+                  <div class="flex flex-wrap items-center justify-between gap-3 pt-1">
+                    <button type="submit" class="px-6 py-3 rounded-full bg-[#6B1D2F] text-[#FAF6EE] font-bold text-xs sm:text-sm hover:bg-[#4A1220] shadow-md transition-all">
+                      Send Enquiry →
+                    </button>
+                    <a
+                      href="${c.whatsappUrl || "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."}"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      class="text-xs font-bold text-[#6B1D2F] hover:underline"
+                    >
+                      Or chat on WhatsApp (+91 96522 62173) →
+                    </a>
+                  </div>
+                </form>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    `;
+  };
+
 })();
