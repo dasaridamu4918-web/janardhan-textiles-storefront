@@ -9,10 +9,9 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>Janardhan Textiles | Saree Showcase &amp; Collection</title>
 
-  <!-- Preload static logo emblem and featured saree views -->
-  <link rel="preload" as="image" href="/public/assets/logo/janardhan-logo-emblem.webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="/public/assets/logo/janardhan-logo-static.webp" fetchpriority="high" />
-  <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" />
+  <!-- Preload featured saree views -->
+  <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/2-back-pallu.jpg" />
 
   <!-- Dynamic SVG Favicon ("JT" Monogram in Deep Burgundy & Champagne Gold) -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%236B1D2F'/%3E%3Crect x='6' y='6' width='88' height='88' rx='14' fill='none' stroke='%23C4A15A' stroke-width='2.5'/%3E%3Ctext x='50' y='66' font-family='Georgia, serif' font-size='48' font-weight='bold' fill='%23C4A15A' text-anchor='middle' letter-spacing='2'%3EJT%3C/text%3E%3C/svg%3E">
@@ -800,20 +799,12 @@
   <!-- Sticky Storefront Header with Prominent Search, Navigation, Wishlist, Account & Cart -->
   <header class="sticky top-0 z-40 w-full max-w-full overflow-x-clip bg-[#FAF8F5]/95 backdrop-blur-md border-b border-gold/40 shadow-[0_1px_8px_rgba(35,29,22,0.06)]">
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3">
-      <!-- Static Brand Logo in Navigation (Revealed & Highlighted as Hero 3D Logo Settles) -->
-      <button id="header-brand-btn" onclick="app.navigate('home')" class="min-w-0 shrink-0 flex items-center gap-2 sm:gap-2.5 text-left group focus:outline-none rounded-full py-1 px-2 sm:px-3 bg-[#FAF6EE] border border-gold/60 hover:border-gold shadow-2xs transition-all duration-300" aria-label="Janardhan Textiles Home">
-        <img
-          id="header-static-logo-img"
-          src="public/assets/logo/janardhan-logo-emblem.webp"
-          alt="Janardhan Textiles JT Logo"
-          width="36"
-          height="36"
-          class="w-7 h-7 sm:w-9 sm:h-9 rounded-full object-cover border border-gold shrink-0 bg-[#FAF6EE]"
-        />
-        <div class="flex flex-col min-w-0 pr-0.5 sm:pr-1">
-          <span id="brand-wordmark" class="font-serif text-xs sm:text-base lg:text-lg font-bold text-ink tracking-[0.04em] sm:tracking-[0.08em] whitespace-nowrap truncate">Janardhan Textiles</span>
-          <span id="header-brand-sub" class="hidden sm:block text-[9px] uppercase tracking-[0.18em] text-teal font-semibold leading-none">Fine Sarees • ~600 Looms</span>
+      <!-- Brand Logo (Present across all pages) -->
+      <button id="header-brand-btn" onclick="app.navigate('home')" class="min-w-0 shrink-0 flex items-center gap-1.5 sm:gap-2.5 text-left group focus:outline-none rounded-lg py-1" aria-label="Janardhan Textiles Home">
+        <div class="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-teal flex items-center justify-center border border-gold shrink-0">
+          <span class="font-serif font-semibold text-gold text-[10px] sm:text-sm tracking-wider">JT</span>
         </div>
+        <span id="brand-wordmark" class="font-serif text-xs sm:text-base lg:text-lg font-bold text-ink tracking-[0.04em] sm:tracking-[0.08em] whitespace-nowrap truncate">Janardhan Textiles</span>
       </button>
 
       <!-- Prominent Debounced Header Search Bar (Desktop & Tablet) -->
@@ -837,15 +828,15 @@
         >✕</button>
       </div>
 
-      <!-- Desktop Navigation (5 Scroll Sections + Storefront Links) -->
+      <!-- Desktop Navigation -->
       <nav class="hidden xl:flex items-center gap-0.5 bg-[#F3ECE0]/90 px-1.5 py-1 rounded-full border border-gold/40 shrink-0" aria-label="Primary Navigation">
-        <button onclick="app.scrollToLandingSection('section-hero')" data-nav="home" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Hero</button>
-        <button onclick="app.scrollToLandingSection('section-featured')" class="px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Featured</button>
-        <button onclick="app.scrollToLandingSection('section-craft')" class="px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Craft &amp; Details</button>
-        <button onclick="app.scrollToLandingSection('section-collection')" data-nav="shop" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Collection</button>
-        <button onclick="app.scrollToLandingSection('section-contact')" data-nav="contact" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Contact</button>
-        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold text-ink bg-gold/25 border border-gold/60 hover:bg-gold/40 transition-colors">Collections Menu</button>
-        <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Orders</button>
+        <button onclick="app.navigate('home')" data-nav="home" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Home</button>
+        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold text-ink bg-gold/25 border border-gold/60 hover:bg-gold/40 transition-colors">Shop Collections</button>
+        <button onclick="app.navigate('shop')" data-nav="shop" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Catalogue</button>
+        <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">My Orders</button>
+        <button onclick="app.navigate('wholesale')" data-nav="wholesale" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Wholesale</button>
+        <button onclick="app.navigate('contact')" data-nav="contact" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Contact</button>
+        <button onclick="app.navigate('admin')" data-nav="admin" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink-muted hover:text-ink hover:bg-gold/20 transition-colors">Admin</button>
       </nav>
 
       <!-- Right Action Controls: Shop Collections (Tablet) + Saree Progress Indicator + Wishlist + Account/Login + Cart -->
@@ -914,7 +905,6 @@
         <svg class="w-3.5 h-3.5 text-ink-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
       <button id="mobile-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="shrink-0 px-2.5 py-1.5 rounded-full bg-gold/25 border border-gold/55 text-[11px] font-semibold text-ink">Shop Collections</button>
-      <button onclick="app.scrollToLandingSection('section-contact')" class="shrink-0 px-2.5 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/45 text-[11px] font-semibold text-ink">Contact</button>
     </div>
   </header>
 
@@ -980,14 +970,9 @@
         <!-- Brand Column + Social Media Logo Links -->
         <div class="md:col-span-1 space-y-4">
           <div class="flex items-center gap-3">
-            <img
-              src="public/assets/logo/janardhan-logo-emblem.webp"
-              alt="Janardhan Textiles Emblem"
-              width="44"
-              height="44"
-              loading="lazy"
-              class="w-11 h-11 rounded-full object-cover border border-gold shrink-0 bg-[#FAF6EE]"
-            />
+            <div class="w-10 h-10 rounded-full bg-teal flex items-center justify-center border border-gold shrink-0">
+              <span class="font-serif font-semibold text-gold text-base tracking-wider">JT</span>
+            </div>
             <div>
               <span class="font-serif text-xl sm:text-2xl font-bold text-ink tracking-wide block">Janardhan Textiles</span>
               <span class="text-[10px] uppercase tracking-[0.18em] text-teal font-semibold block">Fine Sarees • ~600 Power Looms</span>
