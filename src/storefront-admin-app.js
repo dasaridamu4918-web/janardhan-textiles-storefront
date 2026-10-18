@@ -879,7 +879,15 @@
   };
 
   // Upgrade BACKEND_API.request to attach Authorization Bearer token & automatically fall back to LOCAL_FALLBACK_API on static hosts
+  let _detectedStaticHost =
+    typeof window !== "undefined" &&
+    (window.location.hostname.endsWith(".vercel.app") || window.location.hostname.endsWith(".github.io")) &&
+    !window.VITE_API_URL;
+
   BACKEND_API.requestWithStatus = async function (path, options = {}) {
+    if (_detectedStaticHost && path.startsWith("/api/")) {
+      return LOCAL_FALLBACK_API.handle(path, options);
+    }
     const fullUrl = path.startsWith("http") ? path : `${API_URL}${path}`;
     const headers = { ...(options.headers || {}) };
     if (!(options.body instanceof FormData) && !headers["Content-Type"]) {
@@ -898,12 +906,14 @@
       if ((res.status === 404 || res.status === 405 || res.status === 502 || res.status === 503) && path.startsWith("/api/")) {
         const text = await res.clone().text().catch(() => "");
         if (!text.trim().startsWith("{")) {
+          _detectedStaticHost = true;
           return LOCAL_FALLBACK_API.handle(path, options);
         }
       }
       const data = await res.json().catch(() => ({}));
       return { status: res.status, ok: res.ok, data };
     } catch (networkErr) {
+      _detectedStaticHost = true;
       return LOCAL_FALLBACK_API.handle(path, options);
     }
   };
@@ -6172,6 +6182,8 @@
   // Hook into app.init to initialize filters, home sections, catalogue query, session, and React Bits
   const origInit = app.init.bind(app);
   app.init = async function () {
+    if (this._initStarted) return;
+    this._initStarted = true;
     this.parseCatalogueQueryFromUrl();
     const initialRoute = this.getRouteFromHash();
     if (initialRoute && initialRoute !== "home") {
@@ -7265,4 +7277,9 @@
     `;
   };
 
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", () => app.init());
+  } else {
+    app.init();
+  }
 })();
