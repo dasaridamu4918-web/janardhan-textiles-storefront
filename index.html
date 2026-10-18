@@ -590,6 +590,7 @@
         background: #D9CBB0;
       }
 
+      .saree-360-poster-fallback,
       .saree-360-canvas,
       .saree-360-video {
         display: block;
@@ -598,6 +599,17 @@
         object-fit: cover;
         user-select: none;
         -webkit-user-drag: none;
+      }
+
+      .saree-360-poster-fallback {
+        position: absolute;
+        inset: 0;
+        z-index: 1;
+      }
+
+      .saree-360-canvas {
+        position: relative;
+        z-index: 2;
       }
 
       .saree-360-video {
@@ -1654,6 +1666,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             canvas.height = img.naturalHeight;
           }
           ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          const fallbackImg = document.getElementById("saree-360-poster-fallback");
+          if (fallbackImg && img.src && fallbackImg.src !== img.src) {
+            fallbackImg.src = img.src;
+          }
           this.lastDrawnScrubIndex = idx;
         }
       },
@@ -2596,6 +2612,14 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
                   <div class="saree-360-frame-box">
                     <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
+                    <img
+                      id="saree-360-poster-fallback"
+                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp"
+                      alt="Champagne Tissue Saree 360-degree turntable view"
+                      class="saree-360-poster-fallback"
+                      fetchpriority="high"
+                      decoding="async"
+                    />
                     <canvas
                       id="saree-360-canvas"
                       class="saree-360-canvas"
