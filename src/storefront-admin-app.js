@@ -2003,21 +2003,72 @@
     const shipCfg = fm.shipping || { flat: 99, free_above: 2999 };
 
     return `
-      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-12 pb-12">
-        <!-- Shop by Fabric & Occasion Collection Links (from /api/filters) -->
-        <section class="rounded-3xl bg-[#FAF8F5] border border-gold/40 p-5 sm:p-8 shadow-sm space-y-6" aria-label="Saree Collections by Fabric and Occasion">
+      <!-- React Bits CurvedLoop Decorative Divider 1 (Between Hero & Featured / Collections) -->
+      <div id="home-curved-loop-hero-divider" class="w-full max-w-full overflow-hidden my-4" aria-hidden="true"></div>
+
+      <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-12 pb-8">
+        <!-- Shop by Fabric & Occasion Collection Links + React Bits FlowingMenu (from /api/filters & /api/products) -->
+        <section id="home-flowing-menu-section" class="rounded-3xl bg-[#FAF8F5] border border-gold/40 p-4 sm:p-8 shadow-sm space-y-6" aria-label="Saree Collections by Fabric and Occasion">
           <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div>
-              <span class="text-xs font-bold uppercase tracking-widest text-teal">Curated Loom Collections</span>
+              <span class="text-xs font-bold uppercase tracking-widest text-teal">Curated Loom Collections • Flowing Menu</span>
               <h2 class="font-serif text-2xl sm:text-3xl font-semibold text-ink mt-0.5">Browse by Fabric &amp; Occasion</h2>
+              <p class="text-xs text-ink-muted mt-0.5">Live collections from <code>/api/filters</code> with real saree photography from <code>/api/products</code>.</p>
             </div>
-            <button type="button" onclick="app.clearAllCatalogueFilters(false); app.navigate('shop')" class="self-start sm:self-auto px-4 py-2 rounded-full bg-teal text-ivory text-xs font-semibold hover:bg-teal-light">
-              Shop All Sarees →
-            </button>
+            <div class="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+              <button
+                type="button"
+                onclick="app.openFlowingMenuModal()"
+                class="px-4 py-2 rounded-full bg-gold/25 text-ink border border-gold/60 text-xs font-semibold hover:bg-gold/40 transition-colors"
+              >
+                Open Full-Screen Menu ↗
+              </button>
+              <button
+                type="button"
+                onclick="app.clearAllCatalogueFilters(false); app.navigate('shop')"
+                class="px-4 py-2 rounded-full bg-teal text-ivory text-xs font-semibold hover:bg-teal-light transition-colors"
+              >
+                Shop All Sarees →
+              </button>
+            </div>
           </div>
 
-          <div class="space-y-3">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted">Shop by Saree Fabric</h3>
+          <!-- React Bits FlowingMenu Home Mount (Fallback links rendered immediately and upgraded on lazy-load) -->
+          <div id="home-flowing-menu-mount" class="w-full">
+            <nav aria-label="Saree Collections Fallback Links" class="rounded-2xl border border-gold/35 bg-[#FAF8F5] divide-y divide-gold/25 overflow-hidden">
+              ${fabrics
+                .map(
+                  (fab, i) => `
+                <a
+                  href="?fabric=${encodeURIComponent(fab)}#catalogue"
+                  onclick="event.preventDefault(); app.filterByCollection('fabric', '${fab.replace(/'/g, "\\'")}')"
+                  class="flex items-center justify-between px-4 sm:px-6 py-3.5 text-ink hover:bg-gold/20 active:bg-gold/30 transition-colors"
+                >
+                  <span class="font-serif text-lg sm:text-2xl font-semibold">${String(i + 1).padStart(2, "0")}. ${fab}</span>
+                  <span class="text-xs font-semibold text-ink-muted uppercase tracking-wider">Fabric Collection →</span>
+                </a>
+              `
+                )
+                .join("")}
+              ${occasions
+                .map(
+                  (occ, i) => `
+                <a
+                  href="?occasion=${encodeURIComponent(occ)}#catalogue"
+                  onclick="event.preventDefault(); app.filterByCollection('occasion', '${occ.replace(/'/g, "\\'")}')"
+                  class="flex items-center justify-between px-4 sm:px-6 py-3.5 text-ink hover:bg-gold/20 active:bg-gold/30 transition-colors"
+                >
+                  <span class="font-serif text-lg sm:text-2xl font-semibold">${String(fabrics.length + i + 1).padStart(2, "0")}. ${occ}</span>
+                  <span class="text-xs font-semibold text-ink-muted uppercase tracking-wider">Occasion Collection →</span>
+                </a>
+              `
+                )
+                .join("")}
+            </nav>
+          </div>
+
+          <div class="space-y-3 pt-2 border-t border-gold/25">
+            <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted">Quick Filter Pills — Fabric &amp; Occasion</h3>
             <div class="flex flex-wrap gap-2">
               ${fabrics
                 .map(
@@ -2032,12 +2083,6 @@
               `
                 )
                 .join("")}
-            </div>
-          </div>
-
-          <div class="space-y-3 pt-2 border-t border-gold/25">
-            <h3 class="text-xs font-bold uppercase tracking-wider text-ink-muted">Shop by Occasion</h3>
-            <div class="flex flex-wrap gap-2">
               ${occasions
                 .map(
                   (occ) => `
@@ -2148,6 +2193,9 @@
           </div>
         </section>
       </div>
+
+      <!-- React Bits CurvedLoop Decorative Divider 2 (Above Footer on Home Page) -->
+      <div id="home-curved-loop-footer-divider" class="w-full max-w-full overflow-hidden mt-2 mb-4" aria-hidden="true"></div>
     `;
   };
 
@@ -5699,12 +5747,457 @@
         viewport.innerHTML = this.renderShowcaseAndShopPage();
         ShowcaseScrollEngine.mount();
     }
+
+    this.syncReactBitsForRoute();
   };
 
-  // Hook into app.init to initialize filters, home sections, catalogue query, and session
+  // ============================================================================
+  // 17. REACT BITS ANIMATED COMPONENTS (SplashCursor, FlowingMenu, CurvedLoop)
+  //     Variant: JS-TW (@react-bits/SplashCursor-JS-TW, FlowingMenu-JS-TW, CurvedLoop-JS-TW)
+  // ============================================================================
+  app.state.reactBits = {
+    splashInstance: null,
+    homeFlowingMenuInstance: null,
+    modalFlowingMenuInstance: null,
+    heroCurvedLoopInstance: null,
+    footerCurvedLoopInstance: null,
+    flowingMenuItems: [],
+    imageCache: {},
+    modalOpen: false,
+    lastTriggerEl: null
+  };
+
+  app.areEffectsDisabled = function () {
+    if (typeof window === "undefined") return true;
+    if (window.__DISABLE_REACT_BITS__) return true;
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get("effects") === "off" || params.get("reactbits") === "off") return true;
+    } catch (e) {}
+    return false;
+  };
+
+  app.importReactBitsModule = function (fileName) {
+    const base = (typeof window !== "undefined" && window.__ASSET_BASE_PATH__) ? window.__ASSET_BASE_PATH__ : "";
+    const url = new URL(`${base}/src/components/reactbits/${fileName}`, window.location.origin).href;
+    return import(url);
+  };
+
+  app.unmountSplashCursor = function () {
+    const rb = this.state.reactBits;
+    if (rb && rb.splashInstance) {
+      try {
+        rb.splashInstance.destroy();
+      } catch (e) {}
+      rb.splashInstance = null;
+    }
+    const container = document.getElementById("reactbits-splash-cursor-container");
+    if (container) {
+      container.innerHTML = "";
+    }
+  };
+
+  app.unmountHomeCurvedLoops = function () {
+    const rb = this.state.reactBits;
+    if (!rb) return;
+    if (rb.heroCurvedLoopInstance) {
+      try {
+        rb.heroCurvedLoopInstance.destroy();
+      } catch (e) {}
+      rb.heroCurvedLoopInstance = null;
+    }
+    if (rb.footerCurvedLoopInstance) {
+      try {
+        rb.footerCurvedLoopInstance.destroy();
+      } catch (e) {}
+      rb.footerCurvedLoopInstance = null;
+    }
+  };
+
+  // Fetch real collection items from GET /api/filters and real product images from GET /api/products?fabric=...&limit=1
+  app.fetchFlowingMenuItems = async function () {
+    const rb = this.state.reactBits;
+    if (rb.flowingMenuItems && rb.flowingMenuItems.length > 0) {
+      return rb.flowingMenuItems;
+    }
+    if (rb._fetchPromise) {
+      return rb._fetchPromise;
+    }
+    rb._fetchPromise = (async () => {
+      const fm = this.state.filtersMeta || {};
+      const fabrics =
+        Array.isArray(fm.fabrics) && fm.fabrics.length
+          ? fm.fabrics
+          : [...new Set((this.state.products || []).map((p) => p.fabric).filter(Boolean))];
+      const occasions =
+        Array.isArray(fm.occasions) && fm.occasions.length
+          ? fm.occasions
+          : [...new Set((this.state.products || []).map((p) => p.occasion).filter(Boolean))];
+
+      const resolveCollectionImage = async (type, value) => {
+        const cacheKey = `${type}:${value}`;
+        if (cacheKey in rb.imageCache) {
+          return rb.imageCache[cacheKey];
+        }
+        try {
+          const res = await BACKEND_API.request(`/api/products?${type}=${encodeURIComponent(value)}&limit=1`);
+          const first = res && Array.isArray(res.items) && res.items[0] ? res.items[0] : null;
+          if (first) {
+            const rawUrl =
+              (Array.isArray(first.images) && first.images[0]) ||
+              first.image ||
+              (Array.isArray(first.gallery) && first.gallery[0] && first.gallery[0].url) ||
+              "";
+            if (rawUrl && String(rawUrl).trim()) {
+              const resolved = this.resolveImageUrl(rawUrl, first.name, "Front view");
+              rb.imageCache[cacheKey] = resolved;
+              return resolved;
+            }
+          }
+        } catch (e) {}
+        // If a row has no product image, return null so the row renders without one (never stock/invented images)
+        rb.imageCache[cacheKey] = null;
+        return null;
+      };
+
+      const fabricItems = await Promise.all(
+        fabrics.map(async (fab) => {
+          const image = await resolveCollectionImage("fabric", fab);
+          return {
+            text: fab,
+            marquee: fab, // Strictly real collection name only
+            type: "fabric",
+            value: fab,
+            meta: "Fabric Collection",
+            link: `?fabric=${encodeURIComponent(fab)}#catalogue`,
+            routeUrl: `/catalogue?fabric=${encodeURIComponent(fab)}`,
+            image
+          };
+        })
+      );
+
+      const occasionItems = await Promise.all(
+        occasions.map(async (occ) => {
+          const image = await resolveCollectionImage("occasion", occ);
+          return {
+            text: occ,
+            marquee: occ, // Strictly real collection name only
+            type: "occasion",
+            value: occ,
+            meta: "Occasion Collection",
+            link: `?occasion=${encodeURIComponent(occ)}#catalogue`,
+            routeUrl: `/catalogue?occasion=${encodeURIComponent(occ)}`,
+            image
+          };
+        })
+      );
+
+      rb.flowingMenuItems = [...fabricItems, ...occasionItems];
+      rb._fetchPromise = null;
+      return rb.flowingMenuItems;
+    })();
+    return rb._fetchPromise;
+  };
+
+  app.renderFlowingMenuFallbackHTML = function (items) {
+    return `
+      <nav aria-label="Saree Collections Menu" class="rounded-2xl border border-gold/40 bg-[#FAF8F5] divide-y divide-gold/25 overflow-hidden">
+        <ul class="list-none m-0 p-0 divide-y divide-gold/25">
+          ${items
+            .map(
+              (item, i) => `
+            <li>
+              <a
+                href="${item.link}"
+                data-collection-type="${item.type}"
+                data-collection-value="${item.value.replace(/"/g, "&quot;")}"
+                onclick="event.preventDefault(); app.handleFlowingMenuItemActivate('${item.type}', '${item.value.replace(/'/g, "\\'")}')"
+                class="flex items-center justify-between gap-3 px-4 sm:px-6 py-3.5 text-ink hover:bg-gold/20 active:bg-gold/30 transition-colors focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-ink"
+              >
+                <span class="flex items-center gap-3 min-w-0">
+                  <span class="font-sans text-xs font-semibold text-ink-muted tabular-nums">${String(i + 1).padStart(2, "0")}</span>
+                  ${
+                    item.image
+                      ? `<img src="${item.image}" alt="" aria-hidden="true" loading="lazy" class="w-9 h-9 rounded-full object-cover object-top border border-gold/50 shrink-0" />`
+                      : ""
+                  }
+                  <span class="font-serif text-lg sm:text-2xl font-semibold text-ink truncate">${item.text}</span>
+                </span>
+                <span class="text-xs font-semibold text-ink-muted uppercase tracking-wider shrink-0">${item.meta} →</span>
+              </a>
+            </li>
+          `
+            )
+            .join("")}
+        </ul>
+      </nav>
+    `;
+  };
+
+  app.handleFlowingMenuItemActivate = function (type, value) {
+    if (this.state.reactBits.modalOpen) {
+      this.closeFlowingMenuModal();
+    }
+    this.filterByCollection(type, value);
+  };
+
+  app.openFlowingMenuModal = async function () {
+    const modal = document.getElementById("flowing-menu-modal");
+    const mountEl = document.getElementById("flowing-menu-modal-mount");
+    if (!modal || !mountEl) return;
+
+    this.state.reactBits.lastTriggerEl = document.activeElement;
+    this.state.reactBits.modalOpen = true;
+    modal.classList.remove("hidden");
+
+    let items = this.state.reactBits.flowingMenuItems;
+    if (!items || items.length === 0) {
+      items = await this.fetchFlowingMenuItems();
+    }
+
+    if (this.areEffectsDisabled()) {
+      mountEl.innerHTML = this.renderFlowingMenuFallbackHTML(items);
+    } else {
+      try {
+        const mod = await this.importReactBitsModule("flowing-menu.js");
+        if (this.state.reactBits.modalFlowingMenuInstance) {
+          this.state.reactBits.modalFlowingMenuInstance.destroy();
+        }
+        this.state.reactBits.modalFlowingMenuInstance = mod.mountFlowingMenu(mountEl, {
+          items,
+          bgColor: "#FAF8F5",
+          textColor: "#1C1613",
+          marqueeBgColor: "#D4AF37",
+          marqueeTextColor: "#1C1613",
+          borderColor: "rgba(196, 161, 90, 0.32)",
+          ariaLabel: "Full-Screen Saree Collections Menu",
+          onItemClick: (item, _idx, event) => {
+            if (event) event.preventDefault();
+            this.handleFlowingMenuItemActivate(item.type, item.value);
+          }
+        });
+      } catch (err) {
+        mountEl.innerHTML = this.renderFlowingMenuFallbackHTML(items);
+      }
+    }
+
+    const firstLink = mountEl.querySelector("a, button") || document.getElementById("flowing-menu-close-btn");
+    if (firstLink && typeof firstLink.focus === "function") {
+      setTimeout(() => firstLink.focus(), 30);
+    }
+  };
+
+  app.closeFlowingMenuModal = function () {
+    const modal = document.getElementById("flowing-menu-modal");
+    if (modal) modal.classList.add("hidden");
+    this.state.reactBits.modalOpen = false;
+    if (this.state.reactBits.modalFlowingMenuInstance) {
+      try {
+        this.state.reactBits.modalFlowingMenuInstance.destroy();
+      } catch (e) {}
+      this.state.reactBits.modalFlowingMenuInstance = null;
+    }
+    const trigger = this.state.reactBits.lastTriggerEl || document.getElementById("header-shop-collections-btn");
+    if (trigger && typeof trigger.focus === "function") {
+      try {
+        trigger.focus();
+      } catch (e) {}
+    }
+  };
+
+  window.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && app.state.reactBits && app.state.reactBits.modalOpen) {
+      event.preventDefault();
+      app.closeFlowingMenuModal();
+    }
+  });
+
+  app.mountHomeReactBits = async function () {
+    const rb = this.state.reactBits;
+    const isHome = this.state.currentPage === "home";
+
+    const heroDividerEl = document.getElementById("home-curved-loop-hero-divider");
+    const footerDividerEl = document.getElementById("home-curved-loop-footer-divider");
+    if (heroDividerEl) heroDividerEl.classList.toggle("hidden", !isHome);
+    if (footerDividerEl) footerDividerEl.classList.toggle("hidden", !isHome);
+
+    if (this.areEffectsDisabled()) {
+      this.unmountSplashCursor();
+      this.unmountHomeCurvedLoops();
+      if (heroDividerEl) heroDividerEl.innerHTML = "";
+      if (footerDividerEl) footerDividerEl.innerHTML = "";
+      const homeFlowEl = document.getElementById("home-flowing-menu-mount");
+      if (homeFlowEl) {
+        const items =
+          rb.flowingMenuItems && rb.flowingMenuItems.length > 0
+            ? rb.flowingMenuItems
+            : await this.fetchFlowingMenuItems();
+        homeFlowEl.innerHTML = this.renderFlowingMenuFallbackHTML(items);
+      }
+      return;
+    }
+
+    // 1. Mount CurvedLoop dividers immediately when on Home page
+    const mountCurvedLoopsTask = (async () => {
+      if (isHome && (heroDividerEl || footerDividerEl)) {
+        try {
+          const fm = this.state.filtersMeta || {};
+          const fabrics =
+            Array.isArray(fm.fabrics) && fm.fabrics.length
+              ? fm.fabrics
+              : [...new Set((this.state.products || []).map((p) => p.fabric).filter(Boolean))];
+          const occasions =
+            Array.isArray(fm.occasions) && fm.occasions.length
+              ? fm.occasions
+              : [...new Set((this.state.products || []).map((p) => p.occasion).filter(Boolean))];
+
+          // Strictly true brand messages from /api/filters: "Janardan Textiles" + real fabrics & occasions
+          const heroLoopText = ["Janardan Textiles", ...fabrics].join(" ✦ ");
+          const footerLoopText = ["Janardan Textiles", ...occasions, ...fabrics.slice(0, 4)].join(" ✦ ");
+
+          const curvedMod = await this.importReactBitsModule("curved-loop.js");
+          if (this.state.currentPage !== "home" || this.areEffectsDisabled()) return;
+          this.unmountHomeCurvedLoops();
+
+          const liveHeroEl = document.getElementById("home-curved-loop-hero-divider");
+          const liveFooterEl = document.getElementById("home-curved-loop-footer-divider");
+
+          if (liveHeroEl) {
+            rb.heroCurvedLoopInstance = curvedMod.mountCurvedLoop(liveHeroEl, {
+              marqueeText: heroLoopText,
+              separator: "✦",
+              speed: 0.62,
+              curveAmount: 42,
+              direction: "left",
+              color: "#1C1613",
+              separatorColor: "#C4A15A",
+              fontSize: 28,
+              pauseOnHover: true
+            });
+          }
+          if (liveFooterEl) {
+            rb.footerCurvedLoopInstance = curvedMod.mountCurvedLoop(liveFooterEl, {
+              marqueeText: footerLoopText,
+              separator: "✦",
+              speed: 0.58,
+              curveAmount: 38,
+              direction: "right",
+              color: "#1C1613",
+              separatorColor: "#C4A15A",
+              fontSize: 28,
+              pauseOnHover: true
+            });
+          }
+        } catch (e) {}
+      } else {
+        this.unmountHomeCurvedLoops();
+      }
+    })();
+
+    // 2. Mount FlowingMenu in the Home section (#home-flowing-menu-mount)
+    const mountFlowingMenuTask = (async () => {
+      const homeFlowEl = document.getElementById("home-flowing-menu-mount");
+      if (!homeFlowEl) return;
+      try {
+        const items =
+          rb.flowingMenuItems && rb.flowingMenuItems.length > 0
+            ? rb.flowingMenuItems
+            : await this.fetchFlowingMenuItems();
+        const flowMod = await this.importReactBitsModule("flowing-menu.js");
+        const liveHomeFlowEl = document.getElementById("home-flowing-menu-mount");
+        if (!liveHomeFlowEl || this.areEffectsDisabled()) return;
+        if (rb.homeFlowingMenuInstance) {
+          rb.homeFlowingMenuInstance.destroy();
+        }
+        rb.homeFlowingMenuInstance = flowMod.mountFlowingMenu(liveHomeFlowEl, {
+          items,
+          bgColor: "#FAF8F5",
+          textColor: "#1C1613",
+          marqueeBgColor: "#D4AF37",
+          marqueeTextColor: "#1C1613",
+          borderColor: "rgba(196, 161, 90, 0.32)",
+          ariaLabel: "Home Saree Collections Flowing Menu",
+          onItemClick: (item, _idx, event) => {
+            if (event) event.preventDefault();
+            this.filterByCollection(item.type, item.value);
+          }
+        });
+      } catch (e) {}
+    })();
+
+    await Promise.all([mountCurvedLoopsTask, mountFlowingMenuTask]);
+  };
+
+  app.syncReactBitsForRoute = function () {
+    const isHome = this.state.currentPage === "home";
+
+    // SplashCursor MUST ONLY run on the Home page (never on catalogue/shop, product, cart, checkout, account, or admin)
+    if (!isHome || this.areEffectsDisabled()) {
+      this.unmountSplashCursor();
+    } else {
+      // Lazy-load SplashCursor after initial Home page paint so first load stays fast
+      setTimeout(async () => {
+        if (this.state.currentPage !== "home" || this.areEffectsDisabled()) {
+          this.unmountSplashCursor();
+          return;
+        }
+        const splashContainer = document.getElementById("reactbits-splash-cursor-container");
+        if (!splashContainer) return;
+        if (this.state.reactBits.splashInstance && splashContainer.querySelector("canvas")) return;
+        try {
+          const splashMod = await this.importReactBitsModule("splash-cursor.js");
+          if (this.state.currentPage !== "home" || this.areEffectsDisabled()) return;
+          this.unmountSplashCursor();
+          this.state.reactBits.splashInstance = splashMod.mountSplashCursor(splashContainer, {
+            colors: ["#D4AF37", "#E6D5B8", "#F3E8D2", "#C4A15A"],
+            rainbow: false,
+            theme: "light",
+            intensity: 0.36,
+            size: 0.85,
+            force: 0.62,
+            swirl: 2.0,
+            trail: 0.76,
+            quality: "medium",
+            zIndex: 1
+          });
+        } catch (e) {}
+      }, 60);
+    }
+
+    // Mount or update Home FlowingMenu & CurvedLoop dividers
+    if (this.state.currentPage === "home" || this.state.currentPage === "shop") {
+      setTimeout(() => {
+        this.mountHomeReactBits();
+      }, 40);
+    } else {
+      this.unmountHomeCurvedLoops();
+    }
+  };
+
+  // Wrap app.navigate so transitions between "home" and "shop" (Catalogue) always sync React Bits state
+  const origNavigate = app.navigate.bind(app);
+  app.navigate = function (page, params = {}) {
+    origNavigate(page, params);
+    this.syncReactBitsForRoute();
+  };
+
+  // Wrap app.fetchHomeSections so re-rendering #home-api-collections-container re-mounts FlowingMenu & CurvedLoop
+  const origFetchHomeSections = app.fetchHomeSections.bind(app);
+  app.fetchHomeSections = async function () {
+    await origFetchHomeSections();
+    if (this.state.currentPage === "home" || this.state.currentPage === "shop") {
+      await this.mountHomeReactBits();
+    }
+  };
+
+  // Hook into app.init to initialize filters, home sections, catalogue query, session, and React Bits
   const origInit = app.init.bind(app);
   app.init = async function () {
     this.parseCatalogueQueryFromUrl();
+    const initialRoute = this.getRouteFromHash();
+    if (initialRoute && initialRoute !== "home") {
+      this.state.currentPage = initialRoute;
+    }
     this.syncAuthHeaderUI();
     await origInit();
     if (this.state.settings && this.state.settings.contacts) {
@@ -5719,6 +6212,7 @@
       this.state.settings.contacts.emailAddress = "dasaridamu9418@gmail.com";
       this.renderFooterContacts();
     }
+    this.syncReactBitsForRoute();
     await Promise.all([
       this.fetchFiltersMeta(),
       this.verifyCurrentSession(),
@@ -5726,6 +6220,9 @@
       this.fetchCatalogueProducts(),
       this.fetchSareeGeneratorStatus()
     ]);
+
+    await this.fetchFlowingMenuItems();
+    this.syncReactBitsForRoute();
 
     window.addEventListener("popstate", () => {
       this.parseCatalogueQueryFromUrl();

@@ -824,6 +824,7 @@
       <!-- Desktop Navigation -->
       <nav class="hidden xl:flex items-center gap-0.5 bg-[#F5EFE4]/85 px-1.5 py-1 rounded-full border border-gold/35 shrink-0" aria-label="Primary Navigation">
         <button onclick="app.navigate('home')" data-nav="home" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Home</button>
+        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold text-ink bg-gold/20 border border-gold/50 hover:bg-gold/35 transition-colors">Shop Collections</button>
         <button onclick="app.navigate('shop')" data-nav="shop" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Catalogue</button>
         <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">My Orders</button>
         <button onclick="app.navigate('wholesale')" data-nav="wholesale" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/15 transition-colors">Wholesale</button>
@@ -831,8 +832,17 @@
         <button onclick="app.navigate('admin')" data-nav="admin" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink border border-gold/40 hover:bg-teal hover:text-ivory transition-colors ml-0.5">Admin</button>
       </nav>
 
-      <!-- Right Action Controls: Saree Progress Indicator + Wishlist + Account/Login + Cart -->
+      <!-- Right Action Controls: Shop Collections (Tablet) + Saree Progress Indicator + Wishlist + Account/Login + Cart -->
       <div class="flex items-center gap-1 sm:gap-2 shrink-0 pr-0.5">
+        <button
+          id="tablet-shop-collections-btn"
+          type="button"
+          onclick="app.openFlowingMenuModal()"
+          class="hidden md:inline-flex xl:hidden px-2.5 h-8 sm:h-9 items-center rounded-full bg-gold/20 text-ink border border-gold/55 hover:bg-gold/35 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-gold"
+        >
+          Shop Collections
+        </button>
+
         <!-- Accessible 01 / 05 Saree Progress Indicator -->
         <div
           id="progress-indicator"
@@ -874,25 +884,29 @@
     </div>
 
     <!-- Mobile Search Strip (Visible on phones <768px) -->
-    <div class="md:hidden px-2.5 pb-2 pt-0.5 bg-[#FAF8F5]/95 border-t border-gold/20 flex items-center gap-2">
-      <div class="relative flex-1">
+    <div class="md:hidden px-2.5 pb-2 pt-0.5 bg-[#FAF8F5]/95 border-t border-gold/20 flex items-center gap-1.5">
+      <div class="relative flex-1 min-w-0">
         <label for="mobile-header-search-input" class="sr-only">Search sarees</label>
         <input
           id="mobile-header-search-input"
           type="search"
-          placeholder="Search sarees by name, fabric, colour..."
+          placeholder="Search sarees, fabric, colour..."
           oninput="app.handleHeaderSearchInput(this.value)"
           onkeydown="if(event.key==='Enter'){ event.preventDefault(); app.submitHeaderSearch(this.value); }"
-          class="w-full pl-8 pr-7 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/40 text-xs text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-gold"
+          class="w-full pl-8 pr-6 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/40 text-xs text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-gold"
         />
         <svg class="w-3.5 h-3.5 text-ink-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
-      <button onclick="app.navigate('admin')" class="shrink-0 px-2.5 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/45 text-[11px] font-semibold text-ink">Admin</button>
+      <button id="mobile-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="shrink-0 px-2.5 py-1.5 rounded-full bg-gold/25 border border-gold/55 text-[11px] font-semibold text-ink">Shop Collections</button>
+      <button onclick="app.navigate('admin')" class="shrink-0 px-2 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/45 text-[11px] font-semibold text-ink">Admin</button>
     </div>
   </header>
 
+  <!-- React Bits SplashCursor Container (Mounted ONLY on Home page, pointer-events: none, low z-index) -->
+  <div id="reactbits-splash-cursor-container" class="pointer-events-none fixed inset-0 z-[1]" style="pointer-events: none; z-index: 1;" aria-hidden="true"></div>
+
   <!-- Main Application Viewport -->
-  <main id="app-viewport" class="flex-grow pb-36 md:pb-16 focus:outline-none" tabindex="-1">
+  <main id="app-viewport" class="relative z-[2] flex-grow pb-36 md:pb-16 focus:outline-none" tabindex="-1">
     <!-- Dynamic Pages Rendered Here -->
   </main>
 
@@ -944,7 +958,7 @@
   </nav>
 
   <!-- Site Footer -->
-  <footer class="bg-[#EFE6D5] text-ink border-t border-gold/50 pb-36 md:pb-12">
+  <footer class="relative z-[2] bg-[#EFE6D5] text-ink border-t border-gold/50 pb-36 md:pb-12">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
         <!-- Brand Column + Social Media Logo Links -->
@@ -4779,6 +4793,34 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   <div id="order-detail-modal" class="fixed inset-0 z-50 hidden bg-ink/75 backdrop-blur-xs flex items-center justify-center p-3 sm:p-6 overflow-y-auto" role="dialog" aria-modal="true" aria-label="Order Details">
     <div id="order-detail-modal-body" class="bg-[#FAF8F5] border-2 border-gold rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl p-5 sm:p-7 text-ink">
       <!-- Populated dynamically -->
+    </div>
+  </div>
+
+  <!-- Full-Screen React Bits FlowingMenu Collection Overlay (Opened from "Shop Collections" in Header) -->
+  <div id="flowing-menu-modal" class="fixed inset-0 z-50 hidden bg-[#FAF8F5] flex flex-col overflow-hidden" role="dialog" aria-modal="true" aria-labelledby="flowing-menu-modal-title">
+    <div class="px-4 sm:px-8 py-4 border-b border-gold/45 bg-[#F5EFE4] flex items-center justify-between gap-4 shrink-0">
+      <div>
+        <span class="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-teal block">Janardan Textiles • Curated Collections</span>
+        <h2 id="flowing-menu-modal-title" class="font-serif text-xl sm:text-3xl font-bold text-ink">Shop Collections by Fabric &amp; Occasion</h2>
+      </div>
+      <button
+        id="flowing-menu-close-btn"
+        type="button"
+        onclick="app.closeFlowingMenuModal()"
+        class="min-w-[44px] min-h-[44px] px-4 py-2 rounded-full bg-ivory text-ink border border-gold/60 hover:bg-gold/25 font-semibold text-xs sm:text-sm flex items-center justify-center gap-1.5 shadow-2xs focus:outline-none focus:ring-2 focus:ring-gold"
+        aria-label="Close Shop Collections Menu"
+      >
+        <span>Close</span>
+        <span aria-hidden="true" class="text-base leading-none">✕</span>
+      </button>
+    </div>
+    <div class="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8 max-w-6xl w-full mx-auto space-y-4">
+      <p class="text-xs sm:text-sm text-ink-muted">
+        Select any saree fabric or occasion below to open the catalogue filtered to that collection. Use <kbd class="px-1.5 py-0.5 rounded bg-[#EFE6D5] border border-gold/40 text-[11px]">Tab</kbd> and <kbd class="px-1.5 py-0.5 rounded bg-[#EFE6D5] border border-gold/40 text-[11px]">Enter</kbd>, or press <kbd class="px-1.5 py-0.5 rounded bg-[#EFE6D5] border border-gold/40 text-[11px]">Esc</kbd> to close.
+      </p>
+      <div id="flowing-menu-modal-mount" class="w-full min-h-[360px]">
+        <!-- Lazy-loaded FlowingMenu-JS-TW mounts here -->
+      </div>
     </div>
   </div>
 
