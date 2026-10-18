@@ -551,6 +551,80 @@
         }
       }
 
+      .saree-360-turntable-stage {
+        display: none;
+      }
+
+      html.is-scroll-driven .saree-360-turntable-stage {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        inset: 0;
+        width: 100%;
+        height: 100svh;
+        padding: 4.25rem 0.75rem 4.75rem;
+        z-index: 15;
+        pointer-events: none;
+      }
+
+      @media (min-width: 768px) {
+        html.is-scroll-driven .saree-360-turntable-stage {
+          padding: 4.5rem clamp(1rem, 2.5vw, 2rem) 2.75rem;
+        }
+      }
+
+      html.is-scroll-driven #frames-viewport {
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .saree-360-frame-box {
+        position: relative;
+        height: 100%;
+        max-height: calc(100svh - 8.25rem);
+        aspect-ratio: 9 / 16;
+        border-radius: 1.25rem;
+        overflow: hidden;
+        box-shadow: 0 20px 50px rgba(35, 22, 25, 0.16), 0 0 0 1px rgba(196, 161, 90, 0.45);
+        background: #D9CBB0;
+      }
+
+      .saree-360-canvas,
+      .saree-360-video {
+        display: block;
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        user-select: none;
+        -webkit-user-drag: none;
+      }
+
+      .saree-360-video {
+        position: absolute;
+        inset: 0;
+        opacity: 0;
+        pointer-events: none;
+      }
+
+      .saree-360-angle-badge {
+        position: absolute;
+        top: 0.85rem;
+        right: 0.85rem;
+        z-index: 5;
+        padding: 0.25rem 0.65rem;
+        border-radius: 999px;
+        background: rgba(250, 246, 238, 0.92);
+        border: 1px solid rgba(196, 161, 90, 0.55);
+        font-family: var(--font-sans);
+        font-size: 0.68rem;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        font-variant-numeric: tabular-nums;
+        color: var(--text-primary);
+        box-shadow: 0 2px 8px rgba(35, 22, 25, 0.1);
+      }
+
       html.is-scroll-driven .captions-hud {
         display: block;
         position: absolute;
@@ -1473,13 +1547,48 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         }
       ],
 
+      scrubTotalFrames: 72,
+      scrubImages: [],
+      scrubImagesLoaded: false,
+      lastDrawnScrubIndex: -1,
+
       formatIndex(num) {
         return String(num).padStart(2, "0");
+      },
+
+      initScrubFrames() {
+        if (this.scrubImages.length === this.scrubTotalFrames) return;
+        const basePath = window.__ASSET_BASE_PATH__ || "";
+        this.scrubImages = [];
+        for (let i = 0; i < this.scrubTotalFrames; i++) {
+          const img = new Image();
+          img.decoding = "async";
+          const padded = String(i).padStart(3, "0");
+          const src = `${basePath}/public/assets/saree-360/frames/frame-${padded}.webp`;
+          if (i === 0 || i === this.scrubTotalFrames - 1 || i % 6 === 0) {
+            img.src = src;
+            img.dataset.loadedSrc = src;
+          } else {
+            img.dataset.deferredSrc = src;
+          }
+          if (i === 0) {
+            img.onload = () => {
+              if (this.lastDrawnScrubIndex <= 0) this.drawScrubFrame(0, 0);
+            };
+          }
+          this.scrubImages.push(img);
+        }
       },
 
       preloadRemainingFrames() {
         if (this.preloadTriggered) return;
         this.preloadTriggered = true;
+        this.initScrubFrames();
+        this.scrubImages.forEach((img) => {
+          if (img.dataset.deferredSrc && !img.src) {
+            img.src = img.dataset.deferredSrc;
+          }
+        });
         const frames = document.querySelectorAll(".saree-frame");
         frames.forEach((frame, idx) => {
           if (idx < 2) return;
@@ -1488,6 +1597,65 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             img.loading = "eager";
           }
         });
+      },
+
+      drawScrubFrame(progress, scrubIdxOverride = null) {
+        this.initScrubFrames();
+        const clamped = Math.max(0, Math.min(1, Number(progress) || 0));
+        const idx =
+          scrubIdxOverride !== null
+            ? scrubIdxOverride
+            : Math.min(this.scrubTotalFrames - 1, Math.max(0, Math.round(clamped * (this.scrubTotalFrames - 1))));
+
+        const angleBadge = document.getElementById("saree-360-angle-badge");
+        if (angleBadge) {
+          const deg = idx === 0 ? 0 : idx === this.scrubTotalFrames - 1 ? 360 : Math.round(clamped * 360);
+          angleBadge.textContent = `360° Turntable • ${deg}°`;
+        }
+
+        const videoEl = document.getElementById("saree-360-video");
+        if (videoEl && Number.isFinite(videoEl.duration) && videoEl.duration > 0) {
+          const targetTime = clamped * videoEl.duration;
+          if (Math.abs(videoEl.currentTime - targetTime) > 0.08) {
+            try {
+              videoEl.currentTime = targetTime;
+            } catch (e) {}
+          }
+        }
+
+        const canvas = document.getElementById("saree-360-canvas");
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d");
+        if (!ctx) return;
+
+        let img = this.scrubImages[idx];
+        if (img && img.dataset.deferredSrc && !img.src) {
+          img.src = img.dataset.deferredSrc;
+        }
+        // Find nearest loaded image if exact frame is still decoding
+        if (!img || !img.complete || img.naturalWidth === 0) {
+          for (let offset = 1; offset < this.scrubTotalFrames; offset++) {
+            const prev = idx - offset >= 0 ? this.scrubImages[idx - offset] : null;
+            if (prev && prev.complete && prev.naturalWidth > 0) {
+              img = prev;
+              break;
+            }
+            const next = idx + offset < this.scrubTotalFrames ? this.scrubImages[idx + offset] : null;
+            if (next && next.complete && next.naturalWidth > 0) {
+              img = next;
+              break;
+            }
+          }
+        }
+
+        if (img && img.complete && img.naturalWidth > 0) {
+          if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
+            canvas.width = img.naturalWidth;
+            canvas.height = img.naturalHeight;
+          }
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          this.lastDrawnScrubIndex = idx;
+        }
       },
 
       setActiveStep(stepIndex) {
@@ -1530,7 +1698,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         if (!showcaseSection || !stageEl || frames.length === 0) return;
 
         this.activeStepIndex = -1;
+        this.lastDrawnScrubIndex = -1;
         this.setActiveStep(0);
+        this.initScrubFrames();
+        this.drawScrubFrame(0, 0);
 
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         if (reducedMotionQuery.matches || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
@@ -1561,9 +1732,9 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         document.body.classList.remove("is-reduced-motion");
 
         if ("requestIdleCallback" in window) {
-          window.requestIdleCallback(() => this.preloadRemainingFrames(), { timeout: 1500 });
+          window.requestIdleCallback(() => this.preloadRemainingFrames(), { timeout: 900 });
         } else {
-          setTimeout(() => this.preloadRemainingFrames(), 600);
+          setTimeout(() => this.preloadRemainingFrames(), 350);
         }
 
         const totalFrames = frames.length;
@@ -1676,6 +1847,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           invalidateOnRefresh: true,
           onUpdate: (self) => {
             this.preloadRemainingFrames();
+            this.drawScrubFrame(self.progress);
             const clamped = Math.max(0, Math.min(0.999999, self.progress));
             const stepIndex = Math.min(totalFrames - 1, Math.floor(clamped * totalFrames));
             this.setActiveStep(stepIndex);
@@ -2418,6 +2590,29 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                       <figcaption class="showcase-item-caption">0${idx + 1} / 05 — ${frame.caption}</figcaption>
                     </figure>
                   `).join("")}
+                </div>
+
+                <!-- 360° Portrait 9:16 Saree Turntable Scroll-Scrub Stage -->
+                <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
+                  <div class="saree-360-frame-box">
+                    <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
+                    <canvas
+                      id="saree-360-canvas"
+                      class="saree-360-canvas"
+                      width="720"
+                      height="1280"
+                      aria-label="Champagne Tissue Saree 360-degree turntable view"
+                    ></canvas>
+                    <video
+                      id="saree-360-video"
+                      class="saree-360-video"
+                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/champagne-saree-360.mp4"
+                      poster="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/poster-1-front-9x16.webp"
+                      muted
+                      playsinline
+                      preload="auto"
+                    ></video>
+                  </div>
                 </div>
 
                 <div class="stage-vignette" aria-hidden="true"></div>

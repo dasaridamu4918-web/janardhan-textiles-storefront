@@ -1,0 +1,519 @@
+{
+  "productId": "jt-saree-09",
+  "title": "Champagne Tissue Saree with Floral and Peacock Embroidery \u2014 360\u00b0 Turntable",
+  "aspectRatio": "9:16",
+  "masterResolution": "2160x3840",
+  "webVideoSrc": "/public/assets/saree-360/champagne-saree-360.mp4",
+  "posterSrc": "/public/assets/saree-360/poster-1-front-9x16.webp",
+  "durationSeconds": 10.0,
+  "fps": 30,
+  "totalVideoFrames": 300,
+  "scrubFrameCount": 72,
+  "openingAndFinalFramesMatch": true,
+  "frames": [
+    {
+      "index": 0,
+      "progress": 0.0,
+      "yaw": 0.0,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-000.webp"
+    },
+    {
+      "index": 1,
+      "progress": 0.0134,
+      "yaw": 4.8,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-001.webp"
+    },
+    {
+      "index": 2,
+      "progress": 0.0268,
+      "yaw": 9.6,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-002.webp"
+    },
+    {
+      "index": 3,
+      "progress": 0.0435,
+      "yaw": 15.7,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-003.webp"
+    },
+    {
+      "index": 4,
+      "progress": 0.0569,
+      "yaw": 20.5,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-004.webp"
+    },
+    {
+      "index": 5,
+      "progress": 0.0702,
+      "yaw": 25.3,
+      "zoom": 1.008,
+      "src": "/public/assets/saree-360/frames/frame-005.webp"
+    },
+    {
+      "index": 6,
+      "progress": 0.0836,
+      "yaw": 30.1,
+      "zoom": 1.072,
+      "src": "/public/assets/saree-360/frames/frame-006.webp"
+    },
+    {
+      "index": 7,
+      "progress": 0.097,
+      "yaw": 34.9,
+      "zoom": 1.198,
+      "src": "/public/assets/saree-360/frames/frame-007.webp"
+    },
+    {
+      "index": 8,
+      "progress": 0.1137,
+      "yaw": 40.9,
+      "zoom": 1.367,
+      "src": "/public/assets/saree-360/frames/frame-008.webp"
+    },
+    {
+      "index": 9,
+      "progress": 0.1271,
+      "yaw": 45.8,
+      "zoom": 1.445,
+      "src": "/public/assets/saree-360/frames/frame-009.webp"
+    },
+    {
+      "index": 10,
+      "progress": 0.1405,
+      "yaw": 50.6,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-010.webp"
+    },
+    {
+      "index": 11,
+      "progress": 0.1538,
+      "yaw": 55.4,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-011.webp"
+    },
+    {
+      "index": 12,
+      "progress": 0.1706,
+      "yaw": 61.4,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-012.webp"
+    },
+    {
+      "index": 13,
+      "progress": 0.1839,
+      "yaw": 66.2,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-013.webp"
+    },
+    {
+      "index": 14,
+      "progress": 0.1973,
+      "yaw": 71.0,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-014.webp"
+    },
+    {
+      "index": 15,
+      "progress": 0.2107,
+      "yaw": 75.9,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-015.webp"
+    },
+    {
+      "index": 16,
+      "progress": 0.2241,
+      "yaw": 80.7,
+      "zoom": 1.46,
+      "src": "/public/assets/saree-360/frames/frame-016.webp"
+    },
+    {
+      "index": 17,
+      "progress": 0.2408,
+      "yaw": 86.7,
+      "zoom": 1.421,
+      "src": "/public/assets/saree-360/frames/frame-017.webp"
+    },
+    {
+      "index": 18,
+      "progress": 0.2542,
+      "yaw": 91.5,
+      "zoom": 1.33,
+      "src": "/public/assets/saree-360/frames/frame-018.webp"
+    },
+    {
+      "index": 19,
+      "progress": 0.2676,
+      "yaw": 96.3,
+      "zoom": 1.206,
+      "src": "/public/assets/saree-360/frames/frame-019.webp"
+    },
+    {
+      "index": 20,
+      "progress": 0.2809,
+      "yaw": 101.1,
+      "zoom": 1.09,
+      "src": "/public/assets/saree-360/frames/frame-020.webp"
+    },
+    {
+      "index": 21,
+      "progress": 0.2943,
+      "yaw": 106.0,
+      "zoom": 1.018,
+      "src": "/public/assets/saree-360/frames/frame-021.webp"
+    },
+    {
+      "index": 22,
+      "progress": 0.311,
+      "yaw": 112.0,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-022.webp"
+    },
+    {
+      "index": 23,
+      "progress": 0.3244,
+      "yaw": 116.8,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-023.webp"
+    },
+    {
+      "index": 24,
+      "progress": 0.3378,
+      "yaw": 121.6,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-024.webp"
+    },
+    {
+      "index": 25,
+      "progress": 0.3512,
+      "yaw": 126.4,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-025.webp"
+    },
+    {
+      "index": 26,
+      "progress": 0.3645,
+      "yaw": 131.2,
+      "zoom": 1.001,
+      "src": "/public/assets/saree-360/frames/frame-026.webp"
+    },
+    {
+      "index": 27,
+      "progress": 0.3813,
+      "yaw": 137.3,
+      "zoom": 1.046,
+      "src": "/public/assets/saree-360/frames/frame-027.webp"
+    },
+    {
+      "index": 28,
+      "progress": 0.3946,
+      "yaw": 142.1,
+      "zoom": 1.143,
+      "src": "/public/assets/saree-360/frames/frame-028.webp"
+    },
+    {
+      "index": 29,
+      "progress": 0.408,
+      "yaw": 146.9,
+      "zoom": 1.26,
+      "src": "/public/assets/saree-360/frames/frame-029.webp"
+    },
+    {
+      "index": 30,
+      "progress": 0.4214,
+      "yaw": 151.7,
+      "zoom": 1.347,
+      "src": "/public/assets/saree-360/frames/frame-030.webp"
+    },
+    {
+      "index": 31,
+      "progress": 0.4381,
+      "yaw": 157.7,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-031.webp"
+    },
+    {
+      "index": 32,
+      "progress": 0.4515,
+      "yaw": 162.5,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-032.webp"
+    },
+    {
+      "index": 33,
+      "progress": 0.4649,
+      "yaw": 167.4,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-033.webp"
+    },
+    {
+      "index": 34,
+      "progress": 0.4783,
+      "yaw": 172.2,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-034.webp"
+    },
+    {
+      "index": 35,
+      "progress": 0.4916,
+      "yaw": 177.0,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-035.webp"
+    },
+    {
+      "index": 36,
+      "progress": 0.5084,
+      "yaw": 183.0,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-036.webp"
+    },
+    {
+      "index": 37,
+      "progress": 0.5217,
+      "yaw": 187.8,
+      "zoom": 1.38,
+      "src": "/public/assets/saree-360/frames/frame-037.webp"
+    },
+    {
+      "index": 38,
+      "progress": 0.5351,
+      "yaw": 192.6,
+      "zoom": 1.361,
+      "src": "/public/assets/saree-360/frames/frame-038.webp"
+    },
+    {
+      "index": 39,
+      "progress": 0.5485,
+      "yaw": 197.5,
+      "zoom": 1.287,
+      "src": "/public/assets/saree-360/frames/frame-039.webp"
+    },
+    {
+      "index": 40,
+      "progress": 0.5619,
+      "yaw": 202.3,
+      "zoom": 1.173,
+      "src": "/public/assets/saree-360/frames/frame-040.webp"
+    },
+    {
+      "index": 41,
+      "progress": 0.5786,
+      "yaw": 208.3,
+      "zoom": 1.047,
+      "src": "/public/assets/saree-360/frames/frame-041.webp"
+    },
+    {
+      "index": 42,
+      "progress": 0.592,
+      "yaw": 213.1,
+      "zoom": 1.003,
+      "src": "/public/assets/saree-360/frames/frame-042.webp"
+    },
+    {
+      "index": 43,
+      "progress": 0.6054,
+      "yaw": 217.9,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-043.webp"
+    },
+    {
+      "index": 44,
+      "progress": 0.6187,
+      "yaw": 222.7,
+      "zoom": 1.004,
+      "src": "/public/assets/saree-360/frames/frame-044.webp"
+    },
+    {
+      "index": 45,
+      "progress": 0.6355,
+      "yaw": 228.8,
+      "zoom": 1.073,
+      "src": "/public/assets/saree-360/frames/frame-045.webp"
+    },
+    {
+      "index": 46,
+      "progress": 0.6488,
+      "yaw": 233.6,
+      "zoom": 1.194,
+      "src": "/public/assets/saree-360/frames/frame-046.webp"
+    },
+    {
+      "index": 47,
+      "progress": 0.6622,
+      "yaw": 238.4,
+      "zoom": 1.337,
+      "src": "/public/assets/saree-360/frames/frame-047.webp"
+    },
+    {
+      "index": 48,
+      "progress": 0.6756,
+      "yaw": 243.2,
+      "zoom": 1.454,
+      "src": "/public/assets/saree-360/frames/frame-048.webp"
+    },
+    {
+      "index": 49,
+      "progress": 0.689,
+      "yaw": 248.0,
+      "zoom": 1.512,
+      "src": "/public/assets/saree-360/frames/frame-049.webp"
+    },
+    {
+      "index": 50,
+      "progress": 0.7057,
+      "yaw": 254.0,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-050.webp"
+    },
+    {
+      "index": 51,
+      "progress": 0.7191,
+      "yaw": 258.9,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-051.webp"
+    },
+    {
+      "index": 52,
+      "progress": 0.7324,
+      "yaw": 263.7,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-052.webp"
+    },
+    {
+      "index": 53,
+      "progress": 0.7458,
+      "yaw": 268.5,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-053.webp"
+    },
+    {
+      "index": 54,
+      "progress": 0.7592,
+      "yaw": 273.3,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-054.webp"
+    },
+    {
+      "index": 55,
+      "progress": 0.7759,
+      "yaw": 279.3,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-055.webp"
+    },
+    {
+      "index": 56,
+      "progress": 0.7893,
+      "yaw": 284.1,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-056.webp"
+    },
+    {
+      "index": 57,
+      "progress": 0.8027,
+      "yaw": 289.0,
+      "zoom": 1.52,
+      "src": "/public/assets/saree-360/frames/frame-057.webp"
+    },
+    {
+      "index": 58,
+      "progress": 0.8161,
+      "yaw": 293.8,
+      "zoom": 1.519,
+      "src": "/public/assets/saree-360/frames/frame-058.webp"
+    },
+    {
+      "index": 59,
+      "progress": 0.8294,
+      "yaw": 298.6,
+      "zoom": 1.498,
+      "src": "/public/assets/saree-360/frames/frame-059.webp"
+    },
+    {
+      "index": 60,
+      "progress": 0.8462,
+      "yaw": 304.6,
+      "zoom": 1.414,
+      "src": "/public/assets/saree-360/frames/frame-060.webp"
+    },
+    {
+      "index": 61,
+      "progress": 0.8595,
+      "yaw": 309.4,
+      "zoom": 1.308,
+      "src": "/public/assets/saree-360/frames/frame-061.webp"
+    },
+    {
+      "index": 62,
+      "progress": 0.8729,
+      "yaw": 314.2,
+      "zoom": 1.191,
+      "src": "/public/assets/saree-360/frames/frame-062.webp"
+    },
+    {
+      "index": 63,
+      "progress": 0.8863,
+      "yaw": 319.1,
+      "zoom": 1.089,
+      "src": "/public/assets/saree-360/frames/frame-063.webp"
+    },
+    {
+      "index": 64,
+      "progress": 0.903,
+      "yaw": 325.1,
+      "zoom": 1.015,
+      "src": "/public/assets/saree-360/frames/frame-064.webp"
+    },
+    {
+      "index": 65,
+      "progress": 0.9164,
+      "yaw": 329.9,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-065.webp"
+    },
+    {
+      "index": 66,
+      "progress": 0.9298,
+      "yaw": 334.7,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-066.webp"
+    },
+    {
+      "index": 67,
+      "progress": 0.9431,
+      "yaw": 339.5,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-067.webp"
+    },
+    {
+      "index": 68,
+      "progress": 0.9565,
+      "yaw": 344.3,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-068.webp"
+    },
+    {
+      "index": 69,
+      "progress": 0.9732,
+      "yaw": 350.4,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-069.webp"
+    },
+    {
+      "index": 70,
+      "progress": 0.9866,
+      "yaw": 355.2,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-070.webp"
+    },
+    {
+      "index": 71,
+      "progress": 1.0,
+      "yaw": 360.0,
+      "zoom": 1.0,
+      "src": "/public/assets/saree-360/frames/frame-071.webp"
+    }
+  ]
+}
