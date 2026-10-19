@@ -45,7 +45,7 @@
   const LOCAL_FALLBACK_API = {
     getProducts() {
       try {
-        const raw = (localStorage.removeItem("jt_local_products_v1"), localStorage.getItem("jt_local_products_v2"));
+        const raw = (localStorage.removeItem("jt_local_products_v1"), localStorage.getItem("jt_local_products_v3"));
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length > 0) return parsed;
@@ -61,7 +61,7 @@
 
     saveProducts(list) {
       try {
-        localStorage.setItem("jt_local_products_v2", JSON.stringify(list));
+        localStorage.setItem("jt_local_products_v3", JSON.stringify(list));
       } catch (e) {}
       app.state.products = list;
     },
