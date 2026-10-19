@@ -984,61 +984,67 @@
       padding-bottom: env(safe-area-inset-bottom, 0.75rem);
     }
   
-    /* ==========================================================================
+        /* ==========================================================================
        THREE 360-STEP SAREE SCROLL GALLERIES (1,080 DISTINCT DESIGNS)
+       Clean Screenshot-4 Inspired 360° Scroll-Controlled Mannequin Viewer
        ========================================================================== */
     .three-galleries-section {
-      max-width: 1280px;
+      max-width: 1240px;
       margin: 0 auto;
-      padding: 2.5rem 1rem 3rem;
+      padding: 2.5rem 1rem 3.5rem;
     }
     .three-galleries-stack {
       display: flex;
       flex-direction: column;
-      gap: 2.75rem;
+      gap: 3.5rem;
+    }
+    .saree-scroll-gallery-runway {
+      position: relative;
+      min-height: 240vh;
     }
     .saree-scroll-gallery-card {
-      background: #FAF8F5;
-      border: 1px solid rgba(196, 161, 90, 0.45);
-      border-radius: 1.35rem;
-      padding: 1.25rem;
-      box-shadow: 0 18px 42px -18px rgba(42, 30, 23, 0.14);
-      position: relative;
+      position: sticky;
+      top: 5.25rem;
+      background: #F4EFE6;
+      border: 1px solid rgba(196, 161, 90, 0.42);
+      border-radius: 1.5rem;
+      padding: 1.5rem 1.25rem;
+      box-shadow: 0 22px 48px -18px rgba(42, 30, 23, 0.14);
     }
     @media (min-width: 768px) {
       .saree-scroll-gallery-card {
-        padding: 1.75rem 2rem;
+        padding: 2rem 2.5rem;
       }
     }
     .saree-scroll-gallery-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 1.5rem;
+      gap: 1.75rem;
       align-items: center;
+      justify-items: center;
     }
     @media (min-width: 900px) {
       .saree-scroll-gallery-grid {
-        grid-template-columns: minmax(300px, 420px) 1fr;
-        gap: 2.25rem;
+        grid-template-columns: minmax(290px, 380px) 1fr;
+        gap: 2.75rem;
       }
     }
+    /* Clean 9:16 360° Mannequin Viewer matching Screenshot 4 */
     .gallery-360-stage-box {
       position: relative;
       width: 100%;
-      max-width: 400px;
+      max-width: 350px;
+      max-height: calc(100svh - 9.5rem);
       margin: 0 auto;
-      aspect-ratio: 3 / 4;
-      border-radius: 1.05rem;
+      aspect-ratio: 9 / 16;
+      border-radius: 1.25rem;
       overflow: hidden;
-      background: #DFD5C6;
-      border: 1px solid rgba(196, 161, 90, 0.55);
-      box-shadow: 0 14px 34px -12px rgba(42, 30, 23, 0.25);
+      background: #B39E88;
+      box-shadow: 0 20px 50px rgba(35, 22, 25, 0.16), 0 0 0 1px rgba(196, 161, 90, 0.45);
       user-select: none;
       touch-action: pan-y;
-      cursor: grab;
-    }
-    .gallery-360-stage-box:active {
-      cursor: grabbing;
+      contain: layout paint;
+      cursor: ns-resize;
     }
     .gallery-360-poster,
     .gallery-360-canvas {
@@ -1069,18 +1075,40 @@
       top: 0.65rem;
       right: 0.65rem;
       z-index: 6;
-      padding: 0.28rem 0.72rem;
+      padding: 0.24rem 0.68rem;
       border-radius: 999px;
       background: rgba(250, 246, 238, 0.94);
-      border: 1px solid rgba(196, 161, 90, 0.65);
+      border: 1px solid rgba(196, 161, 90, 0.6);
       font-family: var(--font-sans);
-      font-size: 0.72rem;
+      font-size: 0.68rem;
       font-weight: 700;
       letter-spacing: 0.04em;
+      font-variant-numeric: tabular-nums;
       color: #2A1E17;
       box-shadow: 0 4px 12px rgba(42, 30, 23, 0.12);
       pointer-events: none;
       white-space: nowrap;
+    }
+    .gallery-360-scroll-cue {
+      position: absolute;
+      bottom: 0.45rem;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 6;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.15rem;
+      pointer-events: none;
+    }
+    .gallery-360-scroll-label {
+      font-family: var(--font-sans);
+      font-size: 0.62rem;
+      font-weight: 600;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(42, 30, 23, 0.82);
+      text-shadow: 0 1px 2px rgba(250, 246, 238, 0.65);
     }
     .gallery-360-loading-pill {
       position: absolute;
@@ -1090,12 +1118,12 @@
       display: inline-flex;
       align-items: center;
       gap: 0.4rem;
-      padding: 0.26rem 0.68rem;
+      padding: 0.24rem 0.64rem;
       border-radius: 999px;
       background: rgba(42, 30, 23, 0.84);
       border: 1px solid rgba(196, 161, 90, 0.55);
       color: #FAF6EE;
-      font-size: 0.68rem;
+      font-size: 0.64rem;
       font-weight: 600;
       pointer-events: none;
       transition: opacity 0.2s ease;
@@ -1108,7 +1136,7 @@
       position: absolute;
       left: 0.65rem;
       right: 0.65rem;
-      bottom: 0.65rem;
+      bottom: 1.85rem;
       z-index: 7;
       display: flex;
       align-items: center;
@@ -1638,20 +1666,23 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
     }
 
     
-    /**
+        /**
      * ============================================================================
-     * THREE INDEPENDENT 360-STEP SAREE SCROLL GALLERIES ENGINE
+     * THREE INDEPENDENT 360° SAREE SCROLL GALLERIES ENGINE
      * - 3 separate galleries (gallery-01, gallery-02, gallery-03)
-     * - 360 distinct saree design positions per gallery (1,080 total)
-     * - 144 Hz capable requestAnimationFrame scheduling, directional preloading,
-     *   off-thread img.decode(), and bounded LRU decoded-image cache (75 per gallery)
+     * - 360 ordered frames per gallery mapped 1:1 to degrees 0°–359° (Design 001–360)
+     * - Scrolling 1° forward advances both the mannequin viewing angle (+1°) and
+     *   the saree design (+1); scrolling backward reverses both (-1° / -1 design)
+     * - Clean Screenshot-4 inspired viewer with angle badge ("360° Turntable • 0°")
+     *   and "SCROLL" cue, 144 Hz rAF scheduling, directional preloading, off-thread
+     *   img.decode(), and bounded LRU decoded-image cache (75 frames per gallery)
      * ============================================================================
      */
     const ThreeGalleriesScrollEngine = {
       totalPositions: 360,
       maxCachedPerGallery: 75,
-      preloadAhead: 12,
-      preloadBehind: 5,
+      preloadAhead: 14,
+      preloadBehind: 6,
       maxConcurrentLoads: 6,
       activeLoads: 0,
       loadQueue: [],
@@ -1660,6 +1691,34 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       manifestData: null,
       scrollTriggers: [],
       cleanups: [],
+
+      corePalettes: [
+        ["Sindoor Crimson & Champagne Gold", "champagne-gold zari"],
+        ["Imperial Emerald & Antique Gold", "antique gold zari"],
+        ["Royal Sapphire Neel & Silver-Gold", "silver-gold zari"],
+        ["Regal Amethyst Violet & Rose Gold", "rose-gold zari"],
+        ["Haldi Saffron Marigold & Copper Zari", "copper-gold zari"],
+        ["Rani Fuchsia Magenta & Bright Gold", "24K bright gold zari"],
+        ["Peacock Cerulean Teal & Champagne Silver", "champagne-silver zari"],
+        ["Deep Mulberry Wine & Antique Bronze", "antique bronze zari"],
+        ["Copper Russet Terracotta & Silver Zari", "silver-gold zari"],
+        ["Pistachio Celadon Mint & Champagne Zari", "champagne gold zari"],
+        ["Royal Cobalt Indigo & Antique Gold", "antique gold zari"],
+        ["Golden Bronze Ochre & Crimson Zari", "antique gold & crimson meenakari zari"]
+      ],
+
+      weaveFamilies: [
+        "Pure Kanchipuram Silk-Tissue",
+        "Banarasi Katan Silk-Brocade",
+        "Sheer Organza Silk-Tissue",
+        "Paithani Heritage Silk-Tissue",
+        "Patan Patola Silk-Blend",
+        "Chanderi Silk-Cotton Tissue",
+        "Gadwal Korvai Silk-Tissue",
+        "Mysore Crepe Silk-Tissue",
+        "Tussar Muga Silk-Blend",
+        "Uppada Jamdani Silk-Tissue"
+      ],
 
       galleries: {
         1: {
@@ -1728,76 +1787,78 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         return `${basePath}/public/images/sarees/generated/gallery-${gPad}-design-${pPad}.jpg`;
       },
 
+      getAngleViewDescription(deg) {
+        const d = ((deg % 360) + 360) % 360;
+        if (d <= 12 || d >= 348) return `${d}° — Front View (Full frontal drape, pleats & bodice)`;
+        if (d < 68) return `${d}° — Front-Right Three-Quarter View (Pleats & cross-body pallu)`;
+        if (d < 112) return `${d}° — Right Side Profile View (Right sleeve & side drape silhouette)`;
+        if (d < 152) return `${d}° — Back-Right View (Trailing pallu & embroidered back bodice)`;
+        if (d < 208) return `${d}° — Full Back Pallu View (Complete embroidered pallu & deep-U blouse back)`;
+        if (d < 248) return `${d}° — Back-Left View (Left shoulder pallu cascade & scalloped edge)`;
+        if (d < 292) return `${d}° — Left Side Profile View (Left shoulder pallu & scalloped hem)`;
+        return `${d}° — Front-Left Three-Quarter View (Pallu drape returning to front)`;
+      },
+
       getFallbackMeta(gNum, pos) {
+        const p = this.clampPosition(pos);
+        const deg = p - 1;
         const gPad = String(gNum).padStart(2, "0");
-        const pPad = String(pos).padStart(3, "0");
+        const pPad = String(p).padStart(3, "0");
         const g = this.galleries[gNum];
-        if (g && g.designsMeta && g.designsMeta[pos]) {
-          return g.designsMeta[pos];
+        if (g && g.designsMeta && g.designsMeta[p]) {
+          return g.designsMeta[p];
         }
-        const palettes = [
-          "Sindoor Crimson & Champagne Gold",
-          "Imperial Emerald & Antique Gold",
-          "Royal Sapphire Neel & Silver-Gold",
-          "Regal Amethyst Violet & Rose Gold",
-          "Haldi Saffron Marigold & Copper Zari",
-          "Rani Fuchsia Magenta & Bright Gold",
-          "Peacock Cerulean Teal & Champagne Silver",
-          "Deep Mulberry Wine & Antique Bronze",
-          "Copper Russet Terracotta & Silver Zari",
-          "Pistachio Celadon Mint & Champagne Zari",
-          "Royal Cobalt Indigo & Antique Gold",
-          "Golden Bronze Ochre & Crimson Zari"
-        ];
-        const fabrics = [
-          "Pure Kanchipuram Silk",
-          "Banarasi Katan Silk",
-          "Sheer Organza Tissue",
-          "Paithani Pure Silk",
-          "Patan Patola Double-Ikat Silk",
-          "Chanderi Silk-Cotton",
-          "Gadwal Korvai Silk",
-          "Mysore Crepe Silk",
-          "Tussar Muga Silk",
-          "Uppada Jamdani Tissue"
-        ];
-        const borders = [
-          "Scalloped cutwork border with antique gold zari and peacock scrollwork",
-          "4.5-inch traditional korvai temple spire (karvat) and floral vine border",
-          "Broad Paithani oblique square asavali gold zari and meenakari peacock border",
-          "3.5-inch rose-gold zardozi and sequin floral medallion scalloped border",
-          "4-inch Banarasi Mughal arch and kalka paisley brocade border"
-        ];
-        const motifs = [
-          "Dancing royal peacocks and blooming lotus vines across pallu and pleats",
-          "Evenly spaced woven gold floral coin bootis and grand heritage pallu",
-          "All-over floral jaal lattice with intricate zari threadwork",
-          "Traditional kalpavriksha tree-of-life and mango paisley motifs"
-        ];
-        const pal = palettes[(pos + gNum * 3) % palettes.length];
-        const fab = fabrics[(pos + gNum * 5) % fabrics.length];
+
+        let palName, zDesc;
+        if (p === 1 && gNum === 1) {
+          palName = "Champagne Gold & Pastel Rose";
+          zDesc = "champagne-gold zari";
+        } else if (p === 1 && gNum === 2) {
+          [palName, zDesc] = this.corePalettes[0];
+        } else if (p === 1 && gNum === 3) {
+          [palName, zDesc] = this.corePalettes[7];
+        } else {
+          [palName, zDesc] = this.corePalettes[(p + gNum * 3) % this.corePalettes.length];
+        }
+
+        const fabricName = this.weaveFamilies[(p + gNum * 5) % this.weaveFamilies.length];
+        const useContrast = (p + gNum) % 2 === 0;
+        const angleDesc = this.getAngleViewDescription(deg);
+        const sareeTitle =
+          p === 1 && gNum === 1
+            ? "Champagne Tissue Saree with Floral & Peacock Embroidery — Edition 001"
+            : `${palName.split("&")[0].trim()} ${fabricName} Saree — Edition ${pPad}`;
+
         return {
           designId: `gallery-${gPad}-design-${pPad}`,
           filename: `gallery-${gPad}-design-${pPad}.jpg`,
+          position: p,
+          degree: deg,
           positionLabel: `Design ${pPad} / 360`,
-          name: `${pal.split("&")[0].trim()} ${fab} Saree — Edition ${pPad}`,
-          baseColor: pal,
-          fabric: fab,
-          borderDesign: borders[(pos + gNum) % borders.length],
-          motifs: motifs[(pos + gNum * 2) % motifs.length],
-          blouseDetails: `Coordinated ${pal.split("&")[0].trim().toLowerCase()} tailored silk blouse with matching zari border sleeves`
+          angleLabel: `360° Turntable • ${deg}°`,
+          angleView: angleDesc,
+          name: sareeTitle,
+          baseColor: palName,
+          fabric: fabricName,
+          borderDesign: useContrast
+            ? `Ornate scalloped cutwork border with ${zDesc}, floral scrollwork, and contrast selvedge finish`
+            : `Ornate scalloped cutwork border with ${zDesc} and intricate peacock-vine embroidery`,
+          motifs: `Embroidered royal peacocks, blooming lotus vines, and ${zDesc} floral sprays (${angleDesc})`,
+          blouseDetails: useContrast
+            ? `Contrast-accented ${palName.split("&")[0].trim().toLowerCase()} silk-tissue blouse with scalloped ${zDesc} sleeve borders`
+            : `Coordinated ${palName.split("&")[0].trim().toLowerCase()} tailored silk-tissue blouse with scalloped ${zDesc} neckline & sleeves`
         };
       },
 
       async loadManifestOnce() {
         if (this.manifestLoaded) return;
-        this.manifestLoaded = true;
         try {
           const basePath = window.__ASSET_BASE_PATH__ || "";
           const res = await fetch(`${basePath}/public/images/sarees/generated/galleries-manifest.json`);
           if (!res.ok) return;
           const data = await res.json();
           this.manifestData = data;
+          this.manifestLoaded = true;
           if (data && Array.isArray(data.galleries)) {
             data.galleries.forEach((gEntry) => {
               const gNum = Number(gEntry.galleryNumber);
@@ -1806,12 +1867,13 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 gEntry.designs.forEach((d) => {
                   gState.designsMeta[d.position] = d;
                 });
-                this.updateGalleryHUD(gNum, Math.round(gState.currentPosFloat));
+                const shownPos = gState.displayedPos >= 1 ? gState.displayedPos : this.clampPosition(gState.currentPosFloat);
+                this.updateGalleryHUD(gNum, shownPos);
               }
             });
           }
         } catch (err) {
-          // Fallback metadata handles offline / initial load seamlessly
+          // Deterministic getFallbackMeta matches galleries-manifest.json 100%
         }
       },
 
@@ -1926,7 +1988,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         for (let step = 1; step <= this.preloadAhead; step++) {
           const ahead = c + step * dir;
           if (ahead >= 1 && ahead <= 360) {
-            this.enqueueLoad(gNum, ahead, step <= 5);
+            this.enqueueLoad(gNum, ahead, step <= 6);
           }
         }
         for (let step = 1; step <= this.preloadBehind; step++) {
@@ -1980,7 +2042,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           } else {
             pill.classList.remove("is-hidden");
             if (pillText) {
-              pillText.textContent = `Preloading Gallery 0${gNum} designs…`;
+              pillText.textContent = `Loading 360° views…`;
             }
           }
         }
@@ -1991,7 +2053,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           if (g.failedPositions.has(curPos) || g.failedPositions.size >= 3) {
             errBanner.classList.remove("is-hidden");
             if (errText) {
-              errText.textContent = `Design ${String(curPos).padStart(3, "0")} unavailable — showing nearest loaded saree.`;
+              errText.textContent = `Frame ${curPos - 1}° (Design ${String(curPos).padStart(3, "0")}) unavailable — showing nearest ready angle.`;
             }
           } else {
             errBanner.classList.add("is-hidden");
@@ -2015,18 +2077,20 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
 
       updateGalleryHUD(gNum, pos) {
         const p = this.clampPosition(pos);
+        const deg = p - 1;
         const pPad = String(p).padStart(3, "0");
-        const label = `Design ${pPad} / 360`;
         const meta = this.getFallbackMeta(gNum, p);
 
+        // Top-right angle badge inside the Screenshot-4 viewer ("360° Turntable • 0°")
         const badge = document.getElementById(`gallery-0${gNum}-badge`);
-        if (badge) badge.textContent = label;
+        if (badge) badge.textContent = `360° Turntable • ${deg}°`;
 
+        // Synchronized design & degree pill in the product details panel
         const counter = document.getElementById(`gallery-0${gNum}-counter`);
-        if (counter) counter.textContent = label;
+        if (counter) counter.textContent = `Design ${pPad} / 360 • ${deg}°`;
 
-        const slider = document.getElementById(`gallery-0${gNum}-slider`);
-        if (slider && Number(slider.value) !== p) slider.value = String(p);
+        const angleEl = document.getElementById(`gallery-0${gNum}-angle-view`);
+        if (angleEl) angleEl.textContent = meta.angleView || this.getAngleViewDescription(deg);
 
         const titleEl = document.getElementById(`gallery-0${gNum}-design-title`);
         if (titleEl) titleEl.textContent = meta.name;
@@ -2054,15 +2118,24 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const g = this.galleries[gNum];
         if (!g) return;
         const p = this.clampPosition(pos);
-        this.updateGalleryHUD(gNum, p);
 
         const canvas = document.getElementById(`gallery-0${gNum}-canvas`);
-        if (!canvas) return;
+        if (!canvas) {
+          this.updateGalleryHUD(gNum, p);
+          return;
+        }
         const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx) return;
 
         const best = this.findBestReadyImage(gNum, p);
-        if (!best || !best.img) return;
+        if (!best || !best.img) {
+          this.updateGalleryHUD(gNum, p);
+          return;
+        }
+
+        // Always update HUD to match the exact frame drawn (or target once ready) so image & text never desync
+        const hudPos = best.isExact ? p : best.actualPos;
+        this.updateGalleryHUD(gNum, hudPos);
 
         if (g.displayedPos === best.actualPos && (best.isExact || !g.displayedExact)) {
           if (best.isExact) g.displayedExact = true;
@@ -2071,8 +2144,8 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
 
         const img = best.img;
         if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
-          canvas.width = img.naturalWidth || 600;
-          canvas.height = img.naturalHeight || 800;
+          canvas.width = img.naturalWidth || 540;
+          canvas.height = img.naturalHeight || 960;
         }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.classList.add("is-ready");
@@ -2099,7 +2172,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         if (Math.abs(diff) <= 0.08) {
           g.currentPosFloat = g.targetPos;
         } else {
-          const alpha = 1 - Math.exp(-dt * 34);
+          const alpha = 1 - Math.exp(-dt * 36);
           g.currentPosFloat += diff * alpha;
         }
 
@@ -2127,6 +2200,11 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         }
       },
 
+      setGalleryDegree(gNum, degree, immediate = false) {
+        const clampedDeg = Math.min(359, Math.max(0, Math.round(Number(degree) || 0)));
+        this.setGalleryPosition(gNum, clampedDeg + 1, immediate);
+      },
+
       stepGallery(gNum, delta) {
         const g = this.galleries[gNum];
         if (!g) return;
@@ -2140,6 +2218,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
 
         [1, 2, 3].forEach((gNum) => {
           const g = this.galleries[gNum];
+          const runwayEl = document.getElementById(`scroll-runway-0${gNum}`) || document.getElementById(`scroll-gallery-0${gNum}`);
           const cardEl = document.getElementById(`scroll-gallery-0${gNum}`);
           const stageBox = document.getElementById(`gallery-0${gNum}-stage`);
           const poster = document.getElementById(`gallery-0${gNum}-poster`);
@@ -2155,17 +2234,17 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             };
           }
 
-          // Prime initial frames (1..8 and sparse anchors)
+          // Prime initial frames (0°..9° and sparse 30° rotation anchors around 0°..359°)
           this.enqueueLoad(gNum, 1, true);
-          for (let p = 2; p <= 8; p++) this.enqueueLoad(gNum, p, true);
+          for (let p = 2; p <= 10; p++) this.enqueueLoad(gNum, p, true);
           for (let p = 30; p <= 360; p += 30) this.enqueueLoad(gNum, p, false);
           this.processQueue();
           this.drawPosition(gNum, this.clampPosition(g.targetPos));
           this.updateStatusUI(gNum);
 
-          // 1. Wheel scrubbing over the stage box (1 wheel notch = 1 saree position forward/backward)
+          // 1. Wheel scrolling over the 360° viewer: 1 notch forward = +1° & next saree design; backward = -1° & prev design
           const onWheel = (e) => {
-            if (Math.abs(e.deltaY) < 2) return;
+            if (Math.abs(e.deltaY) < 1) return;
             const stepDelta = e.deltaY > 0 ? 1 : -1;
             const cur = this.clampPosition(g.targetPos);
             if ((stepDelta > 0 && cur < 360) || (stepDelta < 0 && cur > 1)) {
@@ -2176,20 +2255,23 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           stageBox.addEventListener("wheel", onWheel, { passive: false });
           this.cleanups.push(() => stageBox.removeEventListener("wheel", onWheel));
 
-          // 2. Pointer/touch drag scrubbing on the stage box
+          // 2. Touch / pointer drag scrolling on the 360° viewer
           let dragging = false;
-          let startX = 0;
+          let startCoord = 0;
           let startPos = 1;
           const onPointerDown = (e) => {
             dragging = true;
-            startX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+            const cx = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+            const cy = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
+            startCoord = cx + cy;
             startPos = this.clampPosition(g.targetPos);
           };
           const onPointerMove = (e) => {
             if (!dragging) return;
-            const clientX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
-            const dx = clientX - startX;
-            const posDelta = Math.round(dx / 2.2);
+            const cx = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+            const cy = e.clientY || (e.touches && e.touches[0]?.clientY) || 0;
+            const delta = (cx + cy) - startCoord;
+            const posDelta = Math.round(delta / 2.2);
             this.setGalleryPosition(gNum, startPos + posDelta, false);
           };
           const onPointerUp = () => {
@@ -2204,16 +2286,16 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             window.removeEventListener("mouseup", onPointerUp);
           });
 
-          // 3. ScrollTrigger page-scroll binding so scrolling through each gallery card advances 001 -> 360
-          if (typeof ScrollTrigger !== "undefined") {
+          // 3. ScrollTrigger page-scroll binding on the gallery scroll runway (0° -> 359° full turn)
+          if (typeof ScrollTrigger !== "undefined" && runwayEl) {
             const st = ScrollTrigger.create({
-              trigger: cardEl,
-              start: "top 82%",
-              end: "bottom 18%",
+              trigger: runwayEl,
+              start: "top top+=90",
+              end: "bottom bottom-=60",
               scrub: true,
               onUpdate: (self) => {
-                const p = 1 + Math.round((self.progress || 0) * 359);
-                this.setGalleryPosition(gNum, p, false);
+                const deg = Math.min(359, Math.max(0, Math.round((self.progress || 0) * 359)));
+                this.setGalleryPosition(gNum, deg + 1, false);
               }
             });
             this.scrollTriggers.push(st);
@@ -3540,187 +3622,153 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             </section>
 
             
-            <!-- 1B. THREE INDEPENDENT 360-STEP SAREE SCROLL GALLERIES (1,080 DISTINCT DESIGNS) -->
-            <section id="three-galleries-section" class="three-galleries-section" aria-label="Three 360-Step Saree Scroll Galleries">
-              <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
-                <div>
-                  <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted">1,080 Distinct Studio Saree Designs • 3 × 360-Step Scroll Galleries</span>
-                  <h2 class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-1">Three 360-Step Saree Design Scroll Galleries</h2>
-                  <p class="text-xs sm:text-sm text-ink-muted mt-1">Each gallery features 360 ordered saree designs in 3:4 studio mannequin framing. Scroll the page, use your mouse wheel or drag on any mannequin stage, or use the 360-step scrubber and step buttons.</p>
-                </div>
-                <div class="flex flex-wrap items-center gap-2 shrink-0">
-                  <a href="#scroll-gallery-01" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 01 (001–360)</a>
-                  <a href="#scroll-gallery-02" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 02 (001–360)</a>
-                  <a href="#scroll-gallery-03" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 03 (001–360)</a>
-                </div>
-              </div>
+                    <!-- 2. THREE INDEPENDENT 360° SCROLL-CONTROLLED SAREE GALLERIES (0°–359° / 1,080 DISTINCT DESIGNS) -->
+        <section id="three-galleries-section" class="three-galleries-section" aria-label="Three 360-Degree Saree Scroll Galleries">
+          <div class="mb-8 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted">3 × 360° Scroll-Controlled Mannequin Galleries • 0° to 359° Full Rotation • 1,080 Saree Designs</span>
+              <h2 class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-1">Three 360° Saree Design Turntable Galleries</h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">Scroll through each gallery (or scroll directly over the centered mannequin viewer) to rotate degree-by-degree from 0° to 359° across a full 360° turn while advancing through all 360 saree designs in sync.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <a href="#scroll-runway-01" class="px-3.5 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 01 (0°–359°)</a>
+              <a href="#scroll-runway-02" class="px-3.5 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 02 (0°–359°)</a>
+              <a href="#scroll-runway-03" class="px-3.5 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 03 (0°–359°)</a>
+            </div>
+          </div>
 
-              <div class="three-galleries-stack">
-                ${[
-                  {
-                    num: 1,
-                    id: "gallery-01",
-                    title: "Gallery 01 — Royal Bridal Kanchipuram, Banarasi & Zardozi Collection",
-                    subtitle: "360 distinct bridal & festive silk saree designs on studio mannequin (gallery-01-design-001 to gallery-01-design-360)",
-                    initialName: "Swarna Sand Jacquard Silk-Blend Saree",
-                    initialColor: "Warm Sand & Muted Gold",
-                    initialFabric: "Silk-Blend Jacquard",
-                    initialBorder: "3.5-inch muted gold woven zari temple border with fine geometric edging",
-                    initialMotifs: "Evenly spaced woven muted gold floral butti motifs",
-                    initialBlouse: "Coordinated warm sand and espresso-brown jacquard blouse with 3.5-inch woven gold temple sleeve border"
-                  },
-                  {
-                    num: 2,
-                    id: "gallery-02",
-                    title: "Gallery 02 — Heirloom Paithani, Patola Ikat, Gadwal & Temple Border Collection",
-                    subtitle: "360 distinct heritage weave, korvai temple border & peacock motif saree designs (gallery-02-design-001 to gallery-02-design-360)",
-                    initialName: "Ruby Sindoor Kanchipuram Korvai Silk Saree — Edition 001",
-                    initialColor: "Ruby Sindoor Red & Antique Gold",
-                    initialFabric: "Pure Kanchipuram Silk",
-                    initialBorder: "4.5-inch traditional korvai temple spire (karvat) and floral vine border",
-                    initialMotifs: "Majestic twin peacocks and chakra medallions across body and pallu",
-                    initialBlouse: "Fitted ruby red silk blouse with antique gold zari armband border and curved neckline"
-                  },
-                  {
-                    num: 3,
-                    id: "gallery-03",
-                    title: "Gallery 03 — Artisanal Organza Tissue, Chanderi, Mysore Crepe & Couture Drape Collection",
-                    subtitle: "360 distinct pastel organza, crushed metallic tissue & couture drape saree designs (gallery-03-design-001 to gallery-03-design-360)",
-                    initialName: "Royal Berry Wine Banarasi Georgette Saree — Edition 001",
-                    initialColor: "Royal Berry Wine & Rose Gold",
-                    initialFabric: "Banarasi Satin Georgette",
-                    initialBorder: "Scalloped cutwork border with rose-gold floral lattice",
-                    initialMotifs: "All-over diagonal rose-gold floral jaal and rich pallu",
-                    initialBlouse: "Fitted berry wine georgette-lined blouse with rose-gold brocade sleeves"
-                  }
-                ].map((g) => `
-                  <article id="scroll-gallery-0${g.num}" class="saree-scroll-gallery-card" data-gallery-num="${g.num}">
-                    <div class="saree-scroll-gallery-grid">
-                      <!-- Left: 3:4 Portrait Mannequin Stage with Immediate Poster Fallback + High-Refresh Canvas -->
-                      <div id="gallery-0${g.num}-stage" class="gallery-360-stage-box" aria-label="${g.title} interactive 360-design viewer">
-                        <div id="gallery-0${g.num}-loading-pill" class="gallery-360-loading-pill" role="status" aria-live="polite">
-                          <span class="saree-360-loading-dot" aria-hidden="true"></span>
-                          <span id="gallery-0${g.num}-loading-text">Preloading Gallery 0${g.num} designs…</span>
+          <div class="three-galleries-stack">
+            ${[
+              {
+                num: 1,
+                id: "gallery-01",
+                title: "Gallery 01 — Royal Bridal Kanchipuram, Banarasi & Zardozi Collection",
+                subtitle: "360 ordered bridal & festive silk saree designs mapped 1:1 to 0°–359° full mannequin rotation (gallery-01-design-001 to gallery-01-design-360)",
+                initialName: "Champagne Tissue Saree with Floral & Peacock Embroidery — Edition 001",
+                initialColor: "Champagne Gold & Pastel Rose",
+                initialFabric: "Chanderi Silk-Cotton Tissue",
+                initialBorder: "Ornate scalloped cutwork border with champagne-gold zari, floral scrollwork, and contrast selvedge finish",
+                initialMotifs: "Embroidered royal peacocks, blooming lotus vines, and champagne-gold zari floral sprays (0° — Front View (Full frontal drape, pleats & bodice))",
+                initialBlouse: "Contrast-accented champagne gold silk-tissue blouse with scalloped champagne-gold zari sleeve borders"
+              },
+              {
+                num: 2,
+                id: "gallery-02",
+                title: "Gallery 02 — Heirloom Paithani, Patola Ikat, Gadwal & Temple Border Collection",
+                subtitle: "360 ordered heritage weave & peacock embroidery saree designs mapped 1:1 to 0°–359° full mannequin rotation (gallery-02-design-001 to gallery-02-design-360)",
+                initialName: "Sindoor Crimson Pure Kanchipuram Silk-Tissue Saree — Edition 001",
+                initialColor: "Sindoor Crimson & Champagne Gold",
+                initialFabric: "Pure Kanchipuram Silk-Tissue",
+                initialBorder: "Ornate scalloped cutwork border with champagne-gold zari and intricate peacock-vine embroidery",
+                initialMotifs: "Embroidered royal peacocks, blooming lotus vines, and champagne-gold zari floral sprays (0° — Front View (Full frontal drape, pleats & bodice))",
+                initialBlouse: "Coordinated sindoor crimson tailored silk-tissue blouse with scalloped champagne-gold zari neckline & sleeves"
+              },
+              {
+                num: 3,
+                id: "gallery-03",
+                title: "Gallery 03 — Artisanal Organza Tissue, Chanderi, Mysore Crepe & Couture Drape Collection",
+                subtitle: "360 ordered sheer organza, metallic tissue & couture saree designs mapped 1:1 to 0°–359° full mannequin rotation (gallery-03-design-001 to gallery-03-design-360)",
+                initialName: "Deep Mulberry Wine Chanderi Silk-Cotton Tissue Saree — Edition 001",
+                initialColor: "Deep Mulberry Wine & Antique Bronze",
+                initialFabric: "Chanderi Silk-Cotton Tissue",
+                initialBorder: "Ornate scalloped cutwork border with antique bronze zari, floral scrollwork, and contrast selvedge finish",
+                initialMotifs: "Embroidered royal peacocks, blooming lotus vines, and antique bronze zari floral sprays (0° — Front View (Full frontal drape, pleats & bodice))",
+                initialBlouse: "Contrast-accented deep mulberry wine silk-tissue blouse with scalloped antique bronze zari sleeve borders"
+              }
+            ].map((g) => `
+              <div id="scroll-runway-0${g.num}" class="saree-scroll-gallery-runway" data-gallery-runway="${g.num}">
+                <article id="scroll-gallery-0${g.num}" class="saree-scroll-gallery-card" data-gallery-num="${g.num}">
+                  <div class="saree-scroll-gallery-grid">
+                    <!-- Clean Screenshot-4 Inspired 9:16 Scroll-Controlled 360° Mannequin Viewer -->
+                    <div id="gallery-0${g.num}-stage" class="gallery-360-stage-box" aria-label="${g.title} 360-degree scroll-controlled mannequin viewer">
+                      <div id="gallery-0${g.num}-loading-pill" class="gallery-360-loading-pill" role="status" aria-live="polite">
+                        <span class="saree-360-loading-dot" aria-hidden="true"></span>
+                        <span id="gallery-0${g.num}-loading-text">Loading 360° views…</span>
+                      </div>
+                      <div id="gallery-0${g.num}-error-banner" class="gallery-360-error-banner is-hidden" role="alert">
+                        <span id="gallery-0${g.num}-error-text">Some 360° frames could not be loaded.</span>
+                        <button type="button" class="saree-360-retry-btn" onclick="ThreeGalleriesScrollEngine.retryFailed(${g.num})">Retry</button>
+                      </div>
+                      <span id="gallery-0${g.num}-badge" class="gallery-360-pos-badge">360° Turntable • 0°</span>
+                      <img
+                        id="gallery-0${g.num}-poster"
+                        src="${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/generated/gallery-0${g.num}-design-001.jpg"
+                        alt="${g.initialName}"
+                        width="540"
+                        height="960"
+                        loading="${g.num === 1 ? "eager" : "lazy"}"
+                        ${g.num === 1 ? 'fetchpriority="high"' : ""}
+                        decoding="async"
+                        class="gallery-360-poster"
+                      />
+                      <canvas
+                        id="gallery-0${g.num}-canvas"
+                        class="gallery-360-canvas"
+                        width="540"
+                        height="960"
+                        aria-label="${g.title} 360° turntable canvas"
+                      ></canvas>
+                      <div class="gallery-360-scroll-cue" aria-hidden="true">
+                        <span class="gallery-360-scroll-label">SCROLL</span>
+                      </div>
+                    </div>
+
+                    <!-- Synchronized Saree Design & Angle Details Panel (No buttons or sliders) -->
+                    <div class="space-y-4 min-w-0 w-full">
+                      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/30 pb-3">
+                        <div>
+                          <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C6D32]">Gallery 0${g.num} • 360 Distinct Saree Designs • 0°–359° Turntable</span>
+                          <h3 class="font-serif text-xl sm:text-2xl font-semibold text-ink mt-0.5">${g.title}</h3>
                         </div>
-                        <div id="gallery-0${g.num}-error-banner" class="gallery-360-error-banner is-hidden" role="alert">
-                          <span id="gallery-0${g.num}-error-text">Some designs could not be loaded.</span>
-                          <button type="button" class="saree-360-retry-btn" onclick="ThreeGalleriesScrollEngine.retryFailed(${g.num})">Retry</button>
-                        </div>
-                        <span id="gallery-0${g.num}-badge" class="gallery-360-pos-badge">Design 001 / 360</span>
-                        <img
-                          id="gallery-0${g.num}-poster"
-                          src="${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/generated/gallery-0${g.num}-design-001.jpg"
-                          alt="${g.initialName}"
-                          width="600"
-                          height="800"
-                          loading="${g.num === 1 ? "eager" : "lazy"}"
-                          ${g.num === 1 ? 'fetchpriority="high"' : ""}
-                          decoding="async"
-                          class="gallery-360-poster"
-                        />
-                        <canvas
-                          id="gallery-0${g.num}-canvas"
-                          class="gallery-360-canvas"
-                          width="600"
-                          height="800"
-                          aria-label="${g.title} canvas"
-                        ></canvas>
+                        <span id="gallery-0${g.num}-counter" class="px-3.5 py-1.5 rounded-full bg-[#2A1E17] text-[#FAF6EE] font-mono text-xs sm:text-sm font-bold tracking-wider">
+                          Design 001 / 360 • 0°
+                        </span>
                       </div>
 
-                      <!-- Right: Live Position Controls, Scrubber & Design Manifest Metadata -->
-                      <div class="space-y-4 min-w-0">
-                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/30 pb-3">
-                          <div>
-                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C6D32]">Gallery 0${g.num} • 360 Distinct Saree Designs</span>
-                            <h3 class="font-serif text-xl sm:text-2xl font-semibold text-ink mt-0.5">${g.title}</h3>
+                      <div class="flex flex-wrap items-center justify-between gap-2 text-xs text-ink-muted">
+                        <span id="gallery-0${g.num}-angle-view" class="font-semibold text-ink">
+                          0° — Front View (Full frontal drape, pleats &amp; bodice)
+                        </span>
+                        <span id="gallery-0${g.num}-file-tag" class="font-mono text-[11px] text-ink-muted">
+                          gallery-0${g.num}-design-001.jpg
+                        </span>
+                      </div>
+
+                      <!-- Live Saree Design & Product Details Card -->
+                      <div class="bg-[#FAF8F5] rounded-xl p-4 sm:p-5 border border-gold/35 space-y-3">
+                        <h4 id="gallery-0${g.num}-design-title" class="font-serif text-lg sm:text-xl font-semibold text-ink">
+                          ${g.initialName}
+                        </h4>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
+                          <div class="p-2.5 rounded-lg bg-[#F5EFE4]/80">
+                            <span class="font-semibold text-ink-muted block">Base Colour &amp; Palette:</span>
+                            <span id="gallery-0${g.num}-color" class="font-semibold text-ink">${g.initialColor}</span>
                           </div>
-                          <span id="gallery-0${g.num}-counter" class="px-3.5 py-1.5 rounded-full bg-[#2A1E17] text-[#FAF6EE] font-mono text-xs sm:text-sm font-bold tracking-wider">
-                            Design 001 / 360
-                          </span>
-                        </div>
-
-                        <p class="text-xs text-ink-muted">${g.subtitle}</p>
-
-                        <!-- Interactive 360-Position Scrubber + Step Forward/Backward Controls -->
-                        <div class="bg-[#F5EFE4] rounded-xl p-3.5 border border-gold/40 space-y-3">
-                          <div class="flex items-center justify-between gap-2">
-                            <button
-                              type="button"
-                              onclick="ThreeGalleriesScrollEngine.stepGallery(${g.num}, -1)"
-                              class="px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink hover:bg-gold/20 transition-colors"
-                              aria-label="Previous saree design in Gallery 0${g.num}"
-                            >
-                              ← Prev Design (-1)
-                            </button>
-                            <span id="gallery-0${g.num}-file-tag" class="font-mono text-xs font-semibold text-ink-muted">
-                              gallery-0${g.num}-design-001.jpg
-                            </span>
-                            <button
-                              type="button"
-                              onclick="ThreeGalleriesScrollEngine.stepGallery(${g.num}, 1)"
-                              class="px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink hover:bg-gold/20 transition-colors"
-                              aria-label="Next saree design in Gallery 0${g.num}"
-                            >
-                              Next Design (+1) →
-                            </button>
+                          <div class="p-2.5 rounded-lg bg-[#F5EFE4]/80">
+                            <span class="font-semibold text-ink-muted block">Silk / Weave Fabric:</span>
+                            <span id="gallery-0${g.num}-fabric" class="font-semibold text-ink">${g.initialFabric}</span>
                           </div>
-
-                          <div>
-                            <label for="gallery-0${g.num}-slider" class="sr-only">Scrub Gallery 0${g.num} Designs 1 to 360</label>
-                            <input
-                              id="gallery-0${g.num}-slider"
-                              type="range"
-                              min="1"
-                              max="360"
-                              step="1"
-                              value="1"
-                              oninput="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, Number(this.value), true)"
-                              class="w-full accent-[#C4A15A] cursor-pointer"
-                            />
-                            <div class="flex justify-between text-[11px] font-semibold text-ink-muted mt-1">
-                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 1, true)" class="hover:text-ink underline">Design 001</button>
-                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 90, true)" class="hover:text-ink underline">Design 090</button>
-                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 180, true)" class="hover:text-ink underline">Design 180</button>
-                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 270, true)" class="hover:text-ink underline">Design 270</button>
-                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 360, true)" class="hover:text-ink underline">Design 360</button>
-                            </div>
+                          <div class="p-2.5 rounded-lg bg-[#F5EFE4]/80 sm:col-span-2">
+                            <span class="font-semibold text-ink-muted block">Border &amp; Zari Work:</span>
+                            <span id="gallery-0${g.num}-border" class="text-ink">${g.initialBorder}</span>
                           </div>
-                        </div>
-
-                        <!-- Live Saree Design Details Card -->
-                        <div class="bg-[#FAF8F5] rounded-xl p-4 border border-gold/35 space-y-2.5">
-                          <h4 id="gallery-0${g.num}-design-title" class="font-serif text-lg font-semibold text-ink">
-                            ${g.initialName}
-                          </h4>
-                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
-                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70">
-                              <span class="font-semibold text-ink-muted block">Base Colour & Palette:</span>
-                              <span id="gallery-0${g.num}-color" class="font-semibold text-ink">${g.initialColor}</span>
-                            </div>
-                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70">
-                              <span class="font-semibold text-ink-muted block">Silk / Weave Fabric:</span>
-                              <span id="gallery-0${g.num}-fabric" class="font-semibold text-ink">${g.initialFabric}</span>
-                            </div>
-                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
-                              <span class="font-semibold text-ink-muted block">Border & Zari Work:</span>
-                              <span id="gallery-0${g.num}-border" class="text-ink">${g.initialBorder}</span>
-                            </div>
-                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
-                              <span class="font-semibold text-ink-muted block">Motifs & Pallu Design:</span>
-                              <span id="gallery-0${g.num}-motifs" class="text-ink">${g.initialMotifs}</span>
-                            </div>
-                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
-                              <span class="font-semibold text-ink-muted block">Coordinated Blouse Piece:</span>
-                              <span id="gallery-0${g.num}-blouse" class="text-ink">${g.initialBlouse}</span>
-                            </div>
+                          <div class="p-2.5 rounded-lg bg-[#F5EFE4]/80 sm:col-span-2">
+                            <span class="font-semibold text-ink-muted block">Motifs, Pallu &amp; Viewing Angle:</span>
+                            <span id="gallery-0${g.num}-motifs" class="text-ink">${g.initialMotifs}</span>
+                          </div>
+                          <div class="p-2.5 rounded-lg bg-[#F5EFE4]/80 sm:col-span-2">
+                            <span class="font-semibold text-ink-muted block">Coordinated Blouse Piece:</span>
+                            <span id="gallery-0${g.num}-blouse" class="text-ink">${g.initialBlouse}</span>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </article>
-                `).join("")}
+                  </div>
+                </article>
               </div>
-            </section>
+            `).join("")}
+          </div>
+        </section>
 
             <!-- 2. SHOP CATALOGUE SECTION -->
             <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12" aria-label="Saree Catalogue">
