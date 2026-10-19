@@ -6,7 +6,11 @@
   <meta name="theme-color" content="#6B1D2F">
   <meta name="description" content="Janardhan Textiles — Champagne Tissue Saree with Floral and Peacock Embroidery. Five-view saree gallery, craft details, and collection.">
   <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Janardhan Textiles">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="apple-touch-icon" href="/public/images/sarees/jt-saree-09/1-front.jpg">
   <title>Janardhan Textiles | Saree Showcase &amp; Collection</title>
 
   <!-- Preload featured saree views -->
@@ -4864,6 +4868,13 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
 
   <!-- Storefront (Prompt 1) & Protected Admin Panel (Prompt 2) Controller Extension -->
   <script src="src/storefront-admin-app.js?v=360-v3"></script>
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("/sw.js").catch(function () {});
+      });
+    }
+  </script>
 </body>
 </html>
 
