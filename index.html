@@ -13,7 +13,8 @@
   <link rel="apple-touch-icon" href="/public/images/sarees/jt-saree-09/1-front.jpg">
   <title>Janardhan Textiles | Saree Showcase &amp; Collection</title>
 
-  <!-- Preload featured saree views -->
+  <!-- Preload initial 0° 360 turntable frame & featured saree views -->
+  <link rel="preload" as="image" href="/public/assets/saree-360/frames/frame-000.webp" fetchpriority="high" />
   <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" fetchpriority="high" />
   <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/2-back-pallu.jpg" />
 
@@ -587,11 +588,13 @@
         position: relative;
         height: 100%;
         max-height: calc(100svh - 8.25rem);
+        max-width: calc(100vw - 1.5rem);
         aspect-ratio: 9 / 16;
         border-radius: 1.25rem;
         overflow: hidden;
         box-shadow: 0 20px 50px rgba(35, 22, 25, 0.16), 0 0 0 1px rgba(196, 161, 90, 0.45);
-        background: #D9CBB0;
+        background: #B39E88;
+        contain: layout paint;
       }
 
       .saree-360-poster-fallback,
@@ -609,11 +612,18 @@
         position: absolute;
         inset: 0;
         z-index: 1;
+        opacity: 1;
       }
 
       .saree-360-canvas {
         position: relative;
         z-index: 2;
+        opacity: 0;
+        transition: opacity 0.12s ease-out;
+      }
+
+      .saree-360-canvas.is-ready {
+        opacity: 1;
       }
 
       .saree-360-video {
@@ -625,20 +635,108 @@
 
       .saree-360-angle-badge {
         position: absolute;
-        top: 0.85rem;
-        right: 0.85rem;
-        z-index: 5;
-        padding: 0.25rem 0.65rem;
+        top: 0.65rem;
+        right: 0.65rem;
+        bottom: auto;
+        left: auto;
+        transform: none;
+        z-index: 6;
+        padding: 0.2rem 0.56rem;
         border-radius: 999px;
-        background: rgba(250, 246, 238, 0.92);
-        border: 1px solid rgba(196, 161, 90, 0.55);
+        background: rgba(250, 246, 238, 0.94);
+        border: 1px solid rgba(196, 161, 90, 0.6);
         font-family: var(--font-sans);
-        font-size: 0.68rem;
+        font-size: 0.6rem;
         font-weight: 700;
-        letter-spacing: 0.12em;
+        letter-spacing: 0.06em;
         font-variant-numeric: tabular-nums;
+        white-space: nowrap;
+        max-width: 44%;
+        overflow: hidden;
+        text-overflow: ellipsis;
         color: var(--text-primary);
-        box-shadow: 0 2px 8px rgba(35, 22, 25, 0.1);
+        box-shadow: 0 2px 10px rgba(35, 22, 25, 0.12);
+      }
+
+      .saree-360-loading-pill {
+        position: absolute;
+        top: 0.65rem;
+        left: 0.65rem;
+        transform: none;
+        z-index: 6;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.35rem;
+        padding: 0.2rem 0.56rem;
+        border-radius: 999px;
+        background: rgba(35, 22, 25, 0.78);
+        border: 1px solid rgba(196, 161, 90, 0.5);
+        color: #FAF6EE;
+        font-family: var(--font-sans);
+        font-size: 0.58rem;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        white-space: nowrap;
+        max-width: 44%;
+        pointer-events: none;
+        transition: opacity 0.25s ease, transform 0.25s ease;
+      }
+
+      .saree-360-loading-pill.is-hidden {
+        opacity: 0;
+        transform: translateY(-4px);
+        pointer-events: none;
+      }
+
+      .saree-360-loading-dot {
+        width: 0.42rem;
+        height: 0.42rem;
+        border-radius: 999px;
+        background: #C4A15A;
+        animation: saree360Pulse 1s ease-in-out infinite;
+      }
+
+      @keyframes saree360Pulse {
+        0%, 100% { opacity: 0.35; transform: scale(0.88); }
+        50% { opacity: 1; transform: scale(1.15); }
+      }
+
+      .saree-360-error-banner {
+        position: absolute;
+        bottom: 2.65rem;
+        left: 0.65rem;
+        right: 0.65rem;
+        z-index: 7;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.5rem;
+        padding: 0.38rem 0.65rem;
+        border-radius: 0.65rem;
+        background: rgba(107, 29, 47, 0.94);
+        border: 1px solid rgba(196, 161, 90, 0.65);
+        color: #FAF6EE;
+        font-family: var(--font-sans);
+        font-size: 0.64rem;
+        line-height: 1.25;
+        pointer-events: auto;
+      }
+
+      .saree-360-error-banner.is-hidden {
+        display: none;
+      }
+
+      .saree-360-retry-btn {
+        padding: 0.18rem 0.5rem;
+        border-radius: 999px;
+        background: #C4A15A;
+        color: #231619;
+        font-weight: 700;
+        font-size: 0.6rem;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        cursor: pointer;
+        flex-shrink: 0;
       }
 
       html.is-scroll-driven .captions-hud {
@@ -1563,118 +1661,339 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         }
       ],
 
-      scrubTotalFrames: 72,
-      scrubImages: [],
-      scrubImagesLoaded: false,
+      scrubTotalFrames: 360,
+      scrubImages: new Array(360).fill(null),
+      frameStates: new Array(360).fill("idle"), // "idle" | "loading" | "ready" | "error"
+      frameTouchOrder: [],
+      failedDegrees: new Set(),
+      loadQueue: [],
+      queuedSet: new Set(),
+      activeLoads: 0,
+      maxConcurrentLoads: 6,
+      maxCachedFrames: 160,
+      preloadWindowRadius: 20,
+      anchorStepDegrees: 15,
+      anchorReadyCount: 0,
+      totalAnchorCount: 24,
       lastDrawnScrubIndex: -1,
+      lastDisplayedExact: false,
+      lastBadgeDegree: -1,
+      targetProgress: 0,
+      currentProgress: 0,
+      scrollDirection: 1,
+      rafId: null,
+      lastRafTimestamp: 0,
 
       formatIndex(num) {
         return String(num).padStart(2, "0");
       },
 
-      initScrubFrames() {
-        if (this.scrubImages.length === this.scrubTotalFrames) return;
+      progressToDegree(progress) {
+        const clamped = Math.max(0, Math.min(1, Number(progress) || 0));
+        if (clamped >= 0.9972) return 359;
+        return Math.min(359, Math.max(0, Math.floor(clamped * 360)));
+      },
+
+      getFrameUrl(deg, ext = "webp") {
         const basePath = window.__ASSET_BASE_PATH__ || "";
-        this.scrubImages = [];
-        for (let i = 0; i < this.scrubTotalFrames; i++) {
-          const img = new Image();
-          img.decoding = "async";
-          const padded = String(i).padStart(3, "0");
-          const src = `${basePath}/public/assets/saree-360/frames/frame-${padded}.webp`;
-          if (i === 0 || i === this.scrubTotalFrames - 1 || i % 6 === 0) {
-            img.src = src;
-            img.dataset.loadedSrc = src;
+        const padded = String(deg).padStart(3, "0");
+        return `${basePath}/public/assets/saree-360/frames/frame-${padded}.${ext}`;
+      },
+
+      isAnchorDegree(deg) {
+        return deg === 0 || deg === 359 || deg % this.anchorStepDegrees === 0;
+      },
+
+      updateLoadingAndErrorUI() {
+        const loadingPill = document.getElementById("saree-360-loading-pill");
+        const loadingText = document.getElementById("saree-360-loading-text");
+        if (loadingPill) {
+          const frame0Ready = this.frameStates[0] === "ready";
+          if (frame0Ready && this.anchorReadyCount >= Math.min(12, this.totalAnchorCount)) {
+            loadingPill.classList.add("is-hidden");
           } else {
-            img.dataset.deferredSrc = src;
+            loadingPill.classList.remove("is-hidden");
+            if (loadingText) {
+              const pct = Math.min(99, Math.max(5, Math.round((this.anchorReadyCount / this.totalAnchorCount) * 100)));
+              loadingText.textContent = `Loading 360° views… ${pct}%`;
+            }
           }
-          if (i === 0) {
-            img.onload = () => {
-              if (this.lastDrawnScrubIndex <= 0) this.drawScrubFrame(0, 0);
-            };
-          }
-          this.scrubImages.push(img);
         }
+
+        const errorBanner = document.getElementById("saree-360-error-banner");
+        const errorText = document.getElementById("saree-360-error-text");
+        if (errorBanner) {
+          const currentDeg = this.progressToDegree(this.currentProgress);
+          const showBanner = this.failedDegrees.has(currentDeg) || this.failedDegrees.size >= 4;
+          if (showBanner) {
+            errorBanner.classList.remove("is-hidden");
+            if (errorText) {
+              const sampleDeg = this.failedDegrees.has(currentDeg) ? currentDeg : Array.from(this.failedDegrees)[0];
+              errorText.textContent =
+                this.failedDegrees.size === 1
+                  ? `Frame ${sampleDeg}° unavailable — holding nearest valid view.`
+                  : `${this.failedDegrees.size} frames unavailable — holding nearest valid views.`;
+            }
+          } else {
+            errorBanner.classList.add("is-hidden");
+          }
+        }
+      },
+
+      retryFailedFrames() {
+        const toRetry = Array.from(this.failedDegrees);
+        this.failedDegrees.clear();
+        toRetry.forEach((deg) => {
+          this.frameStates[deg] = "idle";
+          this.scrubImages[deg] = null;
+          this.enqueueFrameLoad(deg, true);
+        });
+        this.updateLoadingAndErrorUI();
+        this.processLoadQueue();
+      },
+
+      touchCachedFrame(deg) {
+        const idx = this.frameTouchOrder.indexOf(deg);
+        if (idx !== -1) this.frameTouchOrder.splice(idx, 1);
+        this.frameTouchOrder.push(deg);
+
+        if (this.frameTouchOrder.length <= this.maxCachedFrames) return;
+        const currentDeg = this.progressToDegree(this.targetProgress);
+
+        for (let i = 0; i < this.frameTouchOrder.length; i++) {
+          if (this.frameTouchOrder.length <= this.maxCachedFrames) break;
+          const cand = this.frameTouchOrder[i];
+          const dist = Math.min(Math.abs(cand - currentDeg), 360 - Math.abs(cand - currentDeg));
+          if (this.isAnchorDegree(cand) || dist <= this.preloadWindowRadius + 6 || cand === this.lastDrawnScrubIndex) {
+            continue;
+          }
+          this.frameTouchOrder.splice(i, 1);
+          i--;
+          this.scrubImages[cand] = null;
+          if (this.frameStates[cand] === "ready") {
+            this.frameStates[cand] = "idle";
+          }
+        }
+      },
+
+      enqueueFrameLoad(deg, highPriority = false) {
+        if (deg < 0 || deg >= this.scrubTotalFrames) return;
+        const state = this.frameStates[deg];
+        if (state === "ready" || state === "loading" || this.queuedSet.has(deg)) return;
+        this.queuedSet.add(deg);
+        if (highPriority) {
+          this.loadQueue.unshift(deg);
+        } else {
+          this.loadQueue.push(deg);
+        }
+      },
+
+      processLoadQueue() {
+        while (this.activeLoads < this.maxConcurrentLoads && this.loadQueue.length > 0) {
+          const deg = this.loadQueue.shift();
+          this.queuedSet.delete(deg);
+          if (this.frameStates[deg] === "ready" || this.frameStates[deg] === "loading") continue;
+          this.loadSingleDegreeFrame(deg);
+        }
+      },
+
+      loadSingleDegreeFrame(deg, attempt = 0) {
+        const attemptExts = ["webp", "webp", "jpg", "png"];
+        this.frameStates[deg] = "loading";
+        this.activeLoads++;
+
+        const img = new Image();
+        img.decoding = "async";
+        if (deg === 0) img.fetchPriority = "high";
+        const src = this.getFrameUrl(deg, attemptExts[attempt]);
+
+        const finalizeSuccess = () => {
+          this.activeLoads = Math.max(0, this.activeLoads - 1);
+          this.scrubImages[deg] = img;
+          this.frameStates[deg] = "ready";
+          this.failedDegrees.delete(deg);
+          if (this.isAnchorDegree(deg)) {
+            let count = 0;
+            for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
+              if (this.frameStates[d] === "ready") count++;
+            }
+            this.anchorReadyCount = count;
+          }
+          this.touchCachedFrame(deg);
+          this.updateLoadingAndErrorUI();
+
+          const targetDeg = this.progressToDegree(this.currentProgress);
+          if (deg === 0 && this.lastDrawnScrubIndex === -1) {
+            this.drawDegreeToCanvas(0);
+          } else if (deg === targetDeg || !this.lastDisplayedExact) {
+            this.scheduleRender();
+          }
+          this.processLoadQueue();
+        };
+
+        img.onload = () => {
+          if (typeof img.decode === "function") {
+            img.decode().then(finalizeSuccess).catch(finalizeSuccess);
+          } else {
+            finalizeSuccess();
+          }
+        };
+
+        img.onerror = () => {
+          this.activeLoads = Math.max(0, this.activeLoads - 1);
+          if (attempt + 1 < attemptExts.length) {
+            setTimeout(() => this.loadSingleDegreeFrame(deg, attempt + 1), attempt === 0 ? 120 : 0);
+            return;
+          }
+          this.frameStates[deg] = "error";
+          this.failedDegrees.add(deg);
+          this.updateLoadingAndErrorUI();
+          this.processLoadQueue();
+        };
+
+        img.src = src;
+      },
+
+      initScrubFrames() {
+        if (this.frameStates[0] === "idle") {
+          this.enqueueFrameLoad(0, true);
+          for (let step = 1; step <= 8; step++) {
+            this.enqueueFrameLoad(step, true);
+            this.enqueueFrameLoad(360 - step, true);
+          }
+          for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
+            this.enqueueFrameLoad(d, false);
+          }
+          this.enqueueFrameLoad(359, false);
+          this.processLoadQueue();
+        }
+      },
+
+      ensureWindowPreloaded(centerDeg, direction = 1) {
+        this.enqueueFrameLoad(centerDeg, true);
+        const radius = this.preloadWindowRadius;
+        for (let offset = 1; offset <= radius; offset++) {
+          const ahead = (centerDeg + offset * (direction >= 0 ? 1 : -1) + 360) % 360;
+          const behind = (centerDeg - offset * (direction >= 0 ? 1 : -1) + 360) % 360;
+          this.enqueueFrameLoad(ahead, offset <= 6);
+          if (offset <= Math.ceil(radius * 0.6)) {
+            this.enqueueFrameLoad(behind, false);
+          }
+        }
+        this.processLoadQueue();
       },
 
       preloadRemainingFrames() {
-        if (this.preloadTriggered) return;
-        this.preloadTriggered = true;
         this.initScrubFrames();
-        this.scrubImages.forEach((img) => {
-          if (img.dataset.deferredSrc && !img.src) {
-            img.src = img.dataset.deferredSrc;
-          }
-        });
-        const frames = document.querySelectorAll(".saree-frame");
-        frames.forEach((frame, idx) => {
-          if (idx < 2) return;
-          const img = frame.querySelector("img.saree-img");
-          if (img && img.loading === "lazy") {
-            img.loading = "eager";
-          }
-        });
+        const centerDeg = this.progressToDegree(this.targetProgress);
+        this.ensureWindowPreloaded(centerDeg, this.scrollDirection);
       },
 
-      drawScrubFrame(progress, scrubIdxOverride = null) {
-        this.initScrubFrames();
-        const clamped = Math.max(0, Math.min(1, Number(progress) || 0));
-        const idx =
-          scrubIdxOverride !== null
-            ? scrubIdxOverride
-            : Math.min(this.scrubTotalFrames - 1, Math.max(0, Math.round(clamped * (this.scrubTotalFrames - 1))));
-
-        const angleBadge = document.getElementById("saree-360-angle-badge");
-        if (angleBadge) {
-          const deg = idx === 0 ? 0 : idx === this.scrubTotalFrames - 1 ? 360 : Math.round(clamped * 360);
-          angleBadge.textContent = `360° Turntable • ${deg}°`;
+      findBestReadyFrame(targetDeg) {
+        const direct = this.scrubImages[targetDeg];
+        if (direct && this.frameStates[targetDeg] === "ready" && direct.complete && direct.naturalWidth > 0) {
+          return { img: direct, actualDeg: targetDeg, isExact: true };
         }
-
-        const videoEl = document.getElementById("saree-360-video");
-        if (videoEl && Number.isFinite(videoEl.duration) && videoEl.duration > 0) {
-          const targetTime = clamped * videoEl.duration;
-          if (Math.abs(videoEl.currentTime - targetTime) > 0.08) {
-            try {
-              videoEl.currentTime = targetTime;
-            } catch (e) {}
+        for (let offset = 1; offset <= 180; offset++) {
+          const prevDeg = (targetDeg - offset + 360) % 360;
+          const prevImg = this.scrubImages[prevDeg];
+          if (prevImg && this.frameStates[prevDeg] === "ready" && prevImg.complete && prevImg.naturalWidth > 0) {
+            return { img: prevImg, actualDeg: prevDeg, isExact: false };
           }
+          const nextDeg = (targetDeg + offset) % 360;
+          const nextImg = this.scrubImages[nextDeg];
+          if (nextImg && this.frameStates[nextDeg] === "ready" && nextImg.complete && nextImg.naturalWidth > 0) {
+            return { img: nextImg, actualDeg: nextDeg, isExact: false };
+          }
+        }
+        const posterFallback = document.getElementById("saree-360-poster-fallback");
+        if (posterFallback && posterFallback.complete && posterFallback.naturalWidth > 0) {
+          return { img: posterFallback, actualDeg: 0, isExact: targetDeg === 0 };
+        }
+        return null;
+      },
+
+      drawDegreeToCanvas(deg) {
+        const angleBadge = document.getElementById("saree-360-angle-badge");
+        if (angleBadge && this.lastBadgeDegree !== deg) {
+          angleBadge.textContent = `360° Turntable • ${deg}°`;
+          this.lastBadgeDegree = deg;
         }
 
         const canvas = document.getElementById("saree-360-canvas");
         if (!canvas) return;
-        const ctx = canvas.getContext("2d");
+        const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx) return;
 
-        let img = this.scrubImages[idx];
-        if (img && img.dataset.deferredSrc && !img.src) {
-          img.src = img.dataset.deferredSrc;
+        const best = this.findBestReadyFrame(deg);
+        if (!best || !best.img) return;
+
+        if (this.lastDrawnScrubIndex === best.actualDeg && (best.isExact || this.lastDisplayedExact === false)) {
+          if (best.isExact) this.lastDisplayedExact = true;
+          return;
         }
-        // Find nearest loaded image if exact frame is still decoding
-        if (!img || !img.complete || img.naturalWidth === 0) {
-          for (let offset = 1; offset < this.scrubTotalFrames; offset++) {
-            const prev = idx - offset >= 0 ? this.scrubImages[idx - offset] : null;
-            if (prev && prev.complete && prev.naturalWidth > 0) {
-              img = prev;
-              break;
-            }
-            const next = idx + offset < this.scrubTotalFrames ? this.scrubImages[idx + offset] : null;
-            if (next && next.complete && next.naturalWidth > 0) {
-              img = next;
-              break;
-            }
+
+        const img = best.img;
+        if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
+          canvas.width = img.naturalWidth;
+          canvas.height = img.naturalHeight;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.classList.add("is-ready");
+
+        this.lastDrawnScrubIndex = best.actualDeg;
+        this.lastDisplayedExact = best.isExact;
+      },
+
+      drawScrubFrame(progress, scrubIdxOverride = null) {
+        this.initScrubFrames();
+        const deg =
+          scrubIdxOverride !== null
+            ? Math.min(359, Math.max(0, Math.round(scrubIdxOverride)))
+            : this.progressToDegree(progress);
+        this.ensureWindowPreloaded(deg, this.scrollDirection);
+        this.drawDegreeToCanvas(deg);
+      },
+
+      scheduleRender() {
+        if (this.rafId !== null) return;
+        this.rafId = window.requestAnimationFrame((ts) => this.tickRender(ts));
+      },
+
+      tickRender(timestamp) {
+        this.rafId = null;
+        const dt = this.lastRafTimestamp ? Math.min(0.05, Math.max(0.001, (timestamp - this.lastRafTimestamp) / 1000)) : 1 / 60;
+        this.lastRafTimestamp = timestamp;
+
+        const diff = this.targetProgress - this.currentProgress;
+        if (Math.abs(diff) <= 0.00035) {
+          this.currentProgress = this.targetProgress;
+        } else {
+          // Frame-rate-independent smoothing that scales naturally from 60 Hz up to 144 Hz+
+          const alpha = 1 - Math.exp(-dt * 28);
+          this.currentProgress += diff * alpha;
+        }
+
+        const deg = this.progressToDegree(this.currentProgress);
+        this.ensureWindowPreloaded(deg, this.scrollDirection);
+        this.drawDegreeToCanvas(deg);
+
+        const totalSteps = this.framesConfig.length;
+        const clamped = Math.max(0, Math.min(0.999999, this.currentProgress));
+        const stepIndex = Math.min(totalSteps - 1, Math.floor(clamped * totalSteps));
+        this.setActiveStep(stepIndex);
+
+        const scrollCue = document.getElementById("scroll-cue");
+        if (scrollCue) {
+          if (this.currentProgress > 0.02) {
+            scrollCue.classList.add("is-hidden");
+          } else {
+            scrollCue.classList.remove("is-hidden");
           }
         }
 
-        if (img && img.complete && img.naturalWidth > 0) {
-          if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
-            canvas.width = img.naturalWidth;
-            canvas.height = img.naturalHeight;
-          }
-          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-          const fallbackImg = document.getElementById("saree-360-poster-fallback");
-          if (fallbackImg && img.src && fallbackImg.src !== img.src) {
-            fallbackImg.src = img.src;
-          }
-          this.lastDrawnScrubIndex = idx;
+        if (Math.abs(this.targetProgress - this.currentProgress) > 0.00035) {
+          this.scheduleRender();
         }
       },
 
@@ -1725,6 +2044,14 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           stage360.setAttribute("aria-label", "360-degree Saree Turntable");
           stage360.innerHTML = `
             <div class="saree-360-frame-box">
+              <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
+                <span class="saree-360-loading-dot" aria-hidden="true"></span>
+                <span id="saree-360-loading-text">Loading 360° views…</span>
+              </div>
+              <div id="saree-360-error-banner" class="saree-360-error-banner is-hidden" role="alert">
+                <span id="saree-360-error-text">Some 360° frames could not be loaded.</span>
+                <button type="button" class="saree-360-retry-btn" onclick="ShowcaseScrollEngine.retryFailedFrames()">Retry</button>
+              </div>
               <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
               <img
                 id="saree-360-poster-fallback"
@@ -1741,15 +2068,6 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 height="1280"
                 aria-label="Champagne Tissue Saree 360-degree turntable view"
               ></canvas>
-              <video
-                id="saree-360-video"
-                class="saree-360-video"
-                src="${basePath}/public/assets/saree-360/champagne-saree-360.mp4"
-                poster="${basePath}/public/assets/saree-360/poster-1-front-9x16.webp"
-                muted
-                playsinline
-                preload="auto"
-              ></video>
             </div>
           `;
           const framesVp = document.getElementById("frames-viewport");
@@ -1760,18 +2078,32 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           }
         }
 
+        const posterFallback = document.getElementById("saree-360-poster-fallback");
+        if (posterFallback) {
+          posterFallback.onload = () => {
+            if (this.lastDrawnScrubIndex === -1) {
+              this.drawDegreeToCanvas(0);
+            }
+          };
+        }
+
         this.activeStepIndex = -1;
         this.lastDrawnScrubIndex = -1;
+        this.lastDisplayedExact = false;
+        this.lastBadgeDegree = -1;
+        this.targetProgress = 0;
+        this.currentProgress = 0;
+        this.lastRafTimestamp = 0;
         this.setActiveStep(0);
         this.initScrubFrames();
         this.drawScrubFrame(0, 0);
+        this.updateLoadingAndErrorUI();
 
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         if (reducedMotionQuery.matches || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
           document.documentElement.classList.remove("is-scroll-driven");
           document.body.classList.add("is-reduced-motion");
           if (scrollCue) scrollCue.classList.add("is-hidden");
-          this.preloadRemainingFrames();
 
           if ("IntersectionObserver" in window) {
             this.reducedObserver = new IntersectionObserver(
@@ -1794,109 +2126,9 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         document.documentElement.classList.add("is-scroll-driven");
         document.body.classList.remove("is-reduced-motion");
 
-        if ("requestIdleCallback" in window) {
-          window.requestIdleCallback(() => this.preloadRemainingFrames(), { timeout: 900 });
-        } else {
-          setTimeout(() => this.preloadRemainingFrames(), 350);
-        }
-
         const totalFrames = frames.length;
-        const segmentDuration = 1;
-        const crossfadeDuration = segmentDuration * this.crossfadeOverlapRatio;
-        const shiftX = this.transitionShiftXPercent;
-
-        frames.forEach((frameEl, i) => {
-          const img = frameEl.querySelector(".saree-img");
-          const m = this.framesConfig[i]?.motion || {
-            scaleFrom: 1,
-            scaleTo: 1.04,
-            xFromPercent: 0,
-            xToPercent: 0,
-            yFromPercent: 0,
-            yToPercent: 0
-          };
-
-          gsap.set(frameEl, {
-            autoAlpha: i === 0 ? 1 : 0,
-            zIndex: i + 1
-          });
-
-          if (img) {
-            gsap.set(img, {
-              scale: m.scaleFrom,
-              xPercent: i === 0 ? m.xFromPercent : m.xFromPercent + shiftX,
-              yPercent: m.yFromPercent,
-              force3D: true
-            });
-          }
-        });
-
-        const tl = gsap.timeline({
-          defaults: { ease: "none" }
-        });
-
-        for (let i = 0; i < totalFrames; i++) {
-          const currentFrame = frames[i];
-          const currentImg = currentFrame.querySelector(".saree-img");
-          const m = this.framesConfig[i]?.motion || {
-            scaleFrom: 1,
-            scaleTo: 1.04,
-            xFromPercent: 0,
-            xToPercent: 0,
-            yFromPercent: 0,
-            yToPercent: 0
-          };
-          const segStart = i * segmentDuration;
-
-          if (currentImg) {
-            tl.fromTo(
-              currentImg,
-              {
-                scale: m.scaleFrom,
-                xPercent: i === 0 ? m.xFromPercent : m.xFromPercent + shiftX,
-                yPercent: m.yFromPercent
-              },
-              {
-                scale: m.scaleTo,
-                xPercent: m.xToPercent,
-                yPercent: m.yToPercent,
-                duration: segmentDuration,
-                ease: i === totalFrames - 1 ? "power2.out" : "sine.inOut",
-                immediateRender: false
-              },
-              segStart
-            );
-          }
-
-          if (i < totalFrames - 1) {
-            const nextFrame = frames[i + 1];
-            const transitionStart = segStart + segmentDuration - crossfadeDuration;
-
-            tl.fromTo(
-              nextFrame,
-              { autoAlpha: 0 },
-              {
-                autoAlpha: 1,
-                duration: crossfadeDuration,
-                ease: "power2.inOut",
-                immediateRender: false
-              },
-              transitionStart
-            );
-
-            tl.fromTo(
-              currentFrame,
-              { autoAlpha: 1 },
-              {
-                autoAlpha: 0,
-                duration: crossfadeDuration,
-                ease: "power2.inOut",
-                immediateRender: false
-              },
-              transitionStart
-            );
-          }
-        }
+        const tl = gsap.timeline({ defaults: { ease: "none" } });
+        tl.to(stageEl, { duration: totalFrames });
 
         this.timeline = tl;
         this.scrollTriggerInstance = ScrollTrigger.create({
@@ -1905,22 +2137,15 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           pin: stageEl,
           start: "top top",
           end: () => `+=${Math.round(window.innerHeight * (this.pinScrollVh / 100))}`,
-          scrub: this.scrubSmoothingSeconds,
+          scrub: true,
           anticipatePin: 1,
           invalidateOnRefresh: true,
           onUpdate: (self) => {
-            this.preloadRemainingFrames();
-            this.drawScrubFrame(self.progress);
-            const clamped = Math.max(0, Math.min(0.999999, self.progress));
-            const stepIndex = Math.min(totalFrames - 1, Math.floor(clamped * totalFrames));
-            this.setActiveStep(stepIndex);
-
-            if (scrollCue) {
-              if (self.progress > 0.03) {
-                scrollCue.classList.add("is-hidden");
-              } else {
-                scrollCue.classList.remove("is-hidden");
-              }
+            const nextProgress = Math.max(0, Math.min(1, self.progress || 0));
+            if (nextProgress !== this.targetProgress) {
+              this.scrollDirection = nextProgress >= this.targetProgress ? 1 : -1;
+              this.targetProgress = nextProgress;
+              this.scheduleRender();
             }
           }
         });
@@ -1928,6 +2153,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       unmount() {
+        if (this.rafId !== null) {
+          window.cancelAnimationFrame(this.rafId);
+          this.rafId = null;
+        }
         if (this.scrollTriggerInstance) {
           this.scrollTriggerInstance.kill();
           this.scrollTriggerInstance = null;
@@ -2519,6 +2748,14 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                 <!-- 360° Portrait 9:16 Saree Turntable Scroll-Scrub Stage -->
                 <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
                   <div class="saree-360-frame-box">
+                    <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
+                      <span class="saree-360-loading-dot" aria-hidden="true"></span>
+                      <span id="saree-360-loading-text">Loading 360° views…</span>
+                    </div>
+                    <div id="saree-360-error-banner" class="saree-360-error-banner is-hidden" role="alert">
+                      <span id="saree-360-error-text">Some 360° frames could not be loaded.</span>
+                      <button type="button" class="saree-360-retry-btn" onclick="ShowcaseScrollEngine.retryFailedFrames()">Retry</button>
+                    </div>
                     <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
                     <img
                       id="saree-360-poster-fallback"
@@ -2535,15 +2772,6 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                       height="1280"
                       aria-label="Champagne Tissue Saree 360-degree turntable view"
                     ></canvas>
-                    <video
-                      id="saree-360-video"
-                      class="saree-360-video"
-                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/champagne-saree-360.mp4"
-                      poster="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/poster-1-front-9x16.webp"
-                      muted
-                      playsinline
-                      preload="auto"
-                    ></video>
                   </div>
                 </div>
 
@@ -4867,7 +5095,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   </div>
 
   <!-- Storefront (Prompt 1) & Protected Admin Panel (Prompt 2) Controller Extension -->
-  <script src="src/storefront-admin-app.js?v=360-v3"></script>
+  <script src="src/storefront-admin-app.js?v=360-v4"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {

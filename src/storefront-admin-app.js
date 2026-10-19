@@ -2902,6 +2902,14 @@
             <!-- 360° Portrait 9:16 Saree Turntable Scroll-Scrub Stage -->
             <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
               <div class="saree-360-frame-box">
+                <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
+                  <span class="saree-360-loading-dot" aria-hidden="true"></span>
+                  <span id="saree-360-loading-text">Loading 360° views…</span>
+                </div>
+                <div id="saree-360-error-banner" class="saree-360-error-banner is-hidden" role="alert">
+                  <span id="saree-360-error-text">Some 360° frames could not be loaded.</span>
+                  <button type="button" class="saree-360-retry-btn" onclick="ShowcaseScrollEngine.retryFailedFrames()">Retry</button>
+                </div>
                 <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
                 <img
                   id="saree-360-poster-fallback"
@@ -2918,15 +2926,6 @@
                   height="1280"
                   aria-label="Champagne Tissue Saree 360-degree turntable view"
                 ></canvas>
-                <video
-                  id="saree-360-video"
-                  class="saree-360-video"
-                  src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/champagne-saree-360.mp4"
-                  poster="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/poster-1-front-9x16.webp"
-                  muted
-                  playsinline
-                  preload="auto"
-                ></video>
               </div>
             </div>
             <div class="stage-vignette" aria-hidden="true"></div>
