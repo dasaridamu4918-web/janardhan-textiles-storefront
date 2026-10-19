@@ -7,7 +7,7 @@
   "posterSrc": "/public/assets/saree-360/poster-1-front-9x16.webp",
   "totalDegrees": 360,
   "scrubFrameCount": 360,
-  "sourceKeyframeCount": 24,
+  "sourceKeyframeCount": 20,
   "frames": [
     {
       "degree": 0,

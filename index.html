@@ -1669,12 +1669,14 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       loadQueue: [],
       queuedSet: new Set(),
       activeLoads: 0,
-      maxConcurrentLoads: 6,
-      maxCachedFrames: 160,
-      preloadWindowRadius: 20,
+      maxConcurrentLoads: 12,
+      maxCachedFrames: 360,
+      preloadWindowRadius: 24,
       anchorStepDegrees: 15,
       anchorReadyCount: 0,
+      anchorSettledCount: 0,
       totalAnchorCount: 24,
+      totalSettledCount: 0,
       lastDrawnScrubIndex: -1,
       lastDisplayedExact: false,
       lastBadgeDegree: -1,
@@ -1683,38 +1685,76 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       scrollDirection: 1,
       rafId: null,
       lastRafTimestamp: 0,
+      frameCacheBustVersion: "360-v5",
 
       formatIndex(num) {
         return String(num).padStart(2, "0");
       },
 
+      normalizeDegree(deg) {
+        const num = Number(deg);
+        if (!Number.isFinite(num)) return 0;
+        const rounded = Math.round(num);
+        if (rounded === 360) return 0;
+        return ((rounded % 360) + 360) % 360;
+      },
+
       progressToDegree(progress) {
         const clamped = Math.max(0, Math.min(1, Number(progress) || 0));
-        if (clamped >= 0.9972) return 359;
+        if (clamped >= 1) return 359;
         return Math.min(359, Math.max(0, Math.floor(clamped * 360)));
       },
 
       getFrameUrl(deg, ext = "webp") {
+        const normalized = this.normalizeDegree(deg);
         const basePath = window.__ASSET_BASE_PATH__ || "";
-        const padded = String(deg).padStart(3, "0");
-        return `${basePath}/public/assets/saree-360/frames/frame-${padded}.${ext}`;
+        const padded = String(normalized).padStart(3, "0");
+        return `${basePath}/public/assets/saree-360/frames/frame-${padded}.${ext}?v=${this.frameCacheBustVersion}`;
       },
 
       isAnchorDegree(deg) {
-        return deg === 0 || deg === 359 || deg % this.anchorStepDegrees === 0;
+        const normalized = this.normalizeDegree(deg);
+        return normalized % this.anchorStepDegrees === 0;
+      },
+
+      recomputeFrameCounts() {
+        let anchorReady = 0;
+        let anchorSettled = 0;
+        for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
+          const st = this.frameStates[d];
+          if (st === "ready") {
+            anchorReady++;
+            anchorSettled++;
+          } else if (st === "error") {
+            anchorSettled++;
+          }
+        }
+        let totalSettled = 0;
+        for (let d = 0; d < this.scrubTotalFrames; d++) {
+          const st = this.frameStates[d];
+          if (st === "ready" || st === "error") totalSettled++;
+        }
+        this.anchorReadyCount = anchorReady;
+        this.anchorSettledCount = anchorSettled;
+        this.totalSettledCount = totalSettled;
       },
 
       updateLoadingAndErrorUI() {
+        this.recomputeFrameCounts();
         const loadingPill = document.getElementById("saree-360-loading-pill");
         const loadingText = document.getElementById("saree-360-loading-text");
         if (loadingPill) {
-          const frame0Ready = this.frameStates[0] === "ready";
-          if (frame0Ready && this.anchorReadyCount >= Math.min(12, this.totalAnchorCount)) {
+          const frame0Settled = this.frameStates[0] === "ready" || this.frameStates[0] === "error";
+          const anchorsDone = this.anchorSettledCount >= this.totalAnchorCount;
+          if (frame0Settled && (anchorsDone || this.totalSettledCount >= 24)) {
             loadingPill.classList.add("is-hidden");
           } else {
             loadingPill.classList.remove("is-hidden");
             if (loadingText) {
-              const pct = Math.min(99, Math.max(5, Math.round((this.anchorReadyCount / this.totalAnchorCount) * 100)));
+              const pct = Math.min(
+                100,
+                Math.max(4, Math.round((this.anchorSettledCount / this.totalAnchorCount) * 100))
+              );
               loadingText.textContent = `Loading 360° views… ${pct}%`;
             }
           }
@@ -1724,7 +1764,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const errorText = document.getElementById("saree-360-error-text");
         if (errorBanner) {
           const currentDeg = this.progressToDegree(this.currentProgress);
-          const showBanner = this.failedDegrees.has(currentDeg) || this.failedDegrees.size >= 4;
+          const showBanner = this.failedDegrees.size > 0;
           if (showBanner) {
             errorBanner.classList.remove("is-hidden");
             if (errorText) {
@@ -1749,6 +1789,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           this.enqueueFrameLoad(deg, true);
         });
         this.updateLoadingAndErrorUI();
+        this.reprioritizeLoadQueue(this.progressToDegree(this.currentProgress), this.scrollDirection);
         this.processLoadQueue();
       },
 
@@ -1777,15 +1818,40 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       enqueueFrameLoad(deg, highPriority = false) {
-        if (deg < 0 || deg >= this.scrubTotalFrames) return;
-        const state = this.frameStates[deg];
-        if (state === "ready" || state === "loading" || this.queuedSet.has(deg)) return;
-        this.queuedSet.add(deg);
+        const normalized = this.normalizeDegree(deg);
+        if (normalized < 0 || normalized >= this.scrubTotalFrames) return;
+        const state = this.frameStates[normalized];
+        if (state === "ready" || state === "loading" || this.queuedSet.has(normalized)) return;
+        this.queuedSet.add(normalized);
         if (highPriority) {
-          this.loadQueue.unshift(deg);
+          this.loadQueue.unshift(normalized);
         } else {
-          this.loadQueue.push(deg);
+          this.loadQueue.push(normalized);
         }
+      },
+
+      reprioritizeLoadQueue(centerDeg, direction = 1) {
+        if (this.loadQueue.length <= 1) return;
+        const normCenter = this.normalizeDegree(centerDeg);
+        const dirSign = direction >= 0 ? 1 : -1;
+
+        const scoreDegree = (d) => {
+          if (d === 0 && this.frameStates[0] !== "ready") return -1000;
+          if (d === normCenter) return -900;
+          const forwardDist = ((d - normCenter) * dirSign + 360) % 360;
+          const backwardDist = ((normCenter - d) * dirSign + 360) % 360;
+          const minDist = Math.min(forwardDist, backwardDist);
+          // Immediate neighborhood around current scroll degree
+          if (forwardDist <= 6) return -800 + forwardDist;
+          if (backwardDist <= 3) return -700 + backwardDist;
+          // All 24 anchor frames get loaded before wide window sweeps so loader never stalls at 46%
+          if (this.isAnchorDegree(d)) return -500 + minDist;
+          if (forwardDist <= this.preloadWindowRadius) return -300 + forwardDist;
+          if (backwardDist <= this.preloadWindowRadius) return -150 + backwardDist;
+          return minDist;
+        };
+
+        this.loadQueue.sort((a, b) => scoreDegree(a) - scoreDegree(b));
       },
 
       processLoadQueue() {
@@ -1798,35 +1864,29 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       loadSingleDegreeFrame(deg, attempt = 0) {
+        const normalized = this.normalizeDegree(deg);
         const attemptExts = ["webp", "webp", "jpg", "png"];
-        this.frameStates[deg] = "loading";
+        this.frameStates[normalized] = "loading";
         this.activeLoads++;
 
         const img = new Image();
         img.decoding = "async";
-        if (deg === 0) img.fetchPriority = "high";
-        const src = this.getFrameUrl(deg, attemptExts[attempt]);
+        if (normalized === 0 || normalized === this.progressToDegree(this.currentProgress)) {
+          img.fetchPriority = "high";
+        }
+        const src = this.getFrameUrl(normalized, attemptExts[attempt]);
 
         const finalizeSuccess = () => {
           this.activeLoads = Math.max(0, this.activeLoads - 1);
-          this.scrubImages[deg] = img;
-          this.frameStates[deg] = "ready";
-          this.failedDegrees.delete(deg);
-          if (this.isAnchorDegree(deg)) {
-            let count = 0;
-            for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
-              if (this.frameStates[d] === "ready") count++;
-            }
-            this.anchorReadyCount = count;
-          }
-          this.touchCachedFrame(deg);
+          this.scrubImages[normalized] = img;
+          this.frameStates[normalized] = "ready";
+          this.failedDegrees.delete(normalized);
+          this.touchCachedFrame(normalized);
           this.updateLoadingAndErrorUI();
 
           const targetDeg = this.progressToDegree(this.currentProgress);
-          if (deg === 0 && this.lastDrawnScrubIndex === -1) {
-            this.drawDegreeToCanvas(0);
-          } else if (deg === targetDeg || !this.lastDisplayedExact) {
-            this.scheduleRender();
+          if (normalized === targetDeg || !this.lastDisplayedExact || this.lastDrawnScrubIndex === -1) {
+            this.drawDegreeToCanvas(targetDeg);
           }
           this.processLoadQueue();
         };
@@ -1842,12 +1902,16 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         img.onerror = () => {
           this.activeLoads = Math.max(0, this.activeLoads - 1);
           if (attempt + 1 < attemptExts.length) {
-            setTimeout(() => this.loadSingleDegreeFrame(deg, attempt + 1), attempt === 0 ? 120 : 0);
+            setTimeout(() => this.loadSingleDegreeFrame(normalized, attempt + 1), attempt === 0 ? 80 : 0);
             return;
           }
-          this.frameStates[deg] = "error";
-          this.failedDegrees.add(deg);
+          this.frameStates[normalized] = "error";
+          this.failedDegrees.add(normalized);
           this.updateLoadingAndErrorUI();
+          const targetDeg = this.progressToDegree(this.currentProgress);
+          if (normalized === targetDeg) {
+            this.drawDegreeToCanvas(targetDeg);
+          }
           this.processLoadQueue();
         };
 
@@ -1855,31 +1919,35 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       initScrubFrames() {
-        if (this.frameStates[0] === "idle") {
+        if (this.frameStates[0] === "idle" && !this.queuedSet.has(0)) {
           this.enqueueFrameLoad(0, true);
-          for (let step = 1; step <= 8; step++) {
-            this.enqueueFrameLoad(step, true);
-            this.enqueueFrameLoad(360 - step, true);
-          }
           for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
+            this.enqueueFrameLoad(d, true);
+          }
+          for (let step = 1; step <= 12; step++) {
+            this.enqueueFrameLoad(step, false);
+            this.enqueueFrameLoad(360 - step, false);
+          }
+          for (let d = 0; d < this.scrubTotalFrames; d++) {
             this.enqueueFrameLoad(d, false);
           }
-          this.enqueueFrameLoad(359, false);
+          this.reprioritizeLoadQueue(0, 1);
           this.processLoadQueue();
         }
       },
 
       ensureWindowPreloaded(centerDeg, direction = 1) {
-        this.enqueueFrameLoad(centerDeg, true);
+        const normCenter = this.normalizeDegree(centerDeg);
+        this.enqueueFrameLoad(normCenter, true);
         const radius = this.preloadWindowRadius;
+        const dirSign = direction >= 0 ? 1 : -1;
         for (let offset = 1; offset <= radius; offset++) {
-          const ahead = (centerDeg + offset * (direction >= 0 ? 1 : -1) + 360) % 360;
-          const behind = (centerDeg - offset * (direction >= 0 ? 1 : -1) + 360) % 360;
-          this.enqueueFrameLoad(ahead, offset <= 6);
-          if (offset <= Math.ceil(radius * 0.6)) {
-            this.enqueueFrameLoad(behind, false);
-          }
+          const ahead = (normCenter + offset * dirSign + 360) % 360;
+          const behind = (normCenter - offset * dirSign + 360) % 360;
+          this.enqueueFrameLoad(ahead, offset <= 8);
+          this.enqueueFrameLoad(behind, offset <= 4);
         }
+        this.reprioritizeLoadQueue(normCenter, dirSign);
         this.processLoadQueue();
       },
 
@@ -1890,17 +1958,18 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       findBestReadyFrame(targetDeg) {
-        const direct = this.scrubImages[targetDeg];
-        if (direct && this.frameStates[targetDeg] === "ready" && direct.complete && direct.naturalWidth > 0) {
-          return { img: direct, actualDeg: targetDeg, isExact: true };
+        const normTarget = this.normalizeDegree(targetDeg);
+        const direct = this.scrubImages[normTarget];
+        if (direct && this.frameStates[normTarget] === "ready" && direct.complete && direct.naturalWidth > 0) {
+          return { img: direct, actualDeg: normTarget, isExact: true };
         }
         for (let offset = 1; offset <= 180; offset++) {
-          const prevDeg = (targetDeg - offset + 360) % 360;
+          const prevDeg = (normTarget - offset + 360) % 360;
           const prevImg = this.scrubImages[prevDeg];
           if (prevImg && this.frameStates[prevDeg] === "ready" && prevImg.complete && prevImg.naturalWidth > 0) {
             return { img: prevImg, actualDeg: prevDeg, isExact: false };
           }
-          const nextDeg = (targetDeg + offset) % 360;
+          const nextDeg = (normTarget + offset) % 360;
           const nextImg = this.scrubImages[nextDeg];
           if (nextImg && this.frameStates[nextDeg] === "ready" && nextImg.complete && nextImg.naturalWidth > 0) {
             return { img: nextImg, actualDeg: nextDeg, isExact: false };
@@ -1908,16 +1977,17 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         }
         const posterFallback = document.getElementById("saree-360-poster-fallback");
         if (posterFallback && posterFallback.complete && posterFallback.naturalWidth > 0) {
-          return { img: posterFallback, actualDeg: 0, isExact: targetDeg === 0 };
+          return { img: posterFallback, actualDeg: 0, isExact: normTarget === 0 };
         }
         return null;
       },
 
       drawDegreeToCanvas(deg) {
+        const normDeg = this.normalizeDegree(deg);
         const angleBadge = document.getElementById("saree-360-angle-badge");
-        if (angleBadge && this.lastBadgeDegree !== deg) {
-          angleBadge.textContent = `360° Turntable • ${deg}°`;
-          this.lastBadgeDegree = deg;
+        if (angleBadge && this.lastBadgeDegree !== normDeg) {
+          angleBadge.textContent = `360° Turntable • ${normDeg}°`;
+          this.lastBadgeDegree = normDeg;
         }
 
         const canvas = document.getElementById("saree-360-canvas");
@@ -1925,11 +1995,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx) return;
 
-        const best = this.findBestReadyFrame(deg);
+        const best = this.findBestReadyFrame(normDeg);
         if (!best || !best.img) return;
 
-        if (this.lastDrawnScrubIndex === best.actualDeg && (best.isExact || this.lastDisplayedExact === false)) {
-          if (best.isExact) this.lastDisplayedExact = true;
+        if (this.lastDrawnScrubIndex === best.actualDeg && best.isExact && this.lastDisplayedExact) {
           return;
         }
 
@@ -1940,6 +2009,9 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         }
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         canvas.classList.add("is-ready");
+        canvas.dataset.displayedDegree = String(best.actualDeg);
+        canvas.dataset.targetDegree = String(normDeg);
+        canvas.dataset.isExact = String(best.isExact);
 
         this.lastDrawnScrubIndex = best.actualDeg;
         this.lastDisplayedExact = best.isExact;
@@ -1949,10 +2021,21 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         this.initScrubFrames();
         const deg =
           scrubIdxOverride !== null
-            ? Math.min(359, Math.max(0, Math.round(scrubIdxOverride)))
+            ? this.normalizeDegree(scrubIdxOverride)
             : this.progressToDegree(progress);
         this.ensureWindowPreloaded(deg, this.scrollDirection);
         this.drawDegreeToCanvas(deg);
+      },
+
+      setDegree(deg) {
+        const normDeg = this.normalizeDegree(deg);
+        const prevDeg = this.progressToDegree(this.currentProgress);
+        this.scrollDirection = normDeg >= prevDeg ? 1 : -1;
+        this.targetProgress = normDeg / 360;
+        this.currentProgress = this.targetProgress;
+        this.ensureWindowPreloaded(normDeg, this.scrollDirection);
+        this.drawDegreeToCanvas(normDeg);
+        this.updateLoadingAndErrorUI();
       },
 
       scheduleRender() {
@@ -1977,6 +2060,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         const deg = this.progressToDegree(this.currentProgress);
         this.ensureWindowPreloaded(deg, this.scrollDirection);
         this.drawDegreeToCanvas(deg);
+        this.updateLoadingAndErrorUI();
 
         const totalSteps = this.framesConfig.length;
         const clamped = Math.max(0, Math.min(0.999999, this.currentProgress));
@@ -2055,7 +2139,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
               <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
               <img
                 id="saree-360-poster-fallback"
-                src="${basePath}/public/assets/saree-360/frames/frame-000.webp"
+                src="${basePath}/public/assets/saree-360/frames/frame-000.webp?v=${this.frameCacheBustVersion}"
                 alt="Champagne Tissue Saree 360-degree turntable view"
                 class="saree-360-poster-fallback"
                 fetchpriority="high"
@@ -2171,6 +2255,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
         }
       }
     };
+    window.ShowcaseScrollEngine = ShowcaseScrollEngine;
 
     /**
      * ============================================================================
@@ -2759,7 +2844,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                     <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
                     <img
                       id="saree-360-poster-fallback"
-                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp"
+                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v5"
                       alt="Champagne Tissue Saree 360-degree turntable view"
                       class="saree-360-poster-fallback"
                       fetchpriority="high"

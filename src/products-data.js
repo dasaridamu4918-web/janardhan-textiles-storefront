@@ -75,19 +75,20 @@ function createMissingViewPlaceholderSVG(sareeName, viewLabel, fabricName = "") 
   const escXml = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const safeName = escXml(sareeName || "Saree");
   const safeFabric = escXml(fabricName || "Janardhan Textiles");
-  const safeLabel = escXml(viewLabel || "Product View");
+  const safeLabel = escXml(viewLabel || "Additional View");
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 960" width="800" height="960">
-    <rect width="800" height="960" fill="#6B1D2F"/>
-    <rect x="28" y="28" width="744" height="904" rx="18" fill="#4A1220" stroke="#C4A15A" stroke-width="3"/>
-    <rect x="44" y="44" width="712" height="872" rx="14" fill="none" stroke="#C4A15A" stroke-width="1" stroke-dasharray="8 6"/>
-    <rect x="250" y="96" width="300" height="42" rx="21" fill="#C4A15A"/>
-    <text x="400" y="123" font-family="sans-serif" font-size="15" font-weight="bold" fill="#4A1220" text-anchor="middle">JANARDHAN TEXTILES</text>
-    <circle cx="400" cy="360" r="68" fill="#6B1D2F" stroke="#C4A15A" stroke-width="3"/>
-    <text x="400" y="375" font-family="Georgia, serif" font-size="40" font-weight="bold" fill="#C4A15A" text-anchor="middle">JT</text>
-    <text x="400" y="495" font-family="Georgia, serif" font-size="26" font-weight="bold" fill="#FAF6EE" text-anchor="middle">${safeName}</text>
-    <text x="400" y="545" font-family="sans-serif" font-size="20" font-weight="bold" fill="#C4A15A" text-anchor="middle">${safeFabric} • ${safeLabel}</text>
-    <rect x="190" y="600" width="420" height="48" rx="24" fill="#6B1D2F" stroke="#C4A15A" stroke-width="2"/>
-    <text x="400" y="630" font-family="sans-serif" font-size="16" font-weight="bold" fill="#E5D1A7" text-anchor="middle">Five-View Studio Photography</text>
+    <rect width="800" height="960" fill="#EFE6D5"/>
+    <rect x="28" y="28" width="744" height="904" rx="18" fill="#FAF8F5" stroke="#C4A15A" stroke-width="2.5"/>
+    <rect x="46" y="46" width="708" height="868" rx="14" fill="none" stroke="#C4A15A" stroke-width="1" stroke-dasharray="8 6"/>
+    <rect x="240" y="104" width="320" height="40" rx="20" fill="#063F46"/>
+    <text x="400" y="129" font-family="sans-serif" font-size="14" font-weight="bold" fill="#C4A15A" text-anchor="middle">JANARDHAN TEXTILES</text>
+    <circle cx="400" cy="340" r="64" fill="#F5EFE4" stroke="#C4A15A" stroke-width="2.5"/>
+    <text x="400" y="354" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#063F46" text-anchor="middle">JT</text>
+    <text x="400" y="465" font-family="Georgia, serif" font-size="23" font-weight="bold" fill="#231D16" text-anchor="middle">${safeName}</text>
+    <text x="400" y="515" font-family="sans-serif" font-size="19" font-weight="bold" fill="#063F46" text-anchor="middle">${safeLabel}</text>
+    <text x="400" y="555" font-family="sans-serif" font-size="15" fill="#5C4E3E" text-anchor="middle">${safeFabric}</text>
+    <rect x="170" y="605" width="460" height="48" rx="24" fill="#F5EFE4" stroke="#C4A15A" stroke-width="1.5"/>
+    <text x="400" y="635" font-family="sans-serif" font-size="15" font-weight="bold" fill="#5C4E3E" text-anchor="middle">Additional View Asset Missing in Repository</text>
   </svg>`;
   return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
 }
@@ -399,14 +400,16 @@ const GENERATED_CATALOG_SAREES = [
     "borderAndZari": "Scalloped cutwork border with heavy antique gold zari and floral vines",
     "motifs": "Embroidered royal peacocks and blooming lotus vines along border and pallu",
     "blousePiece": "Matching dusty rose-crimson silk-tissue blouse with scalloped neckline and peacock embroidered sleeves",
-    "primaryImage": "/public/images/sarees/generated/saree-009.jpg",
+    "primaryImage": "/public/images/sarees/jt-saree-10/1-front.jpg",
     "galleryUrls": [
       "/public/images/sarees/jt-saree-10/1-front.jpg",
       "/public/images/sarees/jt-saree-10/2-back-pallu.jpg",
       "/public/images/sarees/jt-saree-10/3-pallu-detail.jpg",
       "/public/images/sarees/jt-saree-10/4-macro.jpg",
       "/public/images/sarees/jt-saree-10/5-blouse.jpg"
-    ]
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/jt-saree-10/1-front.jpg"
   },
   {
     "id": "saree-010",
@@ -428,14 +431,16 @@ const GENERATED_CATALOG_SAREES = [
     "borderAndZari": "Ornate scalloped cutwork border with gold zari edging and botanical scrollwork",
     "motifs": "Graceful dancing peacocks and floral blossoms across the pallu and hem",
     "blousePiece": "Coordinated deep emerald-teal silk blouse with gold zari peacock and floral sleeve embroidery",
-    "primaryImage": "/public/images/sarees/generated/saree-010.jpg",
+    "primaryImage": "/public/images/sarees/jt-saree-11/1-front.jpg",
     "galleryUrls": [
       "/public/images/sarees/jt-saree-11/1-front.jpg",
       "/public/images/sarees/jt-saree-11/2-back-pallu.jpg",
       "/public/images/sarees/jt-saree-11/3-pallu-detail.jpg",
       "/public/images/sarees/jt-saree-11/4-macro.jpg",
       "/public/images/sarees/jt-saree-11/5-blouse.jpg"
-    ]
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/jt-saree-11/1-front.jpg"
   },
   {
     "id": "saree-011",
@@ -459,12 +464,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted ruby red silk blouse with antique gold zari armband border and curved neckline",
     "primaryImage": "/public/images/sarees/generated/saree-011.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-011.jpg",
-      "/public/images/sarees/generated/saree-011.jpg",
-      "/public/images/sarees/generated/saree-011.jpg",
-      "/public/images/sarees/generated/saree-011.jpg",
-      "/public/images/sarees/generated/saree-011.jpg"
-    ]
+      "/public/images/sarees/saree-011/1-front.jpg",
+      "/public/images/sarees/saree-011/2-back-pallu.jpg",
+      "/public/images/sarees/saree-011/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-011/4-macro.jpg",
+      "/public/images/sarees/saree-011/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-011/1-front.jpg"
   },
   {
     "id": "saree-012",
@@ -488,12 +495,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated sapphire blue katan silk blouse with embroidered scalloped sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-012.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-012.jpg",
-      "/public/images/sarees/generated/saree-012.jpg",
-      "/public/images/sarees/generated/saree-012.jpg",
-      "/public/images/sarees/generated/saree-012.jpg",
-      "/public/images/sarees/generated/saree-012.jpg"
-    ]
+      "/public/images/sarees/saree-012/1-front.jpg",
+      "/public/images/sarees/saree-012/2-back-pallu.jpg",
+      "/public/images/sarees/saree-012/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-012/4-macro.jpg",
+      "/public/images/sarees/saree-012/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-012/1-front.jpg"
   },
   {
     "id": "saree-013",
@@ -517,12 +526,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Tailored amethyst purple tissue blouse with sweetheart neckline and zari floral cuffs",
     "primaryImage": "/public/images/sarees/generated/saree-013.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-013.jpg",
-      "/public/images/sarees/generated/saree-013.jpg",
-      "/public/images/sarees/generated/saree-013.jpg",
-      "/public/images/sarees/generated/saree-013.jpg",
-      "/public/images/sarees/generated/saree-013.jpg"
-    ]
+      "/public/images/sarees/saree-013/1-front.jpg",
+      "/public/images/sarees/saree-013/2-back-pallu.jpg",
+      "/public/images/sarees/saree-013/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-013/4-macro.jpg",
+      "/public/images/sarees/saree-013/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-013/1-front.jpg"
   },
   {
     "id": "saree-014",
@@ -546,12 +557,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Contrast gold-and-magenta brocade blouse with elbow-length zari border sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-014.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-014.jpg",
-      "/public/images/sarees/generated/saree-014.jpg",
-      "/public/images/sarees/generated/saree-014.jpg",
-      "/public/images/sarees/generated/saree-014.jpg",
-      "/public/images/sarees/generated/saree-014.jpg"
-    ]
+      "/public/images/sarees/saree-014/1-front.jpg",
+      "/public/images/sarees/saree-014/2-back-pallu.jpg",
+      "/public/images/sarees/saree-014/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-014/4-macro.jpg",
+      "/public/images/sarees/saree-014/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-014/1-front.jpg"
   },
   {
     "id": "saree-015",
@@ -575,12 +588,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted midnight navy crepe silk blouse with rose-gold embroidered neckline and sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-015.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-015.jpg",
-      "/public/images/sarees/generated/saree-015.jpg",
-      "/public/images/sarees/generated/saree-015.jpg",
-      "/public/images/sarees/generated/saree-015.jpg",
-      "/public/images/sarees/generated/saree-015.jpg"
-    ]
+      "/public/images/sarees/saree-015/1-front.jpg",
+      "/public/images/sarees/saree-015/2-back-pallu.jpg",
+      "/public/images/sarees/saree-015/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-015/4-macro.jpg",
+      "/public/images/sarees/saree-015/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-015/1-front.jpg"
   },
   {
     "id": "saree-016",
@@ -604,12 +619,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated wine burgundy silk blouse with antique gold embroidered sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-016.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-016.jpg",
-      "/public/images/sarees/generated/saree-016.jpg",
-      "/public/images/sarees/generated/saree-016.jpg",
-      "/public/images/sarees/generated/saree-016.jpg",
-      "/public/images/sarees/generated/saree-016.jpg"
-    ]
+      "/public/images/sarees/saree-016/1-front.jpg",
+      "/public/images/sarees/saree-016/2-back-pallu.jpg",
+      "/public/images/sarees/saree-016/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-016/4-macro.jpg",
+      "/public/images/sarees/saree-016/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-016/1-front.jpg"
   },
   {
     "id": "saree-017",
@@ -633,12 +650,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching jade green tissue-silk blouse with woven temple border on sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-017.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-017.jpg",
-      "/public/images/sarees/generated/saree-017.jpg",
-      "/public/images/sarees/generated/saree-017.jpg",
-      "/public/images/sarees/generated/saree-017.jpg",
-      "/public/images/sarees/generated/saree-017.jpg"
-    ]
+      "/public/images/sarees/saree-017/1-front.jpg",
+      "/public/images/sarees/saree-017/2-back-pallu.jpg",
+      "/public/images/sarees/saree-017/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-017/4-macro.jpg",
+      "/public/images/sarees/saree-017/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-017/1-front.jpg"
   },
   {
     "id": "saree-018",
@@ -662,12 +681,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated cerulean blue silk blouse with copper-gold floral sleeve embroidery",
     "primaryImage": "/public/images/sarees/generated/saree-018.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-018.jpg",
-      "/public/images/sarees/generated/saree-018.jpg",
-      "/public/images/sarees/generated/saree-018.jpg",
-      "/public/images/sarees/generated/saree-018.jpg",
-      "/public/images/sarees/generated/saree-018.jpg"
-    ]
+      "/public/images/sarees/saree-018/1-front.jpg",
+      "/public/images/sarees/saree-018/2-back-pallu.jpg",
+      "/public/images/sarees/saree-018/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-018/4-macro.jpg",
+      "/public/images/sarees/saree-018/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-018/1-front.jpg"
   },
   {
     "id": "saree-019",
@@ -691,12 +712,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted mulberry satin silk blouse with champagne gold brocade sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-019.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-019.jpg",
-      "/public/images/sarees/generated/saree-019.jpg",
-      "/public/images/sarees/generated/saree-019.jpg",
-      "/public/images/sarees/generated/saree-019.jpg",
-      "/public/images/sarees/generated/saree-019.jpg"
-    ]
+      "/public/images/sarees/saree-019/1-front.jpg",
+      "/public/images/sarees/saree-019/2-back-pallu.jpg",
+      "/public/images/sarees/saree-019/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-019/4-macro.jpg",
+      "/public/images/sarees/saree-019/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-019/1-front.jpg"
   },
   {
     "id": "saree-020",
@@ -720,12 +743,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated garnet crimson silk blouse with antique bronze zari border sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-020.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-020.jpg",
-      "/public/images/sarees/generated/saree-020.jpg",
-      "/public/images/sarees/generated/saree-020.jpg",
-      "/public/images/sarees/generated/saree-020.jpg",
-      "/public/images/sarees/generated/saree-020.jpg"
-    ]
+      "/public/images/sarees/saree-020/1-front.jpg",
+      "/public/images/sarees/saree-020/2-back-pallu.jpg",
+      "/public/images/sarees/saree-020/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-020/4-macro.jpg",
+      "/public/images/sarees/saree-020/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-020/1-front.jpg"
   },
   {
     "id": "saree-021",
@@ -749,12 +774,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Tailored blush pink organza-lined blouse with scalloped floral embroidered sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-021.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-021.jpg",
-      "/public/images/sarees/generated/saree-021.jpg",
-      "/public/images/sarees/generated/saree-021.jpg",
-      "/public/images/sarees/generated/saree-021.jpg",
-      "/public/images/sarees/generated/saree-021.jpg"
-    ]
+      "/public/images/sarees/saree-021/1-front.jpg",
+      "/public/images/sarees/saree-021/2-back-pallu.jpg",
+      "/public/images/sarees/saree-021/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-021/4-macro.jpg",
+      "/public/images/sarees/saree-021/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-021/1-front.jpg"
   },
   {
     "id": "saree-022",
@@ -778,12 +805,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated pistachio green silk blouse with champagne-gold embroidered cuffs",
     "primaryImage": "/public/images/sarees/generated/saree-022.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-022.jpg",
-      "/public/images/sarees/generated/saree-022.jpg",
-      "/public/images/sarees/generated/saree-022.jpg",
-      "/public/images/sarees/generated/saree-022.jpg",
-      "/public/images/sarees/generated/saree-022.jpg"
-    ]
+      "/public/images/sarees/saree-022/1-front.jpg",
+      "/public/images/sarees/saree-022/2-back-pallu.jpg",
+      "/public/images/sarees/saree-022/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-022/4-macro.jpg",
+      "/public/images/sarees/saree-022/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-022/1-front.jpg"
   },
   {
     "id": "saree-023",
@@ -807,12 +836,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching lavender tissue blouse with sweetheart neckline and silver-gold sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-023.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-023.jpg",
-      "/public/images/sarees/generated/saree-023.jpg",
-      "/public/images/sarees/generated/saree-023.jpg",
-      "/public/images/sarees/generated/saree-023.jpg",
-      "/public/images/sarees/generated/saree-023.jpg"
-    ]
+      "/public/images/sarees/saree-023/1-front.jpg",
+      "/public/images/sarees/saree-023/2-back-pallu.jpg",
+      "/public/images/sarees/saree-023/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-023/4-macro.jpg",
+      "/public/images/sarees/saree-023/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-023/1-front.jpg"
   },
   {
     "id": "saree-024",
@@ -836,12 +867,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated peach coral silk blouse with woven gold bugdi border sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-024.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-024.jpg",
-      "/public/images/sarees/generated/saree-024.jpg",
-      "/public/images/sarees/generated/saree-024.jpg",
-      "/public/images/sarees/generated/saree-024.jpg",
-      "/public/images/sarees/generated/saree-024.jpg"
-    ]
+      "/public/images/sarees/saree-024/1-front.jpg",
+      "/public/images/sarees/saree-024/2-back-pallu.jpg",
+      "/public/images/sarees/saree-024/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-024/4-macro.jpg",
+      "/public/images/sarees/saree-024/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-024/1-front.jpg"
   },
   {
     "id": "saree-025",
@@ -865,12 +898,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted ice blue raw silk blouse with gold zardozi scalloped sleeve cuffs",
     "primaryImage": "/public/images/sarees/generated/saree-025.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-025.jpg",
-      "/public/images/sarees/generated/saree-025.jpg",
-      "/public/images/sarees/generated/saree-025.jpg",
-      "/public/images/sarees/generated/saree-025.jpg",
-      "/public/images/sarees/generated/saree-025.jpg"
-    ]
+      "/public/images/sarees/saree-025/1-front.jpg",
+      "/public/images/sarees/saree-025/2-back-pallu.jpg",
+      "/public/images/sarees/saree-025/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-025/4-macro.jpg",
+      "/public/images/sarees/saree-025/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-025/1-front.jpg"
   },
   {
     "id": "saree-026",
@@ -894,12 +929,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated pastel yellow silk blouse with woven gold floral sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-026.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-026.jpg",
-      "/public/images/sarees/generated/saree-026.jpg",
-      "/public/images/sarees/generated/saree-026.jpg",
-      "/public/images/sarees/generated/saree-026.jpg",
-      "/public/images/sarees/generated/saree-026.jpg"
-    ]
+      "/public/images/sarees/saree-026/1-front.jpg",
+      "/public/images/sarees/saree-026/2-back-pallu.jpg",
+      "/public/images/sarees/saree-026/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-026/4-macro.jpg",
+      "/public/images/sarees/saree-026/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-026/1-front.jpg"
   },
   {
     "id": "saree-027",
@@ -923,12 +960,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching lilac orchid tissue blouse with V-neckline and rose-gold embroidered sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-027.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-027.jpg",
-      "/public/images/sarees/generated/saree-027.jpg",
-      "/public/images/sarees/generated/saree-027.jpg",
-      "/public/images/sarees/generated/saree-027.jpg",
-      "/public/images/sarees/generated/saree-027.jpg"
-    ]
+      "/public/images/sarees/saree-027/1-front.jpg",
+      "/public/images/sarees/saree-027/2-back-pallu.jpg",
+      "/public/images/sarees/saree-027/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-027/4-macro.jpg",
+      "/public/images/sarees/saree-027/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-027/1-front.jpg"
   },
   {
     "id": "saree-028",
@@ -952,12 +991,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated celadon green soft silk blouse with antique gold border sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-028.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-028.jpg",
-      "/public/images/sarees/generated/saree-028.jpg",
-      "/public/images/sarees/generated/saree-028.jpg",
-      "/public/images/sarees/generated/saree-028.jpg",
-      "/public/images/sarees/generated/saree-028.jpg"
-    ]
+      "/public/images/sarees/saree-028/1-front.jpg",
+      "/public/images/sarees/saree-028/2-back-pallu.jpg",
+      "/public/images/sarees/saree-028/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-028/4-macro.jpg",
+      "/public/images/sarees/saree-028/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-028/1-front.jpg"
   },
   {
     "id": "saree-029",
@@ -981,12 +1022,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted dusty mauve silk blouse with bronze-gold embroidered neckline and sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-029.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-029.jpg",
-      "/public/images/sarees/generated/saree-029.jpg",
-      "/public/images/sarees/generated/saree-029.jpg",
-      "/public/images/sarees/generated/saree-029.jpg",
-      "/public/images/sarees/generated/saree-029.jpg"
-    ]
+      "/public/images/sarees/saree-029/1-front.jpg",
+      "/public/images/sarees/saree-029/2-back-pallu.jpg",
+      "/public/images/sarees/saree-029/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-029/4-macro.jpg",
+      "/public/images/sarees/saree-029/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-029/1-front.jpg"
   },
   {
     "id": "saree-030",
@@ -1010,12 +1053,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Contrast deep gold brocade blouse with apricot selvedge piping",
     "primaryImage": "/public/images/sarees/generated/saree-030.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-030.jpg",
-      "/public/images/sarees/generated/saree-030.jpg",
-      "/public/images/sarees/generated/saree-030.jpg",
-      "/public/images/sarees/generated/saree-030.jpg",
-      "/public/images/sarees/generated/saree-030.jpg"
-    ]
+      "/public/images/sarees/saree-030/1-front.jpg",
+      "/public/images/sarees/saree-030/2-back-pallu.jpg",
+      "/public/images/sarees/saree-030/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-030/4-macro.jpg",
+      "/public/images/sarees/saree-030/5-blouse.jpg"
+    ],
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-030/1-front.jpg"
   },
   {
     "id": "saree-031",
@@ -1040,11 +1085,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-031.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-031.jpg",
-      "/public/images/sarees/generated/saree-031.jpg",
-      "/public/images/sarees/generated/saree-031.jpg",
-      "/public/images/sarees/generated/saree-031.jpg",
-      "/public/images/sarees/generated/saree-031.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-031.jpg"
   },
   {
     "id": "saree-032",
@@ -1069,11 +1121,16 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-032.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-032.jpg",
-      "/public/images/sarees/generated/saree-032.jpg",
-      "/public/images/sarees/generated/saree-032.jpg",
-      "/public/images/sarees/generated/saree-032.jpg",
-      "/public/images/sarees/generated/saree-032.jpg"
-    ]
+      "/public/images/sarees/saree-032/2-back-pallu.jpg",
+      "/public/images/sarees/saree-032/3-pallu-detail.jpg",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-032.jpg"
   },
   {
     "id": "saree-033",
@@ -1098,11 +1155,16 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-033.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-033.jpg",
-      "/public/images/sarees/generated/saree-033.jpg",
-      "/public/images/sarees/generated/saree-033.jpg",
-      "/public/images/sarees/generated/saree-033.jpg",
-      "/public/images/sarees/generated/saree-033.jpg"
-    ]
+      "/public/images/sarees/saree-033/2-back-pallu.jpg",
+      "/public/images/sarees/saree-033/3-pallu-detail.jpg",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-033.jpg"
   },
   {
     "id": "saree-034",
@@ -1127,11 +1189,16 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-034.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-034.jpg",
-      "/public/images/sarees/generated/saree-034.jpg",
-      "/public/images/sarees/generated/saree-034.jpg",
-      "/public/images/sarees/generated/saree-034.jpg",
-      "/public/images/sarees/generated/saree-034.jpg"
-    ]
+      "/public/images/sarees/saree-034/2-back-pallu.jpg",
+      "/public/images/sarees/saree-034/3-pallu-detail.jpg",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-034.jpg"
   },
   {
     "id": "saree-035",
@@ -1156,11 +1223,15 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-035.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-035.jpg",
-      "/public/images/sarees/generated/saree-035.jpg",
-      "/public/images/sarees/generated/saree-035.jpg",
-      "/public/images/sarees/generated/saree-035.jpg",
-      "/public/images/sarees/generated/saree-035.jpg"
-    ]
+      "/public/images/sarees/saree-035/2-back-pallu.jpg",
+      "/public/images/sarees/saree-035/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-035/4-macro.jpg",
+      ""
+    ],
+    "missingViews": [
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-035.jpg"
   },
   {
     "id": "saree-036",
@@ -1185,11 +1256,17 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-036.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-036.jpg",
-      "/public/images/sarees/generated/saree-036.jpg",
-      "/public/images/sarees/generated/saree-036.jpg",
-      "/public/images/sarees/generated/saree-036.jpg",
-      "/public/images/sarees/generated/saree-036.jpg"
-    ]
+      "/public/images/sarees/saree-036/2-back-pallu.jpg",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-036.jpg"
   },
   {
     "id": "saree-037",
@@ -1214,11 +1291,17 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-037.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-037.jpg",
-      "/public/images/sarees/generated/saree-037.jpg",
-      "/public/images/sarees/generated/saree-037.jpg",
-      "/public/images/sarees/generated/saree-037.jpg",
-      "/public/images/sarees/generated/saree-037.jpg"
-    ]
+      "/public/images/sarees/saree-037/2-back-pallu.jpg",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-037.jpg"
   },
   {
     "id": "saree-038",
@@ -1243,11 +1326,17 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-038.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-038.jpg",
-      "/public/images/sarees/generated/saree-038.jpg",
-      "/public/images/sarees/generated/saree-038.jpg",
-      "/public/images/sarees/generated/saree-038.jpg",
-      "/public/images/sarees/generated/saree-038.jpg"
-    ]
+      "/public/images/sarees/saree-038/2-back-pallu.jpg",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-038.jpg"
   },
   {
     "id": "saree-039",
@@ -1272,11 +1361,17 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-039.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-039.jpg",
-      "/public/images/sarees/generated/saree-039.jpg",
-      "/public/images/sarees/generated/saree-039.jpg",
-      "/public/images/sarees/generated/saree-039.jpg",
-      "/public/images/sarees/generated/saree-039.jpg"
-    ]
+      "/public/images/sarees/saree-039/2-back-pallu.jpg",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-039.jpg"
   },
   {
     "id": "saree-040",
@@ -1301,11 +1396,16 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-040.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-040.jpg",
-      "/public/images/sarees/generated/saree-040.jpg",
-      "/public/images/sarees/generated/saree-040.jpg",
-      "/public/images/sarees/generated/saree-040.jpg",
-      "/public/images/sarees/generated/saree-040.jpg"
-    ]
+      "/public/images/sarees/saree-040/2-back-pallu.jpg",
+      "/public/images/sarees/saree-040/3-pallu-detail.jpg",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-040.jpg"
   },
   {
     "id": "saree-041",
@@ -1330,11 +1430,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-041.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-041.jpg",
-      "/public/images/sarees/generated/saree-041.jpg",
-      "/public/images/sarees/generated/saree-041.jpg",
-      "/public/images/sarees/generated/saree-041.jpg",
-      "/public/images/sarees/generated/saree-041.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-041.jpg"
   },
   {
     "id": "saree-042",
@@ -1359,11 +1466,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-042.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-042.jpg",
-      "/public/images/sarees/generated/saree-042.jpg",
-      "/public/images/sarees/generated/saree-042.jpg",
-      "/public/images/sarees/generated/saree-042.jpg",
-      "/public/images/sarees/generated/saree-042.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-042.jpg"
   },
   {
     "id": "saree-043",
@@ -1388,11 +1502,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-043.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-043.jpg",
-      "/public/images/sarees/generated/saree-043.jpg",
-      "/public/images/sarees/generated/saree-043.jpg",
-      "/public/images/sarees/generated/saree-043.jpg",
-      "/public/images/sarees/generated/saree-043.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-043.jpg"
   },
   {
     "id": "saree-044",
@@ -1417,11 +1538,17 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-044.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-044.jpg",
-      "/public/images/sarees/generated/saree-044.jpg",
-      "/public/images/sarees/generated/saree-044.jpg",
-      "/public/images/sarees/generated/saree-044.jpg",
-      "/public/images/sarees/generated/saree-044.jpg"
-    ]
+      "/public/images/sarees/saree-044/2-back-pallu.jpg",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-044.jpg"
   },
   {
     "id": "saree-045",
@@ -1446,11 +1573,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-045.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-045.jpg",
-      "/public/images/sarees/generated/saree-045.jpg",
-      "/public/images/sarees/generated/saree-045.jpg",
-      "/public/images/sarees/generated/saree-045.jpg",
-      "/public/images/sarees/generated/saree-045.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-045.jpg"
   },
   {
     "id": "saree-046",
@@ -1475,11 +1609,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-046.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-046.jpg",
-      "/public/images/sarees/generated/saree-046.jpg",
-      "/public/images/sarees/generated/saree-046.jpg",
-      "/public/images/sarees/generated/saree-046.jpg",
-      "/public/images/sarees/generated/saree-046.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-046.jpg"
   },
   {
     "id": "saree-047",
@@ -1504,11 +1645,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-047.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-047.jpg",
-      "/public/images/sarees/generated/saree-047.jpg",
-      "/public/images/sarees/generated/saree-047.jpg",
-      "/public/images/sarees/generated/saree-047.jpg",
-      "/public/images/sarees/generated/saree-047.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-047.jpg"
   },
   {
     "id": "saree-048",
@@ -1533,11 +1681,17 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-048.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-048.jpg",
-      "/public/images/sarees/generated/saree-048.jpg",
-      "/public/images/sarees/generated/saree-048.jpg",
-      "/public/images/sarees/generated/saree-048.jpg",
-      "/public/images/sarees/generated/saree-048.jpg"
-    ]
+      "/public/images/sarees/saree-048/2-back-pallu.jpg",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-048.jpg"
   },
   {
     "id": "saree-049",
@@ -1562,11 +1716,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-049.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-049.jpg",
-      "/public/images/sarees/generated/saree-049.jpg",
-      "/public/images/sarees/generated/saree-049.jpg",
-      "/public/images/sarees/generated/saree-049.jpg",
-      "/public/images/sarees/generated/saree-049.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-049.jpg"
   },
   {
     "id": "saree-050",
@@ -1591,11 +1752,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-050.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-050.jpg",
-      "/public/images/sarees/generated/saree-050.jpg",
-      "/public/images/sarees/generated/saree-050.jpg",
-      "/public/images/sarees/generated/saree-050.jpg",
-      "/public/images/sarees/generated/saree-050.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-050.jpg"
   },
   {
     "id": "saree-051",
@@ -1620,11 +1788,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-051.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-051.jpg",
-      "/public/images/sarees/generated/saree-051.jpg",
-      "/public/images/sarees/generated/saree-051.jpg",
-      "/public/images/sarees/generated/saree-051.jpg",
-      "/public/images/sarees/generated/saree-051.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-051.jpg"
   },
   {
     "id": "saree-052",
@@ -1649,11 +1824,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-052.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-052.jpg",
-      "/public/images/sarees/generated/saree-052.jpg",
-      "/public/images/sarees/generated/saree-052.jpg",
-      "/public/images/sarees/generated/saree-052.jpg",
-      "/public/images/sarees/generated/saree-052.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-052.jpg"
   },
   {
     "id": "saree-053",
@@ -1678,11 +1860,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-053.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-053.jpg",
-      "/public/images/sarees/generated/saree-053.jpg",
-      "/public/images/sarees/generated/saree-053.jpg",
-      "/public/images/sarees/generated/saree-053.jpg",
-      "/public/images/sarees/generated/saree-053.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-053.jpg"
   },
   {
     "id": "saree-054",
@@ -1707,11 +1896,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-054.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-054.jpg",
-      "/public/images/sarees/generated/saree-054.jpg",
-      "/public/images/sarees/generated/saree-054.jpg",
-      "/public/images/sarees/generated/saree-054.jpg",
-      "/public/images/sarees/generated/saree-054.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-054.jpg"
   },
   {
     "id": "saree-055",
@@ -1736,11 +1932,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-055.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-055.jpg",
-      "/public/images/sarees/generated/saree-055.jpg",
-      "/public/images/sarees/generated/saree-055.jpg",
-      "/public/images/sarees/generated/saree-055.jpg",
-      "/public/images/sarees/generated/saree-055.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-055.jpg"
   },
   {
     "id": "saree-056",
@@ -1765,11 +1968,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-056.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-056.jpg",
-      "/public/images/sarees/generated/saree-056.jpg",
-      "/public/images/sarees/generated/saree-056.jpg",
-      "/public/images/sarees/generated/saree-056.jpg",
-      "/public/images/sarees/generated/saree-056.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-056.jpg"
   },
   {
     "id": "saree-057",
@@ -1794,11 +2004,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-057.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-057.jpg",
-      "/public/images/sarees/generated/saree-057.jpg",
-      "/public/images/sarees/generated/saree-057.jpg",
-      "/public/images/sarees/generated/saree-057.jpg",
-      "/public/images/sarees/generated/saree-057.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-057.jpg"
   },
   {
     "id": "saree-058",
@@ -1823,11 +2040,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-058.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-058.jpg",
-      "/public/images/sarees/generated/saree-058.jpg",
-      "/public/images/sarees/generated/saree-058.jpg",
-      "/public/images/sarees/generated/saree-058.jpg",
-      "/public/images/sarees/generated/saree-058.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-058.jpg"
   },
   {
     "id": "saree-059",
@@ -1852,11 +2076,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-059.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-059.jpg",
-      "/public/images/sarees/generated/saree-059.jpg",
-      "/public/images/sarees/generated/saree-059.jpg",
-      "/public/images/sarees/generated/saree-059.jpg",
-      "/public/images/sarees/generated/saree-059.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-059.jpg"
   },
   {
     "id": "saree-060",
@@ -1881,11 +2112,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-060.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-060.jpg",
-      "/public/images/sarees/generated/saree-060.jpg",
-      "/public/images/sarees/generated/saree-060.jpg",
-      "/public/images/sarees/generated/saree-060.jpg",
-      "/public/images/sarees/generated/saree-060.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-060.jpg"
   },
   {
     "id": "saree-061",
@@ -1910,11 +2148,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-061.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-061.jpg",
-      "/public/images/sarees/generated/saree-061.jpg",
-      "/public/images/sarees/generated/saree-061.jpg",
-      "/public/images/sarees/generated/saree-061.jpg",
-      "/public/images/sarees/generated/saree-061.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-061.jpg"
   },
   {
     "id": "saree-062",
@@ -1939,11 +2184,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-062.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-062.jpg",
-      "/public/images/sarees/generated/saree-062.jpg",
-      "/public/images/sarees/generated/saree-062.jpg",
-      "/public/images/sarees/generated/saree-062.jpg",
-      "/public/images/sarees/generated/saree-062.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-062.jpg"
   },
   {
     "id": "saree-063",
@@ -1968,11 +2220,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-063.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-063.jpg",
-      "/public/images/sarees/generated/saree-063.jpg",
-      "/public/images/sarees/generated/saree-063.jpg",
-      "/public/images/sarees/generated/saree-063.jpg",
-      "/public/images/sarees/generated/saree-063.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-063.jpg"
   },
   {
     "id": "saree-064",
@@ -1997,11 +2256,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-064.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-064.jpg",
-      "/public/images/sarees/generated/saree-064.jpg",
-      "/public/images/sarees/generated/saree-064.jpg",
-      "/public/images/sarees/generated/saree-064.jpg",
-      "/public/images/sarees/generated/saree-064.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-064.jpg"
   },
   {
     "id": "saree-065",
@@ -2026,11 +2292,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-065.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-065.jpg",
-      "/public/images/sarees/generated/saree-065.jpg",
-      "/public/images/sarees/generated/saree-065.jpg",
-      "/public/images/sarees/generated/saree-065.jpg",
-      "/public/images/sarees/generated/saree-065.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-065.jpg"
   },
   {
     "id": "saree-066",
@@ -2055,11 +2328,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-066.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-066.jpg",
-      "/public/images/sarees/generated/saree-066.jpg",
-      "/public/images/sarees/generated/saree-066.jpg",
-      "/public/images/sarees/generated/saree-066.jpg",
-      "/public/images/sarees/generated/saree-066.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-066.jpg"
   },
   {
     "id": "saree-067",
@@ -2084,11 +2364,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-067.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-067.jpg",
-      "/public/images/sarees/generated/saree-067.jpg",
-      "/public/images/sarees/generated/saree-067.jpg",
-      "/public/images/sarees/generated/saree-067.jpg",
-      "/public/images/sarees/generated/saree-067.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-067.jpg"
   },
   {
     "id": "saree-068",
@@ -2113,11 +2400,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-068.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-068.jpg",
-      "/public/images/sarees/generated/saree-068.jpg",
-      "/public/images/sarees/generated/saree-068.jpg",
-      "/public/images/sarees/generated/saree-068.jpg",
-      "/public/images/sarees/generated/saree-068.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-068.jpg"
   },
   {
     "id": "saree-069",
@@ -2142,11 +2436,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-069.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-069.jpg",
-      "/public/images/sarees/generated/saree-069.jpg",
-      "/public/images/sarees/generated/saree-069.jpg",
-      "/public/images/sarees/generated/saree-069.jpg",
-      "/public/images/sarees/generated/saree-069.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-069.jpg"
   },
   {
     "id": "saree-070",
@@ -2171,11 +2472,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-070.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-070.jpg",
-      "/public/images/sarees/generated/saree-070.jpg",
-      "/public/images/sarees/generated/saree-070.jpg",
-      "/public/images/sarees/generated/saree-070.jpg",
-      "/public/images/sarees/generated/saree-070.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-070.jpg"
   },
   {
     "id": "saree-071",
@@ -2200,11 +2508,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-071.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-071.jpg",
-      "/public/images/sarees/generated/saree-071.jpg",
-      "/public/images/sarees/generated/saree-071.jpg",
-      "/public/images/sarees/generated/saree-071.jpg",
-      "/public/images/sarees/generated/saree-071.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-071.jpg"
   },
   {
     "id": "saree-072",
@@ -2229,11 +2544,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-072.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-072.jpg",
-      "/public/images/sarees/generated/saree-072.jpg",
-      "/public/images/sarees/generated/saree-072.jpg",
-      "/public/images/sarees/generated/saree-072.jpg",
-      "/public/images/sarees/generated/saree-072.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-072.jpg"
   },
   {
     "id": "saree-073",
@@ -2258,11 +2580,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-073.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-073.jpg",
-      "/public/images/sarees/generated/saree-073.jpg",
-      "/public/images/sarees/generated/saree-073.jpg",
-      "/public/images/sarees/generated/saree-073.jpg",
-      "/public/images/sarees/generated/saree-073.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-073.jpg"
   },
   {
     "id": "saree-074",
@@ -2287,11 +2616,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-074.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-074.jpg",
-      "/public/images/sarees/generated/saree-074.jpg",
-      "/public/images/sarees/generated/saree-074.jpg",
-      "/public/images/sarees/generated/saree-074.jpg",
-      "/public/images/sarees/generated/saree-074.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-074.jpg"
   },
   {
     "id": "saree-075",
@@ -2316,11 +2652,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-075.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-075.jpg",
-      "/public/images/sarees/generated/saree-075.jpg",
-      "/public/images/sarees/generated/saree-075.jpg",
-      "/public/images/sarees/generated/saree-075.jpg",
-      "/public/images/sarees/generated/saree-075.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-075.jpg"
   },
   {
     "id": "saree-076",
@@ -2345,11 +2688,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-076.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-076.jpg",
-      "/public/images/sarees/generated/saree-076.jpg",
-      "/public/images/sarees/generated/saree-076.jpg",
-      "/public/images/sarees/generated/saree-076.jpg",
-      "/public/images/sarees/generated/saree-076.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-076.jpg"
   },
   {
     "id": "saree-077",
@@ -2374,11 +2724,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-077.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-077.jpg",
-      "/public/images/sarees/generated/saree-077.jpg",
-      "/public/images/sarees/generated/saree-077.jpg",
-      "/public/images/sarees/generated/saree-077.jpg",
-      "/public/images/sarees/generated/saree-077.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-077.jpg"
   },
   {
     "id": "saree-078",
@@ -2403,11 +2760,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-078.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-078.jpg",
-      "/public/images/sarees/generated/saree-078.jpg",
-      "/public/images/sarees/generated/saree-078.jpg",
-      "/public/images/sarees/generated/saree-078.jpg",
-      "/public/images/sarees/generated/saree-078.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-078.jpg"
   },
   {
     "id": "saree-079",
@@ -2432,11 +2796,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-079.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-079.jpg",
-      "/public/images/sarees/generated/saree-079.jpg",
-      "/public/images/sarees/generated/saree-079.jpg",
-      "/public/images/sarees/generated/saree-079.jpg",
-      "/public/images/sarees/generated/saree-079.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-079.jpg"
   },
   {
     "id": "saree-080",
@@ -2461,11 +2832,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-080.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-080.jpg",
-      "/public/images/sarees/generated/saree-080.jpg",
-      "/public/images/sarees/generated/saree-080.jpg",
-      "/public/images/sarees/generated/saree-080.jpg",
-      "/public/images/sarees/generated/saree-080.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-080.jpg"
   },
   {
     "id": "saree-081",
@@ -2490,11 +2868,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-081.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-081.jpg",
-      "/public/images/sarees/generated/saree-081.jpg",
-      "/public/images/sarees/generated/saree-081.jpg",
-      "/public/images/sarees/generated/saree-081.jpg",
-      "/public/images/sarees/generated/saree-081.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-081.jpg"
   },
   {
     "id": "saree-082",
@@ -2519,11 +2904,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-082.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-082.jpg",
-      "/public/images/sarees/generated/saree-082.jpg",
-      "/public/images/sarees/generated/saree-082.jpg",
-      "/public/images/sarees/generated/saree-082.jpg",
-      "/public/images/sarees/generated/saree-082.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-082.jpg"
   },
   {
     "id": "saree-083",
@@ -2548,11 +2940,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-083.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-083.jpg",
-      "/public/images/sarees/generated/saree-083.jpg",
-      "/public/images/sarees/generated/saree-083.jpg",
-      "/public/images/sarees/generated/saree-083.jpg",
-      "/public/images/sarees/generated/saree-083.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-083.jpg"
   },
   {
     "id": "saree-084",
@@ -2577,11 +2976,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-084.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-084.jpg",
-      "/public/images/sarees/generated/saree-084.jpg",
-      "/public/images/sarees/generated/saree-084.jpg",
-      "/public/images/sarees/generated/saree-084.jpg",
-      "/public/images/sarees/generated/saree-084.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-084.jpg"
   },
   {
     "id": "saree-085",
@@ -2606,11 +3012,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-085.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-085.jpg",
-      "/public/images/sarees/generated/saree-085.jpg",
-      "/public/images/sarees/generated/saree-085.jpg",
-      "/public/images/sarees/generated/saree-085.jpg",
-      "/public/images/sarees/generated/saree-085.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-085.jpg"
   },
   {
     "id": "saree-086",
@@ -2635,11 +3048,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-086.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-086.jpg",
-      "/public/images/sarees/generated/saree-086.jpg",
-      "/public/images/sarees/generated/saree-086.jpg",
-      "/public/images/sarees/generated/saree-086.jpg",
-      "/public/images/sarees/generated/saree-086.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-086.jpg"
   },
   {
     "id": "saree-087",
@@ -2664,11 +3084,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-087.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-087.jpg",
-      "/public/images/sarees/generated/saree-087.jpg",
-      "/public/images/sarees/generated/saree-087.jpg",
-      "/public/images/sarees/generated/saree-087.jpg",
-      "/public/images/sarees/generated/saree-087.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-087.jpg"
   },
   {
     "id": "saree-088",
@@ -2693,11 +3120,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-088.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-088.jpg",
-      "/public/images/sarees/generated/saree-088.jpg",
-      "/public/images/sarees/generated/saree-088.jpg",
-      "/public/images/sarees/generated/saree-088.jpg",
-      "/public/images/sarees/generated/saree-088.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-088.jpg"
   },
   {
     "id": "saree-089",
@@ -2722,11 +3156,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-089.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-089.jpg",
-      "/public/images/sarees/generated/saree-089.jpg",
-      "/public/images/sarees/generated/saree-089.jpg",
-      "/public/images/sarees/generated/saree-089.jpg",
-      "/public/images/sarees/generated/saree-089.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-089.jpg"
   },
   {
     "id": "saree-090",
@@ -2751,11 +3192,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-090.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-090.jpg",
-      "/public/images/sarees/generated/saree-090.jpg",
-      "/public/images/sarees/generated/saree-090.jpg",
-      "/public/images/sarees/generated/saree-090.jpg",
-      "/public/images/sarees/generated/saree-090.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-090.jpg"
   },
   {
     "id": "saree-091",
@@ -2780,11 +3228,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-091.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-091.jpg",
-      "/public/images/sarees/generated/saree-091.jpg",
-      "/public/images/sarees/generated/saree-091.jpg",
-      "/public/images/sarees/generated/saree-091.jpg",
-      "/public/images/sarees/generated/saree-091.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-091.jpg"
   },
   {
     "id": "saree-092",
@@ -2809,11 +3264,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-092.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-092.jpg",
-      "/public/images/sarees/generated/saree-092.jpg",
-      "/public/images/sarees/generated/saree-092.jpg",
-      "/public/images/sarees/generated/saree-092.jpg",
-      "/public/images/sarees/generated/saree-092.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-092.jpg"
   },
   {
     "id": "saree-093",
@@ -2838,11 +3300,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-093.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-093.jpg",
-      "/public/images/sarees/generated/saree-093.jpg",
-      "/public/images/sarees/generated/saree-093.jpg",
-      "/public/images/sarees/generated/saree-093.jpg",
-      "/public/images/sarees/generated/saree-093.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-093.jpg"
   },
   {
     "id": "saree-094",
@@ -2867,11 +3336,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-094.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-094.jpg",
-      "/public/images/sarees/generated/saree-094.jpg",
-      "/public/images/sarees/generated/saree-094.jpg",
-      "/public/images/sarees/generated/saree-094.jpg",
-      "/public/images/sarees/generated/saree-094.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-094.jpg"
   },
   {
     "id": "saree-095",
@@ -2896,11 +3372,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-095.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-095.jpg",
-      "/public/images/sarees/generated/saree-095.jpg",
-      "/public/images/sarees/generated/saree-095.jpg",
-      "/public/images/sarees/generated/saree-095.jpg",
-      "/public/images/sarees/generated/saree-095.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-095.jpg"
   },
   {
     "id": "saree-096",
@@ -2925,11 +3408,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-096.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-096.jpg",
-      "/public/images/sarees/generated/saree-096.jpg",
-      "/public/images/sarees/generated/saree-096.jpg",
-      "/public/images/sarees/generated/saree-096.jpg",
-      "/public/images/sarees/generated/saree-096.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-096.jpg"
   },
   {
     "id": "saree-097",
@@ -2954,11 +3444,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-097.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-097.jpg",
-      "/public/images/sarees/generated/saree-097.jpg",
-      "/public/images/sarees/generated/saree-097.jpg",
-      "/public/images/sarees/generated/saree-097.jpg",
-      "/public/images/sarees/generated/saree-097.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-097.jpg"
   },
   {
     "id": "saree-098",
@@ -2983,11 +3480,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-098.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-098.jpg",
-      "/public/images/sarees/generated/saree-098.jpg",
-      "/public/images/sarees/generated/saree-098.jpg",
-      "/public/images/sarees/generated/saree-098.jpg",
-      "/public/images/sarees/generated/saree-098.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-098.jpg"
   },
   {
     "id": "saree-099",
@@ -3012,11 +3516,18 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-099.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-099.jpg",
-      "/public/images/sarees/generated/saree-099.jpg",
-      "/public/images/sarees/generated/saree-099.jpg",
-      "/public/images/sarees/generated/saree-099.jpg",
-      "/public/images/sarees/generated/saree-099.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-099.jpg"
   },
   {
     "id": "saree-100",
@@ -3041,29 +3552,50 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-100.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-100.jpg",
-      "/public/images/sarees/generated/saree-100.jpg",
-      "/public/images/sarees/generated/saree-100.jpg",
-      "/public/images/sarees/generated/saree-100.jpg",
-      "/public/images/sarees/generated/saree-100.jpg"
-    ]
+      "",
+      "",
+      "",
+      ""
+    ],
+    "missingViews": [
+      "2-back-pallu.jpg",
+      "3-pallu-detail.jpg",
+      "4-macro.jpg",
+      "5-blouse.jpg"
+    ],
+    "image": "/public/images/sarees/generated/saree-100.jpg"
   }
 ];
-
 RAW_SAMPLE_SAREES.push(...GENERATED_CATALOG_SAREES);
 
 const INITIAL_PRODUCTS = RAW_SAMPLE_SAREES.map((saree, idx) => {
   const sku = saree.sku || saree.id;
+  const hasExplicitGalleryUrls = Array.isArray(saree.galleryUrls);
   const gallery = (Array.isArray(saree.gallery) && saree.gallery.length === 5)
-    ? saree.gallery
-    : REQUIRED_GALLERY_VIEWS.map((view, vIdx) => ({
-        order: view.index,
-        key: view.key,
-        label: view.label,
-        shortLabel: view.shortLabel,
-        url: (Array.isArray(saree.galleryUrls) && saree.galleryUrls[vIdx]) ? saree.galleryUrls[vIdx] : `/public/images/sarees/${sku}/${view.file}?v=nb2`,
-        isSampleImage: false,
-        alt: `${saree.name} — ${view.label} (${saree.fabric}, ${saree.color})`
-      }));
+    ? saree.gallery.map((slot, vIdx) => ({
+        ...slot,
+        missingView: !slot.url
+      }))
+    : REQUIRED_GALLERY_VIEWS.map((view, vIdx) => {
+        const rawUrl = hasExplicitGalleryUrls
+          ? String(saree.galleryUrls[vIdx] || "").trim()
+          : `/public/images/sarees/${sku}/${view.file}?v=nb2`;
+        return {
+          order: view.index,
+          key: view.key,
+          label: view.label,
+          shortLabel: view.shortLabel,
+          url: rawUrl,
+          missingView: !rawUrl,
+          isSampleImage: false,
+          alt: `${saree.name} — ${view.label} (${saree.fabric}, ${saree.color})`
+        };
+      });
+  const missingViews = Array.isArray(saree.missingViews)
+    ? saree.missingViews
+    : gallery
+        .filter((g) => !g.url)
+        .map((g) => REQUIRED_GALLERY_VIEWS[g.order - 1]?.file || g.key);
 
   const price = Math.round(Number(saree.priceINR || 0));
   const mrp = Math.round(Number(saree.mrp || saree.originalPriceINR || price));
@@ -3090,7 +3622,8 @@ const INITIAL_PRODUCTS = RAW_SAMPLE_SAREES.map((saree, idx) => {
     bestseller: bestsellerSkus.has(sku),
     active: true,
     created_at: `2026-10-${String(10 + idx).padStart(2, "0")}T10:00:00Z`,
-    images: gallery.map((g) => g.url),
+    images: gallery.map((g) => g.url).filter(Boolean),
+    missingViews,
     gallery
   };
 });

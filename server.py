@@ -488,33 +488,83 @@ def normalize_product(prod, idx=0):
     p["care_instructions"] = p.get("care_instructions") or ""
     p["motifs"] = p.get("motifs") or ""
 
-    # 5 Gallery views & images array
-    if not isinstance(p.get("gallery"), list) or len(p["gallery"]) == 0:
-        if isinstance(p.get("images"), list) and len(p["images"]) > 0:
-            gal = []
-            for v_idx, url in enumerate(p["images"][:5]):
-                ord_num, key, label, _ = REQUIRED_VIEWS[v_idx] if v_idx < len(REQUIRED_VIEWS) else (v_idx + 1, f"view_{v_idx+1}", f"View {v_idx+1}", "")
-                gal.append({
-                    "order": ord_num,
-                    "key": key,
-                    "label": label,
-                    "url": url,
-                    "isSampleImage": False,
-                    "alt": f"{p.get('name', 'Saree')} — {label}"
-                })
-            p["gallery"] = gal
-        else:
-            p["gallery"] = [
-                {
-                    "order": ord_num,
-                    "key": key,
-                    "label": label,
-                    "url": f"/public/images/sarees/{sku}/{fname}?v=nb2",
-                    "isSampleImage": False,
-                    "alt": f"{''}{p.get('name', 'Saree')} — {label} ({p.get('fabric', '')}, {p.get('color', '')})"
-                }
-                for ord_num, key, label, fname in REQUIRED_VIEWS
-            ]
+    # 5 Gallery views & images array (never duplicate front view into views 2-5)
+    multi_view_folder_map = {
+        "jt-saree-09": "jt-saree-09",
+        "jt-saree-01": "jt-saree-01",
+        "jt-saree-02": "jt-saree-02",
+        "jt-saree-03": "jt-saree-03",
+        "jt-saree-04": "jt-saree-04",
+        "jt-saree-05": "jt-saree-05",
+        "jt-saree-06": "jt-saree-06",
+        "jt-saree-07": "jt-saree-07",
+        "jt-saree-08": "jt-saree-08",
+        "jt-saree-10": "jt-saree-10",
+        "jt-saree-11": "jt-saree-11",
+        "saree-009": "jt-saree-10",
+        "saree-010": "jt-saree-11",
+    }
+    raw_gal = p.get("gallery") if isinstance(p.get("gallery"), list) else []
+    raw_imgs = p.get("images") if isinstance(p.get("images"), list) else []
+    mapped_folder = multi_view_folder_map.get(sku)
+
+    if mapped_folder and os.path.exists(os.path.join(SAREES_IMAGES_DIR, mapped_folder, "2-back-pallu.jpg")):
+        gal = []
+        for ord_num, key, label, fname in REQUIRED_VIEWS:
+            url = f"/public/images/sarees/{mapped_folder}/{fname}?v=nb2"
+            gal.append({
+                "order": ord_num,
+                "key": key,
+                "label": label,
+                "url": url,
+                "missingView": False,
+                "isSampleImage": False,
+                "alt": f"{p.get('name', 'Saree')} — {label} ({p.get('fabric', '')}, {p.get('color', '')})"
+            })
+        p["gallery"] = gal
+        p["missingViews"] = []
+    else:
+        front_url = ""
+        if len(raw_gal) > 0 and isinstance(raw_gal[0], dict) and raw_gal[0].get("url"):
+            front_url = str(raw_gal[0]["url"]).strip()
+        elif len(raw_imgs) > 0 and raw_imgs[0]:
+            front_url = str(raw_imgs[0]).strip()
+        elif p.get("image"):
+            front_url = str(p["image"]).strip()
+        clean_front = front_url.split("?")[0]
+
+        gal = []
+        missing_views = []
+        for v_idx, (ord_num, key, label, fname) in enumerate(REQUIRED_VIEWS):
+            slot = raw_gal[v_idx] if v_idx < len(raw_gal) and isinstance(raw_gal[v_idx], dict) else None
+            raw_url = ""
+            if slot is not None and "url" in slot:
+                raw_url = str(slot.get("url") or "").strip()
+            elif slot is None and v_idx < len(raw_imgs) and raw_imgs[v_idx]:
+                raw_url = str(raw_imgs[v_idx]).strip()
+            elif v_idx == 0 and front_url:
+                raw_url = front_url
+
+            clean_url = raw_url.split("?")[0]
+            if v_idx > 0 and clean_url and clean_front and clean_url == clean_front:
+                raw_url = ""
+
+            is_missing = not bool(raw_url)
+            if is_missing and v_idx > 0:
+                missing_views.append(fname)
+
+            gal.append({
+                "order": ord_num,
+                "key": key,
+                "label": (slot.get("label") if slot and slot.get("label") else label),
+                "url": raw_url,
+                "missingView": is_missing,
+                "isSampleImage": False,
+                "alt": (slot.get("alt") if slot and slot.get("alt") else f"{p.get('name', 'Saree')} — {label}")
+            })
+        p["gallery"] = gal
+        p["missingViews"] = missing_views
+
     p["images"] = [g.get("url") for g in p["gallery"] if g and g.get("url")]
     p["image"] = p["images"][0] if p["images"] else ""
     return p

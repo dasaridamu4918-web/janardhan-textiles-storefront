@@ -45,15 +45,21 @@
   const LOCAL_FALLBACK_API = {
     getProducts() {
       try {
-        const raw = (localStorage.removeItem("jt_local_products_v1"), localStorage.getItem("jt_local_products_v3"));
+        localStorage.removeItem("jt_local_products_v1");
+        localStorage.removeItem("jt_local_products_v2");
+        localStorage.removeItem("jt_local_products_v3");
+        localStorage.removeItem("jt_local_products_v4");
+        const raw = localStorage.getItem("jt_local_products_v5");
         if (raw) {
           const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            return parsed.map((p, idx) => this.normalizeProduct(p, idx));
+          }
         }
       } catch (e) {}
-      const seed = (Array.isArray(app.state.products) && app.state.products.length > 0
-        ? app.state.products
-        : window.INITIAL_PRODUCTS || []
+      const seed = (Array.isArray(window.INITIAL_PRODUCTS) && window.INITIAL_PRODUCTS.length > 0
+        ? window.INITIAL_PRODUCTS
+        : app.state.products || []
       ).map((p, idx) => this.normalizeProduct(p, idx));
       this.saveProducts(seed);
       return seed;
@@ -61,7 +67,7 @@
 
     saveProducts(list) {
       try {
-        localStorage.setItem("jt_local_products_v3", JSON.stringify(list));
+        localStorage.setItem("jt_local_products_v5", JSON.stringify(list));
       } catch (e) {}
       app.state.products = list;
     },
@@ -105,15 +111,50 @@
       p.borderAndZari = p.borderAndZari || p.work_details;
       p.blouse_piece = p.blouse_piece ?? p.blousePiece ?? "";
       p.blousePiece = p.blousePiece || p.blouse_piece;
-      if (Array.isArray(p.gallery) && p.gallery.length > 0 && (!Array.isArray(p.images) || p.images.length === 0)) {
-        p.images = p.gallery.map((g) => g?.url).filter(Boolean);
-      } else if (Array.isArray(p.images) && p.images.length > 0 && (!Array.isArray(p.gallery) || p.gallery.length === 0)) {
-        p.gallery = p.images.slice(0, 5).map((url, i) => ({
-          order: i + 1,
-          label: REQUIRED_GALLERY_VIEWS[i]?.label || `View ${i + 1}`,
-          url
-        }));
+
+      if (Array.isArray(p.gallery) && p.gallery.length > 0) {
+        const frontBaseUrl = p.gallery[0]?.url ? String(p.gallery[0].url).split("?")[0].trim() : "";
+        p.gallery = REQUIRED_GALLERY_VIEWS.map((viewMeta, i) => {
+          const existing = p.gallery[i] || {};
+          let rawUrl = String(existing.url || "").trim();
+          // Never allow views 2..5 to substitute a duplicate copy of the front view image
+          if (i > 0 && rawUrl && frontBaseUrl && rawUrl.split("?")[0].trim() === frontBaseUrl) {
+            rawUrl = "";
+          }
+          return {
+            order: viewMeta.index,
+            key: viewMeta.key,
+            label: viewMeta.label,
+            shortLabel: viewMeta.shortLabel,
+            url: rawUrl,
+            missingView: !rawUrl,
+            isSampleImage: false,
+            alt: existing.alt || `${p.name || "Saree"} — ${viewMeta.label}`
+          };
+        });
+      } else if (Array.isArray(p.images) && p.images.length > 0) {
+        const frontBaseUrl = p.images[0] ? String(p.images[0]).split("?")[0].trim() : "";
+        p.gallery = REQUIRED_GALLERY_VIEWS.map((viewMeta, i) => {
+          let rawUrl = String(p.images[i] || "").trim();
+          if (i > 0 && rawUrl && frontBaseUrl && rawUrl.split("?")[0].trim() === frontBaseUrl) {
+            rawUrl = "";
+          }
+          return {
+            order: viewMeta.index,
+            key: viewMeta.key,
+            label: viewMeta.label,
+            shortLabel: viewMeta.shortLabel,
+            url: rawUrl,
+            missingView: !rawUrl,
+            isSampleImage: false,
+            alt: `${p.name || "Saree"} — ${viewMeta.label}`
+          };
+        });
       }
+      p.images = Array.isArray(p.gallery) ? p.gallery.map((g) => g?.url).filter(Boolean) : [];
+      p.missingViews = Array.isArray(p.gallery)
+        ? p.gallery.filter((g) => !g.url).map((g) => REQUIRED_GALLERY_VIEWS[g.order - 1]?.file || g.key)
+        : [];
       p.image = (Array.isArray(p.images) && p.images[0]) || (Array.isArray(p.gallery) && p.gallery[0]?.url) || "";
       return p;
     },
@@ -2913,7 +2954,7 @@
                 <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
                 <img
                   id="saree-360-poster-fallback"
-                  src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp"
+                  src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v5"
                   alt="Champagne Tissue Saree 360-degree turntable view"
                   class="saree-360-poster-fallback"
                   fetchpriority="high"
@@ -3098,28 +3139,69 @@
     `;
   };
 
+  // Helper to resolve a product and its 5-view gallery consistently across detail page, thumbnails, and lightbox
+  app.findProductById = function (pid) {
+    const targetId = pid || this.state.selectedProductId;
+    return (
+      (this.state.catalogueResult?.items || []).find((p) => (p.id || p.sku) === targetId) ||
+      (this.state.products || []).find((p) => (p.id || p.sku) === targetId) ||
+      (window.INITIAL_PRODUCTS || []).find((p) => (p.id || p.sku) === targetId) ||
+      this.state.products[0]
+    );
+  };
+
+  app.getNormalizedGallerySlots = function (saree) {
+    if (!saree) return [];
+    const rawGallery = Array.isArray(saree.gallery) ? saree.gallery : [];
+    const rawImages = Array.isArray(saree.images) ? saree.images : [];
+    const frontRaw =
+      (rawGallery[0] && typeof rawGallery[0].url === "string" ? rawGallery[0].url.trim() : "") ||
+      (typeof rawImages[0] === "string" ? rawImages[0].trim() : "") ||
+      (typeof saree.image === "string" ? saree.image.trim() : "");
+    const cleanFront = frontRaw.split("?")[0];
+
+    return REQUIRED_GALLERY_VIEWS.map((viewMeta, idx) => {
+      const slot = rawGallery[idx] || null;
+      let rawUrl = "";
+      if (slot && typeof slot.url === "string") {
+        rawUrl = slot.url.trim();
+      } else if (!slot && typeof rawImages[idx] === "string") {
+        rawUrl = rawImages[idx].trim();
+      }
+      const cleanSlot = rawUrl.split("?")[0];
+      // Never reuse the front image for views 2-5
+      if (idx > 0 && cleanSlot && cleanFront && cleanSlot === cleanFront) {
+        rawUrl = "";
+      }
+      const label = (slot && slot.label) || viewMeta.label || `View ${idx + 1}`;
+      const isMissing = !rawUrl || Boolean(slot && slot.missingView);
+      const resolvedSrc = isMissing
+        ? createMissingViewPlaceholderSVG(saree.name, label, saree.fabric)
+        : this.resolveImageUrl(rawUrl, saree.name, label);
+      return {
+        order: viewMeta.order || idx + 1,
+        key: viewMeta.key,
+        label,
+        url: rawUrl,
+        resolvedSrc,
+        missingView: isMissing,
+        alt: (slot && slot.alt) || `${saree.name} — ${label}`
+      };
+    });
+  };
+
   // 12. Product Details Screen (Strict Honesty: Show a field only if API returns it; hide empty fields; hover/tap zoom)
   const origRenderProductDetailPage = app.renderProductDetailPage.bind(app);
   app.renderProductDetailPage = function () {
     const pid = this.state.selectedProductId;
-    const saree =
-      (this.state.catalogueResult?.items || []).find((p) => (p.id || p.sku) === pid) ||
-      this.state.products.find((p) => (p.id || p.sku) === pid) ||
-      this.state.products[0];
+    const saree = this.findProductById(pid);
     if (!saree) return origRenderProductDetailPage();
 
     const activeIdx = this.state.selectedGalleryIndex || 0;
-    const galleryList =
-      Array.isArray(saree.gallery) && saree.gallery.length > 0
-        ? saree.gallery
-        : (Array.isArray(saree.images) ? saree.images : []).map((u, i) => ({
-            order: i + 1,
-            label: REQUIRED_GALLERY_VIEWS[i]?.label || `View ${i + 1}`,
-            url: u
-          }));
+    const galleryList = this.getNormalizedGallerySlots(saree);
     const activeGalleryItem = galleryList[activeIdx] || galleryList[0] || {};
     const activeLabel = activeGalleryItem.label || REQUIRED_GALLERY_VIEWS[activeIdx]?.label || `View ${activeIdx + 1}`;
-    const largeImageSrc = this.resolveImageUrl(activeGalleryItem.url, saree.name, activeLabel);
+    const largeImageSrc = activeGalleryItem.resolvedSrc || this.resolveImageUrl(activeGalleryItem.url, saree.name, activeLabel);
 
     const pricing = this.getPricing(saree);
     const stockCode = this.getStockStatusCode(saree);
@@ -3192,6 +3274,8 @@
                 <img
                   id="product-main-image"
                   src="${largeImageSrc}"
+                  data-view-key="${activeGalleryItem.key || ""}"
+                  data-missing-view="${activeGalleryItem.missingView ? "true" : "false"}"
                   alt="${saree.name} — ${activeLabel}"
                   onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${(saree.name || "").replace(/'/g, "\\'")}', '${activeLabel.replace(/'/g, "\\'")}');"
                   class="gallery-crossfade-img is-active"
@@ -3220,12 +3304,15 @@
               ${galleryList
                 .map((item, idx) => {
                   const slotLabel = item.label || REQUIRED_GALLERY_VIEWS[idx]?.label || `View ${idx + 1}`;
-                  const thumbSrc = this.resolveImageUrl(item.url, saree.name, slotLabel);
+                  const thumbSrc = item.resolvedSrc || this.resolveImageUrl(item.url, saree.name, slotLabel);
                   const isSelected = idx === activeIdx;
                   return `
                     <button
                       type="button"
                       role="tab"
+                      data-index="${idx}"
+                      data-view-key="${item.key || ""}"
+                      data-missing-view="${item.missingView ? "true" : "false"}"
                       aria-selected="${isSelected ? "true" : "false"}"
                       onclick="app.selectGalleryView(${idx})"
                       class="gallery-thumb-btn shrink-0 w-24 sm:w-auto text-left rounded-xl overflow-hidden border-2 bg-[#FAF8F5] ${
@@ -3233,7 +3320,14 @@
                       }"
                     >
                       <div class="aspect-[5/6] bg-[#EFE6D5] overflow-hidden flex items-center justify-center p-0.5">
-                        <img src="${thumbSrc}" alt="${saree.name} — ${slotLabel}" loading="lazy" decoding="async" class="w-full h-full object-contain"/>
+                        <img
+                          src="${thumbSrc}"
+                          alt="${saree.name} — ${slotLabel}"
+                          loading="lazy"
+                          decoding="async"
+                          onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${(saree.name || "").replace(/'/g, "\\'")}', '${slotLabel.replace(/'/g, "\\'")}');"
+                          class="w-full h-full object-contain"
+                        />
                       </div>
                       <div class="thumb-caption p-1.5 ${isSelected ? "bg-ink text-ivory" : "bg-[#FAF8F5] text-ink"}">
                         <p class="text-[10px] font-semibold leading-tight line-clamp-1">${slotLabel}</p>
@@ -3419,6 +3513,120 @@
     if (!img) return;
     img.style.transformOrigin = "50% 50%";
     img.style.transform = "scale(1)";
+  };
+
+  app.selectGalleryView = function (index) {
+    if (index < 0 || index >= REQUIRED_GALLERY_VIEWS.length) return;
+    this.state.selectedGalleryIndex = index;
+
+    const saree = this.findProductById(this.state.selectedProductId);
+    const galleryList = this.getNormalizedGallerySlots(saree);
+    const item = galleryList[index] || galleryList[0] || {};
+    const slotLabel = item.label || REQUIRED_GALLERY_VIEWS[index]?.label || `View ${index + 1}`;
+    const safeName = saree ? saree.name : "Saree";
+    const nextSrc = item.resolvedSrc || createMissingViewPlaceholderSVG(safeName, slotLabel, saree ? saree.fabric : "");
+    const nextAlt = item.alt || `${safeName} — ${slotLabel} (${index + 1} of ${REQUIRED_GALLERY_VIEWS.length})`;
+
+    const activePill = document.getElementById("detail-active-view-pill");
+    if (activePill) activePill.textContent = slotLabel;
+    const mainLabel = document.getElementById("product-main-label");
+    if (mainLabel) mainLabel.textContent = slotLabel;
+
+    const stage = document.getElementById("product-main-image-stage");
+    if (stage) {
+      stage.setAttribute("aria-label", `Viewing ${slotLabel} for ${safeName}. Click or press Enter to zoom.`);
+    }
+
+    const thumbBtns = document.querySelectorAll("#gallery-thumbnails-strip .gallery-thumb-btn");
+    thumbBtns.forEach((btn, i) => {
+      const isSelected = i === index;
+      btn.setAttribute("aria-selected", isSelected ? "true" : "false");
+      btn.classList.toggle("is-active-thumb", isSelected);
+      btn.classList.toggle("border-ink", isSelected);
+      btn.classList.toggle("ring-2", isSelected);
+      btn.classList.toggle("ring-gold", isSelected);
+      btn.classList.toggle("border-gold/30", !isSelected);
+      btn.classList.toggle("opacity-80", !isSelected);
+
+      const caption = btn.querySelector(".thumb-caption");
+      if (caption) {
+        if (isSelected) {
+          caption.classList.remove("bg-[#FAF8F5]", "text-ink");
+          caption.classList.add("bg-ink", "text-ivory");
+        } else {
+          caption.classList.remove("bg-ink", "text-ivory");
+          caption.classList.add("bg-[#FAF8F5]", "text-ink");
+        }
+      }
+      if (isSelected) {
+        btn.scrollIntoView({ behavior: "smooth", inline: "nearest", block: "nearest" });
+      }
+    });
+
+    const mainImg = document.getElementById("product-main-image");
+    const incomingImg = document.getElementById("product-incoming-image");
+    if (mainImg) {
+      mainImg.src = nextSrc;
+      mainImg.alt = nextAlt;
+      mainImg.setAttribute("data-view-key", item.key || "");
+      mainImg.setAttribute("data-missing-view", item.missingView ? "true" : "false");
+      mainImg.className = "gallery-crossfade-img is-active";
+    }
+    if (incomingImg) {
+      incomingImg.className = "gallery-crossfade-img is-idle";
+      incomingImg.src = "data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7";
+    }
+
+    if (this.state.lightboxOpen) {
+      this.syncLightboxView();
+    }
+  };
+
+  app.syncLightboxView = function () {
+    const saree = this.findProductById(this.state.selectedProductId);
+    if (!saree) return;
+    const idx = this.state.selectedGalleryIndex || 0;
+    const galleryList = this.getNormalizedGallerySlots(saree);
+    const item = galleryList[idx] || galleryList[0] || {};
+    const slotLabel = item.label || REQUIRED_GALLERY_VIEWS[idx]?.label || `View ${idx + 1}`;
+    const src = item.resolvedSrc || createMissingViewPlaceholderSVG(saree.name, slotLabel, saree.fabric);
+    const altText = item.alt || `${saree.name} — ${slotLabel}`;
+
+    const nameEl = document.getElementById("lightbox-saree-name");
+    const labelEl = document.getElementById("lightbox-view-label");
+    const imgEl = document.getElementById("lightbox-img");
+    const thumbsEl = document.getElementById("lightbox-thumbs");
+
+    if (nameEl) nameEl.textContent = saree.name;
+    if (labelEl) labelEl.textContent = slotLabel;
+    if (imgEl) {
+      imgEl.src = src;
+      imgEl.alt = altText;
+      imgEl.style.transform = "scale(1)";
+      this.state.lightboxZoomed = false;
+    }
+    if (thumbsEl) {
+      thumbsEl.innerHTML = galleryList
+        .map((gItem, i) => {
+          const gLabel = gItem.label || REQUIRED_GALLERY_VIEWS[i]?.label || `View ${i + 1}`;
+          const tSrc = gItem.resolvedSrc || createMissingViewPlaceholderSVG(saree.name, gLabel, saree.fabric);
+          const tAlt = gItem.alt || gLabel;
+          const active = i === idx;
+          return `
+            <button
+              type="button"
+              onclick="app.selectGalleryView(${i})"
+              class="shrink-0 w-14 h-16 rounded-lg overflow-hidden border-2 transition-all ${
+                active ? "border-gold scale-110 ring-2 ring-white" : "border-white/20 opacity-60 hover:opacity-100"
+              }"
+              title="${gLabel}"
+            >
+              <img src="${tSrc}" alt="${tAlt}" class="w-full h-full object-cover"/>
+            </button>
+          `;
+        })
+        .join("");
+    }
   };
 
   // 13. Full Cart Page (#cart) + 4-Step Checkout (#checkout)
