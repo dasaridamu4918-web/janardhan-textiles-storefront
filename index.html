@@ -15,6 +15,9 @@
 
   <!-- Preload initial 0° 360 turntable frame & featured saree views -->
   <link rel="preload" as="image" href="/public/assets/saree-360/frames/frame-000.webp" fetchpriority="high" />
+  <link rel="preload" as="image" href="/public/images/sarees/generated/gallery-01-design-001.jpg" fetchpriority="high" />
+  <link rel="preload" as="image" href="/public/images/sarees/generated/gallery-02-design-001.jpg" />
+  <link rel="preload" as="image" href="/public/images/sarees/generated/gallery-03-design-001.jpg" />
   <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" fetchpriority="high" />
   <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/2-back-pallu.jpg" />
 
@@ -980,6 +983,148 @@
     .pb-safe {
       padding-bottom: env(safe-area-inset-bottom, 0.75rem);
     }
+  
+    /* ==========================================================================
+       THREE 360-STEP SAREE SCROLL GALLERIES (1,080 DISTINCT DESIGNS)
+       ========================================================================== */
+    .three-galleries-section {
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 2.5rem 1rem 3rem;
+    }
+    .three-galleries-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 2.75rem;
+    }
+    .saree-scroll-gallery-card {
+      background: #FAF8F5;
+      border: 1px solid rgba(196, 161, 90, 0.45);
+      border-radius: 1.35rem;
+      padding: 1.25rem;
+      box-shadow: 0 18px 42px -18px rgba(42, 30, 23, 0.14);
+      position: relative;
+    }
+    @media (min-width: 768px) {
+      .saree-scroll-gallery-card {
+        padding: 1.75rem 2rem;
+      }
+    }
+    .saree-scroll-gallery-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 1.5rem;
+      align-items: center;
+    }
+    @media (min-width: 900px) {
+      .saree-scroll-gallery-grid {
+        grid-template-columns: minmax(300px, 420px) 1fr;
+        gap: 2.25rem;
+      }
+    }
+    .gallery-360-stage-box {
+      position: relative;
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+      aspect-ratio: 3 / 4;
+      border-radius: 1.05rem;
+      overflow: hidden;
+      background: #DFD5C6;
+      border: 1px solid rgba(196, 161, 90, 0.55);
+      box-shadow: 0 14px 34px -12px rgba(42, 30, 23, 0.25);
+      user-select: none;
+      touch-action: pan-y;
+      cursor: grab;
+    }
+    .gallery-360-stage-box:active {
+      cursor: grabbing;
+    }
+    .gallery-360-poster,
+    .gallery-360-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center center;
+      display: block;
+    }
+    .gallery-360-poster {
+      z-index: 1;
+      opacity: 1;
+      pointer-events: none;
+    }
+    .gallery-360-canvas {
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.14s ease-out;
+      pointer-events: none;
+    }
+    .gallery-360-canvas.is-ready {
+      opacity: 1;
+    }
+    .gallery-360-pos-badge {
+      position: absolute;
+      top: 0.65rem;
+      right: 0.65rem;
+      z-index: 6;
+      padding: 0.28rem 0.72rem;
+      border-radius: 999px;
+      background: rgba(250, 246, 238, 0.94);
+      border: 1px solid rgba(196, 161, 90, 0.65);
+      font-family: var(--font-sans);
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #2A1E17;
+      box-shadow: 0 4px 12px rgba(42, 30, 23, 0.12);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+    .gallery-360-loading-pill {
+      position: absolute;
+      top: 0.65rem;
+      left: 0.65rem;
+      z-index: 6;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.26rem 0.68rem;
+      border-radius: 999px;
+      background: rgba(42, 30, 23, 0.84);
+      border: 1px solid rgba(196, 161, 90, 0.55);
+      color: #FAF6EE;
+      font-size: 0.68rem;
+      font-weight: 600;
+      pointer-events: none;
+      transition: opacity 0.2s ease;
+    }
+    .gallery-360-loading-pill.is-hidden {
+      opacity: 0;
+      visibility: hidden;
+    }
+    .gallery-360-error-banner {
+      position: absolute;
+      left: 0.65rem;
+      right: 0.65rem;
+      bottom: 0.65rem;
+      z-index: 7;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      padding: 0.45rem 0.75rem;
+      border-radius: 0.65rem;
+      background: rgba(74, 18, 32, 0.94);
+      border: 1px solid rgba(196, 161, 90, 0.65);
+      color: #FAF6EE;
+      font-size: 0.72rem;
+    }
+    .gallery-360-error-banner.is-hidden {
+      display: none;
+    }
+
   </style>
 </head>
 <body class="woven-bg min-h-screen flex flex-col selection:bg-gold/40 selection:text-ink">
@@ -1492,6 +1637,606 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       return "data:image/svg+xml;utf8," + encodeURIComponent(svg);
     }
 
+    
+    /**
+     * ============================================================================
+     * THREE INDEPENDENT 360-STEP SAREE SCROLL GALLERIES ENGINE
+     * - 3 separate galleries (gallery-01, gallery-02, gallery-03)
+     * - 360 distinct saree design positions per gallery (1,080 total)
+     * - 144 Hz capable requestAnimationFrame scheduling, directional preloading,
+     *   off-thread img.decode(), and bounded LRU decoded-image cache (75 per gallery)
+     * ============================================================================
+     */
+    const ThreeGalleriesScrollEngine = {
+      totalPositions: 360,
+      maxCachedPerGallery: 75,
+      preloadAhead: 12,
+      preloadBehind: 5,
+      maxConcurrentLoads: 6,
+      activeLoads: 0,
+      loadQueue: [],
+      queuedKeys: new Set(),
+      manifestLoaded: false,
+      manifestData: null,
+      scrollTriggers: [],
+      cleanups: [],
+
+      galleries: {
+        1: {
+          id: "gallery-01",
+          num: 1,
+          title: "Gallery 01 — Royal Bridal Kanchipuram, Banarasi & Zardozi Collection",
+          theme: "Bridal & Festive Grandeur",
+          targetPos: 1,
+          currentPosFloat: 1,
+          displayedPos: -1,
+          displayedExact: false,
+          direction: 1,
+          rafId: null,
+          lastRafTs: 0,
+          images: new Array(361).fill(null),
+          states: new Array(361).fill("idle"),
+          failedPositions: new Set(),
+          lruOrder: [],
+          anchorReadyCount: 0,
+          designsMeta: {}
+        },
+        2: {
+          id: "gallery-02",
+          num: 2,
+          title: "Gallery 02 — Heirloom Paithani, Patola Ikat, Gadwal & Temple Border Collection",
+          theme: "Heritage Weaves & Ornate Borders",
+          targetPos: 1,
+          currentPosFloat: 1,
+          displayedPos: -1,
+          displayedExact: false,
+          direction: 1,
+          rafId: null,
+          lastRafTs: 0,
+          images: new Array(361).fill(null),
+          states: new Array(361).fill("idle"),
+          failedPositions: new Set(),
+          lruOrder: [],
+          anchorReadyCount: 0,
+          designsMeta: {}
+        },
+        3: {
+          id: "gallery-03",
+          num: 3,
+          title: "Gallery 03 — Artisanal Organza Tissue, Chanderi, Mysore Crepe & Couture Drape Collection",
+          theme: "Sheer Organza, Metallic Tissue & Couture Drapes",
+          targetPos: 1,
+          currentPosFloat: 1,
+          displayedPos: -1,
+          displayedExact: false,
+          direction: 1,
+          rafId: null,
+          lastRafTs: 0,
+          images: new Array(361).fill(null),
+          states: new Array(361).fill("idle"),
+          failedPositions: new Set(),
+          lruOrder: [],
+          anchorReadyCount: 0,
+          designsMeta: {}
+        }
+      },
+
+      getImageUrl(gNum, pos) {
+        const basePath = window.__ASSET_BASE_PATH__ || "";
+        const gPad = String(gNum).padStart(2, "0");
+        const pPad = String(pos).padStart(3, "0");
+        return `${basePath}/public/images/sarees/generated/gallery-${gPad}-design-${pPad}.jpg`;
+      },
+
+      getFallbackMeta(gNum, pos) {
+        const gPad = String(gNum).padStart(2, "0");
+        const pPad = String(pos).padStart(3, "0");
+        const g = this.galleries[gNum];
+        if (g && g.designsMeta && g.designsMeta[pos]) {
+          return g.designsMeta[pos];
+        }
+        const palettes = [
+          "Sindoor Crimson & Champagne Gold",
+          "Imperial Emerald & Antique Gold",
+          "Royal Sapphire Neel & Silver-Gold",
+          "Regal Amethyst Violet & Rose Gold",
+          "Haldi Saffron Marigold & Copper Zari",
+          "Rani Fuchsia Magenta & Bright Gold",
+          "Peacock Cerulean Teal & Champagne Silver",
+          "Deep Mulberry Wine & Antique Bronze",
+          "Copper Russet Terracotta & Silver Zari",
+          "Pistachio Celadon Mint & Champagne Zari",
+          "Royal Cobalt Indigo & Antique Gold",
+          "Golden Bronze Ochre & Crimson Zari"
+        ];
+        const fabrics = [
+          "Pure Kanchipuram Silk",
+          "Banarasi Katan Silk",
+          "Sheer Organza Tissue",
+          "Paithani Pure Silk",
+          "Patan Patola Double-Ikat Silk",
+          "Chanderi Silk-Cotton",
+          "Gadwal Korvai Silk",
+          "Mysore Crepe Silk",
+          "Tussar Muga Silk",
+          "Uppada Jamdani Tissue"
+        ];
+        const borders = [
+          "Scalloped cutwork border with antique gold zari and peacock scrollwork",
+          "4.5-inch traditional korvai temple spire (karvat) and floral vine border",
+          "Broad Paithani oblique square asavali gold zari and meenakari peacock border",
+          "3.5-inch rose-gold zardozi and sequin floral medallion scalloped border",
+          "4-inch Banarasi Mughal arch and kalka paisley brocade border"
+        ];
+        const motifs = [
+          "Dancing royal peacocks and blooming lotus vines across pallu and pleats",
+          "Evenly spaced woven gold floral coin bootis and grand heritage pallu",
+          "All-over floral jaal lattice with intricate zari threadwork",
+          "Traditional kalpavriksha tree-of-life and mango paisley motifs"
+        ];
+        const pal = palettes[(pos + gNum * 3) % palettes.length];
+        const fab = fabrics[(pos + gNum * 5) % fabrics.length];
+        return {
+          designId: `gallery-${gPad}-design-${pPad}`,
+          filename: `gallery-${gPad}-design-${pPad}.jpg`,
+          positionLabel: `Design ${pPad} / 360`,
+          name: `${pal.split("&")[0].trim()} ${fab} Saree — Edition ${pPad}`,
+          baseColor: pal,
+          fabric: fab,
+          borderDesign: borders[(pos + gNum) % borders.length],
+          motifs: motifs[(pos + gNum * 2) % motifs.length],
+          blouseDetails: `Coordinated ${pal.split("&")[0].trim().toLowerCase()} tailored silk blouse with matching zari border sleeves`
+        };
+      },
+
+      async loadManifestOnce() {
+        if (this.manifestLoaded) return;
+        this.manifestLoaded = true;
+        try {
+          const basePath = window.__ASSET_BASE_PATH__ || "";
+          const res = await fetch(`${basePath}/public/images/sarees/generated/galleries-manifest.json`);
+          if (!res.ok) return;
+          const data = await res.json();
+          this.manifestData = data;
+          if (data && Array.isArray(data.galleries)) {
+            data.galleries.forEach((gEntry) => {
+              const gNum = Number(gEntry.galleryNumber);
+              const gState = this.galleries[gNum];
+              if (gState && Array.isArray(gEntry.designs)) {
+                gEntry.designs.forEach((d) => {
+                  gState.designsMeta[d.position] = d;
+                });
+                this.updateGalleryHUD(gNum, Math.round(gState.currentPosFloat));
+              }
+            });
+          }
+        } catch (err) {
+          // Fallback metadata handles offline / initial load seamlessly
+        }
+      },
+
+      clampPosition(pos) {
+        return Math.min(360, Math.max(1, Math.round(Number(pos) || 1)));
+      },
+
+      touchLru(gNum, pos) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        const existingIdx = g.lruOrder.indexOf(pos);
+        if (existingIdx !== -1) g.lruOrder.splice(existingIdx, 1);
+        g.lruOrder.push(pos);
+
+        if (g.lruOrder.length <= this.maxCachedPerGallery) return;
+        const center = this.clampPosition(g.targetPos);
+
+        for (let i = 0; i < g.lruOrder.length; i++) {
+          if (g.lruOrder.length <= this.maxCachedPerGallery) break;
+          const cand = g.lruOrder[i];
+          const dist = Math.abs(cand - center);
+          if (cand === 1 || cand === 360 || cand % 30 === 0 || dist <= this.preloadAhead + 4 || cand === g.displayedPos) {
+            continue;
+          }
+          g.lruOrder.splice(i, 1);
+          i--;
+          g.images[cand] = null;
+          if (g.states[cand] === "ready") g.states[cand] = "idle";
+        }
+      },
+
+      enqueueLoad(gNum, pos, highPriority = false) {
+        const p = this.clampPosition(pos);
+        const g = this.galleries[gNum];
+        if (!g) return;
+        if (g.states[p] === "ready" || g.states[p] === "loading") return;
+        const key = `${gNum}:${p}`;
+        if (this.queuedKeys.has(key)) return;
+        this.queuedKeys.add(key);
+        if (highPriority) {
+          this.loadQueue.unshift({ gNum, pos: p, key });
+        } else {
+          this.loadQueue.push({ gNum, pos: p, key });
+        }
+      },
+
+      processQueue() {
+        while (this.activeLoads < this.maxConcurrentLoads && this.loadQueue.length > 0) {
+          const item = this.loadQueue.shift();
+          this.queuedKeys.delete(item.key);
+          const g = this.galleries[item.gNum];
+          if (!g || g.states[item.pos] === "ready" || g.states[item.pos] === "loading") continue;
+          this.loadSingleImage(item.gNum, item.pos);
+        }
+      },
+
+      loadSingleImage(gNum, pos, attempt = 0) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        g.states[pos] = "loading";
+        this.activeLoads++;
+
+        const img = new Image();
+        img.decoding = "async";
+        if (pos === 1) img.fetchPriority = "high";
+
+        const finishSuccess = () => {
+          this.activeLoads = Math.max(0, this.activeLoads - 1);
+          g.images[pos] = img;
+          g.states[pos] = "ready";
+          g.failedPositions.delete(pos);
+          if (pos === 1 || pos % 30 === 0) g.anchorReadyCount++;
+          this.touchLru(gNum, pos);
+          this.updateStatusUI(gNum);
+
+          const targetPos = this.clampPosition(g.currentPosFloat);
+          if (pos === 1 && g.displayedPos === -1) {
+            this.drawPosition(gNum, 1);
+          } else if (pos === targetPos || !g.displayedExact) {
+            this.scheduleRender(gNum);
+          }
+          this.processQueue();
+        };
+
+        img.onload = () => {
+          if (typeof img.decode === "function") {
+            img.decode().then(finishSuccess).catch(finishSuccess);
+          } else {
+            finishSuccess();
+          }
+        };
+
+        img.onerror = () => {
+          this.activeLoads = Math.max(0, this.activeLoads - 1);
+          if (attempt < 1) {
+            setTimeout(() => this.loadSingleImage(gNum, pos, attempt + 1), 150);
+            return;
+          }
+          g.states[pos] = "error";
+          g.failedPositions.add(pos);
+          this.updateStatusUI(gNum);
+          this.processQueue();
+        };
+
+        img.src = this.getImageUrl(gNum, pos);
+      },
+
+      preloadWindow(gNum, centerPos, direction = 1) {
+        const c = this.clampPosition(centerPos);
+        this.enqueueLoad(gNum, c, true);
+        const dir = direction >= 0 ? 1 : -1;
+        for (let step = 1; step <= this.preloadAhead; step++) {
+          const ahead = c + step * dir;
+          if (ahead >= 1 && ahead <= 360) {
+            this.enqueueLoad(gNum, ahead, step <= 5);
+          }
+        }
+        for (let step = 1; step <= this.preloadBehind; step++) {
+          const behind = c - step * dir;
+          if (behind >= 1 && behind <= 360) {
+            this.enqueueLoad(gNum, behind, false);
+          }
+        }
+        this.processQueue();
+      },
+
+      findBestReadyImage(gNum, targetPos) {
+        const g = this.galleries[gNum];
+        if (!g) return null;
+        const p = this.clampPosition(targetPos);
+        const direct = g.images[p];
+        if (direct && g.states[p] === "ready" && direct.complete && direct.naturalWidth > 0) {
+          return { img: direct, actualPos: p, isExact: true };
+        }
+        for (let off = 1; off <= 360; off++) {
+          const prev = p - off;
+          if (prev >= 1) {
+            const pImg = g.images[prev];
+            if (pImg && g.states[prev] === "ready" && pImg.complete && pImg.naturalWidth > 0) {
+              return { img: pImg, actualPos: prev, isExact: false };
+            }
+          }
+          const next = p + off;
+          if (next <= 360) {
+            const nImg = g.images[next];
+            if (nImg && g.states[next] === "ready" && nImg.complete && nImg.naturalWidth > 0) {
+              return { img: nImg, actualPos: next, isExact: false };
+            }
+          }
+        }
+        const poster = document.getElementById(`gallery-0${gNum}-poster`);
+        if (poster && poster.complete && poster.naturalWidth > 0) {
+          return { img: poster, actualPos: 1, isExact: p === 1 };
+        }
+        return null;
+      },
+
+      updateStatusUI(gNum) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        const pill = document.getElementById(`gallery-0${gNum}-loading-pill`);
+        const pillText = document.getElementById(`gallery-0${gNum}-loading-text`);
+        if (pill) {
+          if (g.states[1] === "ready" && g.lruOrder.length >= 4) {
+            pill.classList.add("is-hidden");
+          } else {
+            pill.classList.remove("is-hidden");
+            if (pillText) {
+              pillText.textContent = `Preloading Gallery 0${gNum} designs…`;
+            }
+          }
+        }
+        const errBanner = document.getElementById(`gallery-0${gNum}-error-banner`);
+        const errText = document.getElementById(`gallery-0${gNum}-error-text`);
+        if (errBanner) {
+          const curPos = this.clampPosition(g.currentPosFloat);
+          if (g.failedPositions.has(curPos) || g.failedPositions.size >= 3) {
+            errBanner.classList.remove("is-hidden");
+            if (errText) {
+              errText.textContent = `Design ${String(curPos).padStart(3, "0")} unavailable — showing nearest loaded saree.`;
+            }
+          } else {
+            errBanner.classList.add("is-hidden");
+          }
+        }
+      },
+
+      retryFailed(gNum) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        const failed = Array.from(g.failedPositions);
+        g.failedPositions.clear();
+        failed.forEach((pos) => {
+          g.states[pos] = "idle";
+          g.images[pos] = null;
+          this.enqueueLoad(gNum, pos, true);
+        });
+        this.updateStatusUI(gNum);
+        this.processQueue();
+      },
+
+      updateGalleryHUD(gNum, pos) {
+        const p = this.clampPosition(pos);
+        const pPad = String(p).padStart(3, "0");
+        const label = `Design ${pPad} / 360`;
+        const meta = this.getFallbackMeta(gNum, p);
+
+        const badge = document.getElementById(`gallery-0${gNum}-badge`);
+        if (badge) badge.textContent = label;
+
+        const counter = document.getElementById(`gallery-0${gNum}-counter`);
+        if (counter) counter.textContent = label;
+
+        const slider = document.getElementById(`gallery-0${gNum}-slider`);
+        if (slider && Number(slider.value) !== p) slider.value = String(p);
+
+        const titleEl = document.getElementById(`gallery-0${gNum}-design-title`);
+        if (titleEl) titleEl.textContent = meta.name;
+
+        const fileEl = document.getElementById(`gallery-0${gNum}-file-tag`);
+        if (fileEl) fileEl.textContent = meta.filename;
+
+        const colorEl = document.getElementById(`gallery-0${gNum}-color`);
+        if (colorEl) colorEl.textContent = meta.baseColor;
+
+        const fabricEl = document.getElementById(`gallery-0${gNum}-fabric`);
+        if (fabricEl) fabricEl.textContent = meta.fabric;
+
+        const borderEl = document.getElementById(`gallery-0${gNum}-border`);
+        if (borderEl) borderEl.textContent = meta.borderDesign;
+
+        const motifsEl = document.getElementById(`gallery-0${gNum}-motifs`);
+        if (motifsEl) motifsEl.textContent = meta.motifs;
+
+        const blouseEl = document.getElementById(`gallery-0${gNum}-blouse`);
+        if (blouseEl) blouseEl.textContent = meta.blouseDetails;
+      },
+
+      drawPosition(gNum, pos) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        const p = this.clampPosition(pos);
+        this.updateGalleryHUD(gNum, p);
+
+        const canvas = document.getElementById(`gallery-0${gNum}-canvas`);
+        if (!canvas) return;
+        const ctx = canvas.getContext("2d", { alpha: false });
+        if (!ctx) return;
+
+        const best = this.findBestReadyImage(gNum, p);
+        if (!best || !best.img) return;
+
+        if (g.displayedPos === best.actualPos && (best.isExact || !g.displayedExact)) {
+          if (best.isExact) g.displayedExact = true;
+          return;
+        }
+
+        const img = best.img;
+        if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
+          canvas.width = img.naturalWidth || 600;
+          canvas.height = img.naturalHeight || 800;
+        }
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        canvas.classList.add("is-ready");
+
+        g.displayedPos = best.actualPos;
+        g.displayedExact = best.isExact;
+      },
+
+      scheduleRender(gNum) {
+        const g = this.galleries[gNum];
+        if (!g || g.rafId !== null) return;
+        g.rafId = window.requestAnimationFrame((ts) => this.tickGalleryRender(gNum, ts));
+      },
+
+      tickGalleryRender(gNum, timestamp) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        g.rafId = null;
+
+        const dt = g.lastRafTs ? Math.min(0.05, Math.max(0.001, (timestamp - g.lastRafTs) / 1000)) : 1 / 60;
+        g.lastRafTs = timestamp;
+
+        const diff = g.targetPos - g.currentPosFloat;
+        if (Math.abs(diff) <= 0.08) {
+          g.currentPosFloat = g.targetPos;
+        } else {
+          const alpha = 1 - Math.exp(-dt * 34);
+          g.currentPosFloat += diff * alpha;
+        }
+
+        const posInt = this.clampPosition(g.currentPosFloat);
+        this.preloadWindow(gNum, posInt, g.direction);
+        this.drawPosition(gNum, posInt);
+
+        if (Math.abs(g.targetPos - g.currentPosFloat) > 0.08) {
+          this.scheduleRender(gNum);
+        }
+      },
+
+      setGalleryPosition(gNum, nextPos, immediate = false) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        const clamped = this.clampPosition(nextPos);
+        g.direction = clamped >= g.targetPos ? 1 : -1;
+        g.targetPos = clamped;
+        if (immediate) {
+          g.currentPosFloat = clamped;
+          this.preloadWindow(gNum, clamped, g.direction);
+          this.drawPosition(gNum, clamped);
+        } else {
+          this.scheduleRender(gNum);
+        }
+      },
+
+      stepGallery(gNum, delta) {
+        const g = this.galleries[gNum];
+        if (!g) return;
+        const next = this.clampPosition(Math.round(g.targetPos) + Number(delta || 0));
+        this.setGalleryPosition(gNum, next, true);
+      },
+
+      mount() {
+        this.unmount();
+        this.loadManifestOnce();
+
+        [1, 2, 3].forEach((gNum) => {
+          const g = this.galleries[gNum];
+          const cardEl = document.getElementById(`scroll-gallery-0${gNum}`);
+          const stageBox = document.getElementById(`gallery-0${gNum}-stage`);
+          const poster = document.getElementById(`gallery-0${gNum}-poster`);
+          if (!cardEl || !stageBox) return;
+
+          g.displayedPos = -1;
+          g.displayedExact = false;
+          g.lastRafTs = 0;
+
+          if (poster) {
+            poster.onload = () => {
+              if (g.displayedPos === -1) this.drawPosition(gNum, 1);
+            };
+          }
+
+          // Prime initial frames (1..8 and sparse anchors)
+          this.enqueueLoad(gNum, 1, true);
+          for (let p = 2; p <= 8; p++) this.enqueueLoad(gNum, p, true);
+          for (let p = 30; p <= 360; p += 30) this.enqueueLoad(gNum, p, false);
+          this.processQueue();
+          this.drawPosition(gNum, this.clampPosition(g.targetPos));
+          this.updateStatusUI(gNum);
+
+          // 1. Wheel scrubbing over the stage box (1 wheel notch = 1 saree position forward/backward)
+          const onWheel = (e) => {
+            if (Math.abs(e.deltaY) < 2) return;
+            const stepDelta = e.deltaY > 0 ? 1 : -1;
+            const cur = this.clampPosition(g.targetPos);
+            if ((stepDelta > 0 && cur < 360) || (stepDelta < 0 && cur > 1)) {
+              e.preventDefault();
+              this.setGalleryPosition(gNum, cur + stepDelta, false);
+            }
+          };
+          stageBox.addEventListener("wheel", onWheel, { passive: false });
+          this.cleanups.push(() => stageBox.removeEventListener("wheel", onWheel));
+
+          // 2. Pointer/touch drag scrubbing on the stage box
+          let dragging = false;
+          let startX = 0;
+          let startPos = 1;
+          const onPointerDown = (e) => {
+            dragging = true;
+            startX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+            startPos = this.clampPosition(g.targetPos);
+          };
+          const onPointerMove = (e) => {
+            if (!dragging) return;
+            const clientX = e.clientX || (e.touches && e.touches[0]?.clientX) || 0;
+            const dx = clientX - startX;
+            const posDelta = Math.round(dx / 2.2);
+            this.setGalleryPosition(gNum, startPos + posDelta, false);
+          };
+          const onPointerUp = () => {
+            dragging = false;
+          };
+          stageBox.addEventListener("mousedown", onPointerDown);
+          window.addEventListener("mousemove", onPointerMove);
+          window.addEventListener("mouseup", onPointerUp);
+          this.cleanups.push(() => {
+            stageBox.removeEventListener("mousedown", onPointerDown);
+            window.removeEventListener("mousemove", onPointerMove);
+            window.removeEventListener("mouseup", onPointerUp);
+          });
+
+          // 3. ScrollTrigger page-scroll binding so scrolling through each gallery card advances 001 -> 360
+          if (typeof ScrollTrigger !== "undefined") {
+            const st = ScrollTrigger.create({
+              trigger: cardEl,
+              start: "top 82%",
+              end: "bottom 18%",
+              scrub: true,
+              onUpdate: (self) => {
+                const p = 1 + Math.round((self.progress || 0) * 359);
+                this.setGalleryPosition(gNum, p, false);
+              }
+            });
+            this.scrollTriggers.push(st);
+          }
+        });
+      },
+
+      unmount() {
+        [1, 2, 3].forEach((gNum) => {
+          const g = this.galleries[gNum];
+          if (g && g.rafId !== null) {
+            window.cancelAnimationFrame(g.rafId);
+            g.rafId = null;
+          }
+        });
+        this.scrollTriggers.forEach((st) => st.kill());
+        this.scrollTriggers = [];
+        this.cleanups.forEach((fn) => fn());
+        this.cleanups = [];
+      }
+    };
+    window.ThreeGalleriesScrollEngine = ThreeGalleriesScrollEngine;
+
     const INITIAL_DEMO_ORDERS = [
       {
         orderId: "DEMO-JT-1041",
@@ -1749,6 +2494,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
           this.enqueueFrameLoad(deg, true);
         });
         this.updateLoadingAndErrorUI();
+        if (typeof ThreeGalleriesScrollEngine !== 'undefined') ThreeGalleriesScrollEngine.mount();
         this.processLoadQueue();
       },
 
@@ -2153,6 +2899,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       unmount() {
+        if (typeof ThreeGalleriesScrollEngine !== 'undefined') ThreeGalleriesScrollEngine.unmount();
         if (this.rafId !== null) {
           window.cancelAnimationFrame(this.rafId);
           this.rafId = null;
@@ -2789,6 +3536,189 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                   <span class="scroll-cue-label">Scroll</span>
                   <span class="scroll-cue-line"></span>
                 </div>
+              </div>
+            </section>
+
+            
+            <!-- 1B. THREE INDEPENDENT 360-STEP SAREE SCROLL GALLERIES (1,080 DISTINCT DESIGNS) -->
+            <section id="three-galleries-section" class="three-galleries-section" aria-label="Three 360-Step Saree Scroll Galleries">
+              <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+                <div>
+                  <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted">1,080 Distinct Studio Saree Designs • 3 × 360-Step Scroll Galleries</span>
+                  <h2 class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-1">Three 360-Step Saree Design Scroll Galleries</h2>
+                  <p class="text-xs sm:text-sm text-ink-muted mt-1">Each gallery features 360 ordered saree designs in 3:4 studio mannequin framing. Scroll the page, use your mouse wheel or drag on any mannequin stage, or use the 360-step scrubber and step buttons.</p>
+                </div>
+                <div class="flex flex-wrap items-center gap-2 shrink-0">
+                  <a href="#scroll-gallery-01" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 01 (001–360)</a>
+                  <a href="#scroll-gallery-02" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 02 (001–360)</a>
+                  <a href="#scroll-gallery-03" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 03 (001–360)</a>
+                </div>
+              </div>
+
+              <div class="three-galleries-stack">
+                ${[
+                  {
+                    num: 1,
+                    id: "gallery-01",
+                    title: "Gallery 01 — Royal Bridal Kanchipuram, Banarasi & Zardozi Collection",
+                    subtitle: "360 distinct bridal & festive silk saree designs on studio mannequin (gallery-01-design-001 to gallery-01-design-360)",
+                    initialName: "Swarna Sand Jacquard Silk-Blend Saree",
+                    initialColor: "Warm Sand & Muted Gold",
+                    initialFabric: "Silk-Blend Jacquard",
+                    initialBorder: "3.5-inch muted gold woven zari temple border with fine geometric edging",
+                    initialMotifs: "Evenly spaced woven muted gold floral butti motifs",
+                    initialBlouse: "Coordinated warm sand and espresso-brown jacquard blouse with 3.5-inch woven gold temple sleeve border"
+                  },
+                  {
+                    num: 2,
+                    id: "gallery-02",
+                    title: "Gallery 02 — Heirloom Paithani, Patola Ikat, Gadwal & Temple Border Collection",
+                    subtitle: "360 distinct heritage weave, korvai temple border & peacock motif saree designs (gallery-02-design-001 to gallery-02-design-360)",
+                    initialName: "Ruby Sindoor Kanchipuram Korvai Silk Saree — Edition 001",
+                    initialColor: "Ruby Sindoor Red & Antique Gold",
+                    initialFabric: "Pure Kanchipuram Silk",
+                    initialBorder: "4.5-inch traditional korvai temple spire (karvat) and floral vine border",
+                    initialMotifs: "Majestic twin peacocks and chakra medallions across body and pallu",
+                    initialBlouse: "Fitted ruby red silk blouse with antique gold zari armband border and curved neckline"
+                  },
+                  {
+                    num: 3,
+                    id: "gallery-03",
+                    title: "Gallery 03 — Artisanal Organza Tissue, Chanderi, Mysore Crepe & Couture Drape Collection",
+                    subtitle: "360 distinct pastel organza, crushed metallic tissue & couture drape saree designs (gallery-03-design-001 to gallery-03-design-360)",
+                    initialName: "Royal Berry Wine Banarasi Georgette Saree — Edition 001",
+                    initialColor: "Royal Berry Wine & Rose Gold",
+                    initialFabric: "Banarasi Satin Georgette",
+                    initialBorder: "Scalloped cutwork border with rose-gold floral lattice",
+                    initialMotifs: "All-over diagonal rose-gold floral jaal and rich pallu",
+                    initialBlouse: "Fitted berry wine georgette-lined blouse with rose-gold brocade sleeves"
+                  }
+                ].map((g) => `
+                  <article id="scroll-gallery-0${g.num}" class="saree-scroll-gallery-card" data-gallery-num="${g.num}">
+                    <div class="saree-scroll-gallery-grid">
+                      <!-- Left: 3:4 Portrait Mannequin Stage with Immediate Poster Fallback + High-Refresh Canvas -->
+                      <div id="gallery-0${g.num}-stage" class="gallery-360-stage-box" aria-label="${g.title} interactive 360-design viewer">
+                        <div id="gallery-0${g.num}-loading-pill" class="gallery-360-loading-pill" role="status" aria-live="polite">
+                          <span class="saree-360-loading-dot" aria-hidden="true"></span>
+                          <span id="gallery-0${g.num}-loading-text">Preloading Gallery 0${g.num} designs…</span>
+                        </div>
+                        <div id="gallery-0${g.num}-error-banner" class="gallery-360-error-banner is-hidden" role="alert">
+                          <span id="gallery-0${g.num}-error-text">Some designs could not be loaded.</span>
+                          <button type="button" class="saree-360-retry-btn" onclick="ThreeGalleriesScrollEngine.retryFailed(${g.num})">Retry</button>
+                        </div>
+                        <span id="gallery-0${g.num}-badge" class="gallery-360-pos-badge">Design 001 / 360</span>
+                        <img
+                          id="gallery-0${g.num}-poster"
+                          src="${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/generated/gallery-0${g.num}-design-001.jpg"
+                          alt="${g.initialName}"
+                          width="600"
+                          height="800"
+                          loading="${g.num === 1 ? "eager" : "lazy"}"
+                          ${g.num === 1 ? 'fetchpriority="high"' : ""}
+                          decoding="async"
+                          class="gallery-360-poster"
+                        />
+                        <canvas
+                          id="gallery-0${g.num}-canvas"
+                          class="gallery-360-canvas"
+                          width="600"
+                          height="800"
+                          aria-label="${g.title} canvas"
+                        ></canvas>
+                      </div>
+
+                      <!-- Right: Live Position Controls, Scrubber & Design Manifest Metadata -->
+                      <div class="space-y-4 min-w-0">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/30 pb-3">
+                          <div>
+                            <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C6D32]">Gallery 0${g.num} • 360 Distinct Saree Designs</span>
+                            <h3 class="font-serif text-xl sm:text-2xl font-semibold text-ink mt-0.5">${g.title}</h3>
+                          </div>
+                          <span id="gallery-0${g.num}-counter" class="px-3.5 py-1.5 rounded-full bg-[#2A1E17] text-[#FAF6EE] font-mono text-xs sm:text-sm font-bold tracking-wider">
+                            Design 001 / 360
+                          </span>
+                        </div>
+
+                        <p class="text-xs text-ink-muted">${g.subtitle}</p>
+
+                        <!-- Interactive 360-Position Scrubber + Step Forward/Backward Controls -->
+                        <div class="bg-[#F5EFE4] rounded-xl p-3.5 border border-gold/40 space-y-3">
+                          <div class="flex items-center justify-between gap-2">
+                            <button
+                              type="button"
+                              onclick="ThreeGalleriesScrollEngine.stepGallery(${g.num}, -1)"
+                              class="px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink hover:bg-gold/20 transition-colors"
+                              aria-label="Previous saree design in Gallery 0${g.num}"
+                            >
+                              ← Prev Design (-1)
+                            </button>
+                            <span id="gallery-0${g.num}-file-tag" class="font-mono text-xs font-semibold text-ink-muted">
+                              gallery-0${g.num}-design-001.jpg
+                            </span>
+                            <button
+                              type="button"
+                              onclick="ThreeGalleriesScrollEngine.stepGallery(${g.num}, 1)"
+                              class="px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink hover:bg-gold/20 transition-colors"
+                              aria-label="Next saree design in Gallery 0${g.num}"
+                            >
+                              Next Design (+1) →
+                            </button>
+                          </div>
+
+                          <div>
+                            <label for="gallery-0${g.num}-slider" class="sr-only">Scrub Gallery 0${g.num} Designs 1 to 360</label>
+                            <input
+                              id="gallery-0${g.num}-slider"
+                              type="range"
+                              min="1"
+                              max="360"
+                              step="1"
+                              value="1"
+                              oninput="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, Number(this.value), true)"
+                              class="w-full accent-[#C4A15A] cursor-pointer"
+                            />
+                            <div class="flex justify-between text-[11px] font-semibold text-ink-muted mt-1">
+                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 1, true)" class="hover:text-ink underline">Design 001</button>
+                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 90, true)" class="hover:text-ink underline">Design 090</button>
+                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 180, true)" class="hover:text-ink underline">Design 180</button>
+                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 270, true)" class="hover:text-ink underline">Design 270</button>
+                              <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 360, true)" class="hover:text-ink underline">Design 360</button>
+                            </div>
+                          </div>
+                        </div>
+
+                        <!-- Live Saree Design Details Card -->
+                        <div class="bg-[#FAF8F5] rounded-xl p-4 border border-gold/35 space-y-2.5">
+                          <h4 id="gallery-0${g.num}-design-title" class="font-serif text-lg font-semibold text-ink">
+                            ${g.initialName}
+                          </h4>
+                          <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70">
+                              <span class="font-semibold text-ink-muted block">Base Colour & Palette:</span>
+                              <span id="gallery-0${g.num}-color" class="font-semibold text-ink">${g.initialColor}</span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70">
+                              <span class="font-semibold text-ink-muted block">Silk / Weave Fabric:</span>
+                              <span id="gallery-0${g.num}-fabric" class="font-semibold text-ink">${g.initialFabric}</span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
+                              <span class="font-semibold text-ink-muted block">Border & Zari Work:</span>
+                              <span id="gallery-0${g.num}-border" class="text-ink">${g.initialBorder}</span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
+                              <span class="font-semibold text-ink-muted block">Motifs & Pallu Design:</span>
+                              <span id="gallery-0${g.num}-motifs" class="text-ink">${g.initialMotifs}</span>
+                            </div>
+                            <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
+                              <span class="font-semibold text-ink-muted block">Coordinated Blouse Piece:</span>
+                              <span id="gallery-0${g.num}-blouse" class="text-ink">${g.initialBlouse}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </article>
+                `).join("")}
               </div>
             </section>
 

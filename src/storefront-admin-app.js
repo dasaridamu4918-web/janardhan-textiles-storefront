@@ -2945,6 +2945,189 @@
           </div>
         </section>
 
+        <!-- 2. THREE INDEPENDENT 360-STEP SAREE SCROLL GALLERIES (1,080 DISTINCT DESIGNS) -->
+        <section id="three-galleries-section" class="three-galleries-section" aria-label="Three 360-Step Saree Scroll Galleries">
+          <div class="mb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div>
+              <span class="text-xs font-semibold uppercase tracking-widest text-ink-muted">1,080 Distinct Studio Saree Designs • 3 × 360-Step Scroll Galleries</span>
+              <h2 class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-1">Three 360-Step Saree Design Scroll Galleries</h2>
+              <p class="text-xs sm:text-sm text-ink-muted mt-1">Each gallery features 360 ordered saree designs in 3:4 studio mannequin framing. Scroll the page, use your mouse wheel or drag on any mannequin stage, or use the 360-step scrubber and step buttons.</p>
+            </div>
+            <div class="flex flex-wrap items-center gap-2 shrink-0">
+              <a href="#scroll-gallery-01" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 01 (001–360)</a>
+              <a href="#scroll-gallery-02" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 02 (001–360)</a>
+              <a href="#scroll-gallery-03" class="px-3 py-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20">Gallery 03 (001–360)</a>
+            </div>
+          </div>
+
+          <div class="three-galleries-stack">
+            ${[
+              {
+                num: 1,
+                id: "gallery-01",
+                title: "Gallery 01 — Royal Bridal Kanchipuram, Banarasi & Zardozi Collection",
+                subtitle: "360 distinct bridal & festive silk saree designs on studio mannequin (gallery-01-design-001 to gallery-01-design-360)",
+                initialName: "Swarna Sand Jacquard Silk-Blend Saree",
+                initialColor: "Warm Sand & Muted Gold",
+                initialFabric: "Silk-Blend Jacquard",
+                initialBorder: "3.5-inch muted gold woven zari temple border with fine geometric edging",
+                initialMotifs: "Evenly spaced woven muted gold floral butti motifs",
+                initialBlouse: "Coordinated warm sand and espresso-brown jacquard blouse with 3.5-inch woven gold temple sleeve border"
+              },
+              {
+                num: 2,
+                id: "gallery-02",
+                title: "Gallery 02 — Heirloom Paithani, Patola Ikat, Gadwal & Temple Border Collection",
+                subtitle: "360 distinct heritage weave, korvai temple border & peacock motif saree designs (gallery-02-design-001 to gallery-02-design-360)",
+                initialName: "Ruby Sindoor Kanchipuram Korvai Silk Saree — Edition 001",
+                initialColor: "Ruby Sindoor Red & Antique Gold",
+                initialFabric: "Pure Kanchipuram Silk",
+                initialBorder: "4.5-inch traditional korvai temple spire (karvat) and floral vine border",
+                initialMotifs: "Majestic twin peacocks and chakra medallions across body and pallu",
+                initialBlouse: "Fitted ruby red silk blouse with antique gold zari armband border and curved neckline"
+              },
+              {
+                num: 3,
+                id: "gallery-03",
+                title: "Gallery 03 — Artisanal Organza Tissue, Chanderi, Mysore Crepe & Couture Drape Collection",
+                subtitle: "360 distinct pastel organza, crushed metallic tissue & couture drape saree designs (gallery-03-design-001 to gallery-03-design-360)",
+                initialName: "Royal Berry Wine Banarasi Georgette Saree — Edition 001",
+                initialColor: "Royal Berry Wine & Rose Gold",
+                initialFabric: "Banarasi Satin Georgette",
+                initialBorder: "Scalloped cutwork border with rose-gold floral lattice",
+                initialMotifs: "All-over diagonal rose-gold floral jaal and rich pallu",
+                initialBlouse: "Fitted berry wine georgette-lined blouse with rose-gold brocade sleeves"
+              }
+            ].map((g) => `
+              <article id="scroll-gallery-0${g.num}" class="saree-scroll-gallery-card" data-gallery-num="${g.num}">
+                <div class="saree-scroll-gallery-grid">
+                  <!-- Left: 3:4 Portrait Mannequin Stage with Immediate Poster Fallback + High-Refresh Canvas -->
+                  <div id="gallery-0${g.num}-stage" class="gallery-360-stage-box" aria-label="${g.title} interactive 360-design viewer">
+                    <div id="gallery-0${g.num}-loading-pill" class="gallery-360-loading-pill" role="status" aria-live="polite">
+                      <span class="saree-360-loading-dot" aria-hidden="true"></span>
+                      <span id="gallery-0${g.num}-loading-text">Preloading Gallery 0${g.num} designs…</span>
+                    </div>
+                    <div id="gallery-0${g.num}-error-banner" class="gallery-360-error-banner is-hidden" role="alert">
+                      <span id="gallery-0${g.num}-error-text">Some designs could not be loaded.</span>
+                      <button type="button" class="saree-360-retry-btn" onclick="ThreeGalleriesScrollEngine.retryFailed(${g.num})">Retry</button>
+                    </div>
+                    <span id="gallery-0${g.num}-badge" class="gallery-360-pos-badge">Design 001 / 360</span>
+                    <img
+                      id="gallery-0${g.num}-poster"
+                      src="${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/generated/gallery-0${g.num}-design-001.jpg"
+                      alt="${g.initialName}"
+                      width="600"
+                      height="800"
+                      loading="${g.num === 1 ? "eager" : "lazy"}"
+                      ${g.num === 1 ? 'fetchpriority="high"' : ""}
+                      decoding="async"
+                      class="gallery-360-poster"
+                    />
+                    <canvas
+                      id="gallery-0${g.num}-canvas"
+                      id-num="${g.num}"
+                      class="gallery-360-canvas"
+                      width="600"
+                      height="800"
+                      aria-label="${g.title} canvas"
+                    ></canvas>
+                  </div>
+
+                  <!-- Right: Live Position Controls, Scrubber & Design Manifest Metadata -->
+                  <div class="space-y-4 min-w-0">
+                    <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/30 pb-3">
+                      <div>
+                        <span class="text-[11px] font-bold uppercase tracking-widest text-[#8C6D32]">Gallery 0${g.num} • 360 Distinct Saree Designs</span>
+                        <h3 class="font-serif text-xl sm:text-2xl font-semibold text-ink mt-0.5">${g.title}</h3>
+                      </div>
+                      <span id="gallery-0${g.num}-counter" class="px-3.5 py-1.5 rounded-full bg-[#2A1E17] text-[#FAF6EE] font-mono text-xs sm:text-sm font-bold tracking-wider">
+                        Design 001 / 360
+                      </span>
+                    </div>
+
+                    <p class="text-xs text-ink-muted">${g.subtitle}</p>
+
+                    <!-- Interactive 360-Position Scrubber + Step Forward/Backward Controls -->
+                    <div class="bg-[#F5EFE4] rounded-xl p-3.5 border border-gold/40 space-y-3">
+                      <div class="flex items-center justify-between gap-2">
+                        <button
+                          type="button"
+                          onclick="ThreeGalleriesScrollEngine.stepGallery(${g.num}, -1)"
+                          class="px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink hover:bg-gold/20 transition-colors"
+                          aria-label="Previous saree design in Gallery 0${g.num}"
+                        >
+                          ← Prev Design (-1)
+                        </button>
+                        <span id="gallery-0${g.num}-file-tag" class="font-mono text-xs font-semibold text-ink-muted">
+                          gallery-0${g.num}-design-001.jpg
+                        </span>
+                        <button
+                          type="button"
+                          onclick="ThreeGalleriesScrollEngine.stepGallery(${g.num}, 1)"
+                          class="px-3 py-1.5 rounded-lg bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink hover:bg-gold/20 transition-colors"
+                          aria-label="Next saree design in Gallery 0${g.num}"
+                        >
+                          Next Design (+1) →
+                        </button>
+                      </div>
+
+                      <div>
+                        <label for="gallery-0${g.num}-slider" class="sr-only">Scrub Gallery 0${g.num} Designs 1 to 360</label>
+                        <input
+                          id="gallery-0${g.num}-slider"
+                          type="range"
+                          min="1"
+                          max="360"
+                          step="1"
+                          value="1"
+                          oninput="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, Number(this.value), true)"
+                          class="w-full accent-[#C4A15A] cursor-pointer"
+                        />
+                        <div class="flex justify-between text-[11px] font-semibold text-ink-muted mt-1">
+                          <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 1, true)" class="hover:text-ink underline">Design 001</button>
+                          <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 90, true)" class="hover:text-ink underline">Design 090</button>
+                          <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 180, true)" class="hover:text-ink underline">Design 180</button>
+                          <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 270, true)" class="hover:text-ink underline">Design 270</button>
+                          <button type="button" onclick="ThreeGalleriesScrollEngine.setGalleryPosition(${g.num}, 360, true)" class="hover:text-ink underline">Design 360</button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- Live Saree Design Details Card -->
+                    <div class="bg-[#FAF8F5] rounded-xl p-4 border border-gold/35 space-y-2.5">
+                      <h4 id="gallery-0${g.num}-design-title" class="font-serif text-lg font-semibold text-ink">
+                        ${g.initialName}
+                      </h4>
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+                        <div class="p-2 rounded-lg bg-[#F5EFE4]/70">
+                          <span class="font-semibold text-ink-muted block">Base Colour & Palette:</span>
+                          <span id="gallery-0${g.num}-color" class="font-semibold text-ink">${g.initialColor}</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-[#F5EFE4]/70">
+                          <span class="font-semibold text-ink-muted block">Silk / Weave Fabric:</span>
+                          <span id="gallery-0${g.num}-fabric" class="font-semibold text-ink">${g.initialFabric}</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
+                          <span class="font-semibold text-ink-muted block">Border & Zari Work:</span>
+                          <span id="gallery-0${g.num}-border" class="text-ink">${g.initialBorder}</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
+                          <span class="font-semibold text-ink-muted block">Motifs & Pallu Design:</span>
+                          <span id="gallery-0${g.num}-motifs" class="text-ink">${g.initialMotifs}</span>
+                        </div>
+                        <div class="p-2 rounded-lg bg-[#F5EFE4]/70 sm:col-span-2">
+                          <span class="font-semibold text-ink-muted block">Coordinated Blouse Piece:</span>
+                          <span id="gallery-0${g.num}-blouse" class="text-ink">${g.initialBlouse}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </article>
+            `).join("")}
+          </div>
+        </section>
+
         <!-- 3. HOME COLLECTIONS, FEATURED, NEW ARRIVALS, BESTSELLERS & TRUST STRIP -->
         <div id="home-api-collections-container">
           ${this.renderHomeCollectionsAndSections()}
