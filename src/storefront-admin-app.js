@@ -2482,30 +2482,6 @@
               .join("")}
           </div>
         </div>
-
-        <!-- Generate Saree from Selected Categories (Sidebar / Mobile Sheet Quick Trigger) -->
-        <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/50 space-y-2.5">
-          <div class="flex items-center justify-between">
-            <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Custom Saree Studio</span>
-            <span class="px-2 py-0.5 rounded-full bg-gold/25 text-ink text-[10px] font-bold">5-View Gallery</span>
-          </div>
-          <p class="text-[11px] text-ink-muted leading-snug">
-            Create 1 new saree from your checked <strong>Colour</strong>, <strong>Fabric</strong> &amp; <strong>Occasion</strong> (unselected categories are auto-chosen).
-          </p>
-          <button
-            type="button"
-            data-generate-saree-btn="sidebar-${prefix}"
-            onclick="app.generateSareeDesign('filter-${prefix}')"
-            ${this.state.sareeGenerator?.generating ? "disabled" : ""}
-            class="w-full py-2.5 px-3 rounded-full text-xs font-bold flex items-center justify-center gap-1.5 transition-all ${
-              this.state.sareeGenerator?.generating
-                ? "bg-sand-deep text-ink-muted cursor-not-allowed opacity-75"
-                : "bg-teal text-ivory hover:bg-teal-light shadow-sm"
-            }"
-          >
-            <span>${this.state.sareeGenerator?.generating ? "Generating Saree..." : "✦ Generate Saree"}</span>
-          </button>
-        </div>
       </div>
     `;
   };
@@ -2637,6 +2613,7 @@
   };
 
   app.renderSareeGeneratorStudio = function () {
+    return "";
     const sg = this.state.sareeGenerator || {};
     const fm = this.state.filtersMeta || {};
     const rawColors = fm.colors && fm.colors.length ? fm.colors : [...new Set((this.state.products || []).map((p) => p.color).filter(Boolean))];
@@ -2969,11 +2946,6 @@
           </div>
         </section>
 
-        <!-- 2. FEATURED SAREE EDITORIAL DETAILS -->
-        <section id="featured-product-details-container" aria-labelledby="featured-saree-heading">
-          ${this.renderFeaturedSareeEditorialDetails()}
-        </section>
-
         <!-- 3. HOME COLLECTIONS, FEATURED, NEW ARRIVALS, BESTSELLERS & TRUST STRIP -->
         <div id="home-api-collections-container">
           ${this.renderHomeCollectionsAndSections()}
@@ -3012,11 +2984,6 @@
                 </select>
               </div>
             </div>
-          </div>
-
-          <!-- Generate Saree Studio Bar (Colour, Fabric, Occasion -> 1 New Product Card & 5-View Gallery) -->
-          <div id="saree-generator-studio-container">
-            ${this.renderSareeGeneratorStudio()}
           </div>
 
           <!-- Active Filter Chips -->
@@ -4550,15 +4517,14 @@
       `;
     }
 
-    const tab = this.state.adminState.tab || "dashboard";
+    const tab = this.state.adminState.tab === "ai_studio" ? "dashboard" : (this.state.adminState.tab || "dashboard");
     const tabs = [
       { id: "dashboard", label: "1. Dashboard" },
       { id: "products", label: "2. Products" },
       { id: "product_form", label: "3. Add / Edit Product" },
       { id: "bulk_import", label: "4. Bulk Import (CSV)" },
       { id: "orders", label: "5. Orders" },
-      { id: "customers", label: "6. Customers" },
-      { id: "ai_studio", label: "7. AI 5-View Studio ✨" }
+      { id: "customers", label: "6. Customers" }
     ];
 
     return `
@@ -4610,7 +4576,6 @@
           ${tab === "bulk_import" ? this.renderAdminBulkImportTab() : ""}
           ${tab === "orders" ? this.renderAdminOrdersTab() : ""}
           ${tab === "customers" ? this.renderAdminCustomersTab() : ""}
-          ${tab === "ai_studio" ? this.renderAdminAIStudioTab(this.state.products.find((p) => p.id === this.state.aiStudioProductId) || this.state.products[0]) : ""}
         </div>
       </div>
     `;

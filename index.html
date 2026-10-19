@@ -2467,146 +2467,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
       },
 
       renderFeaturedSareeEditorialDetails() {
-        const saree = this.state.products.find((p) => p.id === "jt-saree-09") || this.state.products[0];
-        const pricing = this.getPricing(saree);
-        const outOfStock = this.isProductOutOfStock(saree);
-
-        return `
-          <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-16">
-            <div class="rounded-3xl bg-[#FAF8F5]/95 border border-gold/40 shadow-xl p-4 sm:p-10 lg:p-12">
-              <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-12 items-start">
-                <!-- Left: Editorial Product Copy & Verified Specifications -->
-                <div class="lg:col-span-7 space-y-5 min-w-0">
-                  <div class="flex flex-wrap items-center gap-2">
-                    <span class="px-3 py-1 rounded-full bg-[#F5EFE4] border border-gold/40 text-ink font-medium text-xs tracking-wider uppercase">
-                      Featured Showcase Drape
-                    </span>
-                    <span class="px-3 py-1 rounded-full bg-gold/20 border border-gold/40 text-ink font-semibold text-xs">
-                      5 Scroll-Controlled Views Above
-                    </span>
-                  </div>
-
-                  <div class="space-y-3">
-                    <h1 id="featured-saree-heading" class="font-serif text-2xl sm:text-4xl lg:text-[2.6rem] font-semibold text-ink leading-[1.18] break-words">
-                      ${saree.name}
-                    </h1>
-                    <p id="featured-saree-copy" class="text-sm sm:text-lg text-[#3d3327] leading-relaxed">
-                      ${saree.description}
-                    </p>
-                  </div>
-
-                  <!-- Pricing & Availability Bar -->
-                  <div class="flex flex-wrap items-center gap-2.5 sm:gap-3 pt-2 border-t border-gold/25">
-                    <span class="font-serif text-2xl sm:text-4xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
-                    ${pricing.isSamplePrice ? `
-                      <span class="sample-price-badge px-2.5 py-0.5 rounded-full bg-gold/20 text-ink font-semibold text-xs border border-gold/50">
-                        Mill Price
-                      </span>
-                    ` : ""}
-                    ${saree.stockStatus ? `
-                      <span class="sm:ml-auto px-3 py-1 rounded-full bg-[#F5EFE4] border border-gold/40 text-xs font-medium text-ink">
-                        ${saree.stockStatus}
-                      </span>
-                    ` : ""}
-                  </div>
-
-                  <!-- Verified Product Facts (Strictly supported by product data & images) -->
-                  <dl class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm pt-1">
-                    <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/30">
-                      <dt class="text-[11px] text-ink-muted uppercase tracking-wider font-medium">Drape &amp; Fabric</dt>
-                      <dd class="font-semibold text-ink mt-0.5">${saree.fabric} — Luminous champagne-gold tissue drape</dd>
-                    </div>
-                    <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/30">
-                      <dt class="text-[11px] text-ink-muted uppercase tracking-wider font-medium">Colour Palette</dt>
-                      <dd class="font-semibold text-ink mt-0.5 flex items-center gap-2">
-                        <span class="w-3.5 h-3.5 rounded-full border border-ink/25 inline-block shrink-0" style="background:#CBBCA5"></span>
-                        <span>${saree.color} with restrained floral &amp; peacock accents</span>
-                      </dd>
-                    </div>
-                    <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/30">
-                      <dt class="text-[11px] text-ink-muted uppercase tracking-wider font-medium">Border &amp; Motifs</dt>
-                      <dd class="font-semibold text-ink mt-0.5">${saree.borderAndZari}</dd>
-                    </div>
-                    <div class="p-3.5 rounded-2xl bg-[#F5EFE4] border border-gold/30">
-                      <dt class="text-[11px] text-ink-muted uppercase tracking-wider font-medium">Pallu &amp; Blouse Details</dt>
-                      <dd class="font-semibold text-ink mt-0.5">${saree.blousePiece}</dd>
-                    </div>
-                  </dl>
-
-                  <!-- Actions -->
-                  <div class="flex flex-col sm:flex-row flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3 pt-2">
-                    <button
-                      type="button"
-                      ${outOfStock ? "disabled" : ""}
-                      onclick="app.addToCart('${saree.id}', 1)"
-                      class="w-full sm:w-auto justify-center px-5 py-3.5 rounded-full bg-teal text-ivory font-semibold text-sm shadow-md hover:bg-teal-light active:scale-95 transition-all flex items-center gap-2"
-                    >
-                      <svg class="w-4 h-4 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-                      <span>${outOfStock ? "Out of Stock" : "Add Saree to Cart"}</span>
-                    </button>
-                    <button
-                      type="button"
-                      onclick="app.openProductDetail('${saree.id}')"
-                      class="w-full sm:w-auto justify-center text-center px-4 sm:px-5 py-3.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/50 font-semibold text-sm hover:bg-gold/20 transition-colors"
-                    >
-                      Inspect Full-Screen 5-View Gallery
-                    </button>
-                    <button
-                      type="button"
-                      onclick="app.navigate('shop')"
-                      class="w-full sm:w-auto justify-center text-center px-4 sm:px-5 py-3.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/50 font-semibold text-sm hover:bg-gold/20 transition-colors"
-                    >
-                      Browse Saree Catalogue ↓
-                    </button>
-                    <a
-                      href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
-                      class="w-full sm:w-auto justify-center text-center px-4 sm:px-5 py-3.5 rounded-full bg-ivory text-ink border border-gold/60 font-semibold text-sm hover:bg-gold hover:border-gold transition-colors inline-flex items-center gap-2"
-                    >
-                      <svg class="w-4 h-4 text-[#1E3F35] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                        <path d="M12.031 2c-5.516 0-9.999 4.486-10 10.003-.001 1.766.46 3.489 1.337 5.008L2 22l5.122-1.343a9.958 9.958 0 0 0 4.904 1.298h.004c5.515 0 9.998-4.486 10-10.002A9.963 9.963 0 0 0 19.104 4.93 9.937 9.937 0 0 0 12.031 2zm0 18.299h-.004a8.29 8.29 0 0 1-4.231-1.158l-.303-.18-3.039.797.811-2.963-.197-.314a8.293 8.293 0 0 1-1.275-4.426c.002-4.581 3.73-8.309 8.313-8.309 2.22 0 4.306.865 5.875 2.435a8.257 8.257 0 0 1 2.432 5.879c-.002 4.581-3.73 8.309-8.382 8.239zm4.56-6.219c-.25-.125-1.478-.729-1.707-.813-.229-.083-.396-.125-.562.125-.167.25-.646.813-.792.979-.146.167-.292.188-.542.063-.25-.125-1.055-.389-2.01-1.24-.743-.662-1.244-1.481-1.39-1.731-.146-.25-.015-.385.11-.51.112-.112.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.021-.438-.062-.125-.562-1.355-.771-1.855-.203-.486-.409-.42-.562-.428l-.479-.008c-.167 0-.438.063-.667.313-.229.25-.875.855-.875 2.084s.896 2.418 1.021 2.584c.125.167 1.763 2.692 4.271 3.775.597.258 1.063.412 1.426.527.599.19 1.144.163 1.575.099.48-.072 1.478-.604 1.687-1.188.208-.583.208-1.084.146-1.188-.063-.104-.229-.167-.479-.292z"/>
-                      </svg>
-                      <span>WhatsApp Enquiry</span>
-                    </a>
-                  </div>
-                </div>
-
-                <!-- Right: 5-View Thumbnail Strip Preview for Champagne Tissue Saree -->
-                <div class="lg:col-span-5 space-y-3 min-w-0">
-                  <div class="flex flex-wrap items-center justify-between gap-1 text-xs text-ink-muted">
-                    <span class="font-semibold uppercase tracking-wider text-ink">Five Showcase Views (01 / 05 — 05 / 05)</span>
-                    <span>Tap any view to zoom</span>
-                  </div>
-                  <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
-                    ${ShowcaseScrollEngine.framesConfig.map((frame, idx) => `
-                      <button
-                        type="button"
-                        onclick="app.state.selectedProductId='${saree.id}'; app.state.selectedGalleryIndex=${idx}; app.openLightbox();"
-                        class="group text-left rounded-2xl overflow-hidden bg-[#F5EFE4] border border-gold/35 hover:border-gold transition-all shadow-sm hover:shadow-md min-w-0"
-                      >
-                        <div class="aspect-[3/4] overflow-hidden bg-[#EFE6D5] relative flex items-center justify-center">
-                          <img
-                            src="${frame.jpg}"
-                            alt="${frame.alt}"
-                            class="w-full h-full object-contain group-hover:scale-105 transition-transform duration-300"
-                          />
-                          <span class="absolute top-1.5 left-1.5 px-1.5 py-0.5 rounded bg-ivory/90 text-ink font-mono text-[10px] font-medium border border-gold/30">
-                            0${frame.index}
-                          </span>
-                        </div>
-                        <div class="p-2 bg-ivory">
-                          <p class="font-serif text-xs font-medium text-ink truncate">${frame.caption}</p>
-                        </div>
-                      </button>
-                    `).join("")}
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        `;
+        return "";
       },
 
       renderShowcaseAndShopPage() {
@@ -2620,7 +2481,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
 
         return `
           <div class="page-transition">
-            <!-- 1. SCROLL-DRIVEN 5-IMAGE SAREE SHOWCASE -->
+            <!-- 1. SCROLL-DRIVEN SAREE SHOWCASE -->
             <section id="showcase-section" class="showcase-section" aria-label="Saree visual showcase">
               <div id="showcase-stage" class="showcase-stage">
                 <div class="stage-ambient" aria-hidden="true"></div>
@@ -2699,12 +2560,7 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
               </div>
             </section>
 
-            <!-- 2. PRODUCT DETAILS SECTION: Champagne Tissue Saree with Floral and Peacock Embroidery -->
-            <section id="featured-product-details-container" aria-labelledby="featured-saree-heading">
-              ${this.renderFeaturedSareeEditorialDetails()}
-            </section>
-
-            <!-- 3. SHOP CATALOGUE SECTION -->
+            <!-- 2. SHOP CATALOGUE SECTION -->
             <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12" aria-label="Saree Catalogue">
               <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div class="min-w-0">
@@ -2713,11 +2569,8 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
                   <p class="text-xs sm:text-sm text-ink-muted mt-1">Select any saree card to inspect all 5 ordered catalogue views, border details, and coordinated blouse piece.</p>
                 </div>
                 <div class="flex flex-wrap items-center gap-2 shrink-0">
-                  <button type="button" onclick="app.scrollToFeaturedSaree()" class="px-3.5 py-2 rounded-full bg-[#FAF8F5] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20 transition-colors">
-                    ↑ Featured Saree Details
-                  </button>
                   <button type="button" onclick="app.navigate('home')" class="px-3.5 py-2 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20 transition-colors">
-                    ↑ 5-View Showcase
+                    ↑ 360° Showcase
                   </button>
                 </div>
               </div>
@@ -4247,11 +4100,10 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
             <div class="flex flex-wrap gap-2 border-b border-gold/30 pb-3">
               ${[
                 { id: "products", label: `1. Edit Products & 5 Views (${this.state.products.length})` },
-                { id: "ai_studio", label: "2. AI 5-Image Photorealistic Studio ✨" },
-                { id: "orders", label: `3. Demo Orders (${this.state.orders.length})` },
-                { id: "wholesale", label: `4. Wholesale Enquiries (${this.state.wholesaleEnquiries.length})` },
-                { id: "messages", label: `5. Customer Messages (${this.state.contactMessages.length})` },
-                { id: "settings", label: "6. Contacts & Policies" }
+                { id: "orders", label: `2. Demo Orders (${this.state.orders.length})` },
+                { id: "wholesale", label: `3. Wholesale Enquiries (${this.state.wholesaleEnquiries.length})` },
+                { id: "messages", label: `4. Customer Messages (${this.state.contactMessages.length})` },
+                { id: "settings", label: "5. Contacts & Policies" }
               ].map((t) => `
                 <button
                   onclick="app.state.activeAdminTab='${t.id}'; app.renderCurrentPage();"
@@ -4456,9 +4308,6 @@ Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinate
               </div>
             ` : ""}
 
-            <!-- TAB 2: AI 5-IMAGE PHOTOREALISTIC CATALOGUE STUDIO -->
-            ${tab === "ai_studio" ? this.renderAdminAIStudioTab(studioProduct) : ""}
-
             <!-- TAB 3: DEMO ORDERS MANAGEMENT -->
             ${tab === "orders" ? `
               <div class="bg-white rounded-2xl border border-gold/40 p-6 space-y-4">
@@ -4635,93 +4484,8 @@ Image 4 (4-macro.jpg): Macro close-up of the fabric weave, border and motif deta
 Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinated blouse, neckline, sleeve border and saree drape across the shoulder.`;
       },
 
-      renderAdminAIStudioTab(saree) {
-        const masterPrompt = this.buildFiveImageCataloguePrompt(saree);
-        const viewPrompts = [
-          "Image 1 (1-front.jpg): Full-length three-quarter front view on the mannequin, pleats and pallu drape clearly visible.",
-          "Image 2 (2-back-pallu.jpg): Full-length back view on the mannequin showing the blouse back and the full length of the pallu.",
-          "Image 3 (3-pallu-detail.jpg): Mid-body close view of the pallu and border draped over the mannequin, sharp embroidery/weave detail.",
-          "Image 4 (4-macro.jpg): Macro close-up of the fabric weave, border and motif detail, shallow depth of field.",
-          "Image 5 (5-blouse.jpg): Close crop of the mannequin torso showing the coordinated blouse, neckline, sleeve border and saree drape across the shoulder."
-        ];
-
-        return `
-          <div class="bg-white rounded-2xl border border-gold/40 p-6 space-y-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-gold/20 pb-4">
-              <div>
-                <span class="text-xs font-bold uppercase tracking-widest text-teal">Photorealistic 5-View Saree Catalogue Generator</span>
-                <h2 class="font-serif text-2xl sm:text-3xl font-bold text-ink mt-1">AI 5-Image Studio for "${saree.name}"</h2>
-                <p class="text-xs sm:text-sm text-ink-muted">Auto-builds your exact 5-image studio specification prompt (matching <code>IMAGE_PROMPTS.md</code>) and can generate views directly into its 5 gallery slots.</p>
-              </div>
-              <div class="flex items-center gap-2">
-                <select
-                  onchange="app.state.aiStudioProductId=this.value; app.renderCurrentPage();"
-                  class="px-3.5 py-2.5 rounded-xl border border-gold/40 bg-ivory text-xs sm:text-sm font-semibold"
-                >
-                  ${this.state.products.map((p) => `<option value="${p.id}" ${p.id === saree.id ? "selected" : ""}>${p.name}</option>`).join("")}
-                </select>
-                <button
-                  onclick="app.generateAllFiveAIViews('${saree.id}')"
-                  ${this.state.aiStudioGeneratingView !== null ? "disabled" : ""}
-                  class="px-4 py-2.5 rounded-xl bg-teal text-white font-bold text-xs sm:text-sm hover:bg-teal-light disabled:opacity-50 shrink-0"
-                >
-                  ${this.state.aiStudioGeneratingView !== null ? "Generating View..." : "Generate All 5 Views (AI)"}
-                </button>
-              </div>
-            </div>
-
-            <div class="p-4 rounded-2xl bg-ivory border border-gold/40 space-y-2">
-              <div class="flex items-center justify-between">
-                <span class="text-xs font-bold uppercase tracking-wider text-teal">Exact 5-Image Catalogue Prompt for ${saree.name}</span>
-                <button onclick="app.copyTextToClipboard(document.getElementById('studio-filled-prompt').innerText)" class="px-3 py-1 rounded-lg bg-teal text-white text-xs font-semibold hover:bg-teal-light">
-                  Copy Filled Prompt
-                </button>
-              </div>
-              <pre id="studio-filled-prompt" class="p-3 rounded-xl bg-white border border-gold/30 text-xs font-mono whitespace-pre-wrap text-ink max-h-60 overflow-y-auto">${masterPrompt}</pre>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-              ${REQUIRED_GALLERY_VIEWS.map((viewMeta, idx) => {
-                const gItem = saree.gallery[idx];
-                const slotLabel = (gItem && gItem.label) ? gItem.label : viewMeta.label;
-                const isGenerating = this.state.aiStudioGeneratingView === `${saree.id}_${idx}`;
-                const isSampleSlot = Boolean(gItem && gItem.isSampleImage);
-                return `
-                  <div class="p-4 rounded-2xl bg-ivory border border-gold/40 flex flex-col justify-between space-y-3">
-                    <div>
-                      <div class="flex items-center justify-between mb-1.5 gap-1">
-                        <span class="text-xs font-bold text-teal truncate">${slotLabel}</span>
-                        <div class="flex items-center gap-1 shrink-0">
-                          ${isSampleSlot ? `<span class="text-[10px] px-2 py-0.5 rounded-full bg-teal text-gold font-bold uppercase">Sample image</span>` : ""}
-                          <span class="text-[10px] px-2 py-0.5 rounded bg-gold/20 text-ink font-semibold">Slot ${idx + 1}/5</span>
-                        </div>
-                      </div>
-                      <div class="aspect-[5/6] bg-white rounded-xl overflow-hidden border border-gold/30 relative">
-                        <img src="${gItem.url}" alt="${gItem.alt || slotLabel}" class="w-full h-full object-cover"/>
-                        ${isGenerating ? `
-                          <div class="absolute inset-0 bg-teal/85 backdrop-blur-sm flex flex-col items-center justify-center text-ivory p-4 text-center">
-                            <div class="w-8 h-8 border-3 border-gold border-t-transparent rounded-full animate-spin mb-2"></div>
-                            <p class="text-xs font-bold text-gold">Generating Studio View ${idx + 1}/5...</p>
-                            <p class="text-[11px] text-ivory/80 mt-1">Keeping saree color, border &amp; blouse identical</p>
-                          </div>
-                        ` : ""}
-                      </div>
-                      <p class="text-[11px] text-ink-muted mt-2">${viewPrompts[idx]}</p>
-                    </div>
-
-                    <button
-                      onclick="app.generateSingleAIView('${saree.id}', ${idx})"
-                      ${this.state.aiStudioGeneratingView !== null ? "disabled" : ""}
-                      class="w-full py-2.5 px-3 rounded-xl bg-teal text-white font-semibold text-xs hover:bg-teal-light disabled:opacity-50 transition-colors"
-                    >
-                      ${isGenerating ? "Generating..." : `Generate Studio Image ${idx + 1}`}
-                    </button>
-                  </div>
-                `;
-              }).join("")}
-            </div>
-          </div>
-        `;
+      renderAdminAIStudioTab() {
+        return "";
       },
 
       async generateSingleAIView(productId, viewIdx) {
@@ -5099,7 +4863,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   </div>
 
   <!-- Storefront (Prompt 1) & Protected Admin Panel (Prompt 2) Controller Extension -->
-  <script src="src/storefront-admin-app.js?v=360-v2"></script>
+  <script src="src/storefront-admin-app.js?v=360-v3"></script>
 </body>
 </html>
 
