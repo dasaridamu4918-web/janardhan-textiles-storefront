@@ -46,29 +46,40 @@ Implements:
 import base64
 import datetime
 import hashlib
+import hmac
 import http.server
 import json
 import os
 import re
+import secrets
 import shutil
 import sqlite3
+import tempfile
 import threading
+import time
 import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
-DB_PATH = os.path.join(ROOT_DIR, "janardan_textiles.db")
+DEFAULT_DB_PATH = os.path.join(ROOT_DIR, "janardan_textiles.db")
+ORIGINALS_DIR = os.path.join(ROOT_DIR, "assets", "originals")
+ORIGINALS_UPLOADS_DIR = os.path.join(ORIGINALS_DIR, "uploads")
 UPLOADS_DIR = os.path.join(ROOT_DIR, "public", "assets", "uploads")
 ROOT_UPLOADS_DIR = os.path.join(ROOT_DIR, "uploads")
 SAREES_IMAGES_DIR = os.path.join(ROOT_DIR, "public", "images", "sarees")
-os.makedirs(UPLOADS_DIR, exist_ok=True)
-os.makedirs(ROOT_UPLOADS_DIR, exist_ok=True)
-os.makedirs(SAREES_IMAGES_DIR, exist_ok=True)
+for _d in (ORIGINALS_DIR, ORIGINALS_UPLOADS_DIR, UPLOADS_DIR, ROOT_UPLOADS_DIR, SAREES_IMAGES_DIR):
+    try:
+        os.makedirs(_d, exist_ok=True)
+    except Exception:
+        pass
 
-DB_LOCK = threading.Lock()
+DB_LOCK = threading.RLock()
 GENERATION_LOCK = threading.Lock()
+RATE_LIMIT_LOCK = threading.Lock()
+RATE_LIMIT_BUCKETS = {}
+LOGIN_LOCKOUTS = {}
 
 
 def load_dotenv_if_present():
@@ -91,6 +102,62 @@ def load_dotenv_if_present():
 
 
 load_dotenv_if_present()
+
+
+def is_production_env():
+    load_dotenv_if_present()
+    return bool(
+        os.environ.get("VERCEL")
+        or os.environ.get("VERCEL_ENV") == "production"
+        or os.environ.get("APP_ENV", "").strip().lower() == "production"
+        or os.environ.get("NODE_ENV", "").strip().lower() == "production"
+    )
+
+
+def resolve_writable_db_path():
+    custom_path = (os.environ.get("SQLITE_DB_PATH") or "").strip()
+    if custom_path:
+        return custom_path
+    if os.access(ROOT_DIR, os.W_OK):
+        return DEFAULT_DB_PATH
+    tmp_db = os.path.join(tempfile.gettempdir(), "janardan_textiles.db")
+    if not os.path.exists(tmp_db) and os.path.exists(DEFAULT_DB_PATH):
+        try:
+            shutil.copyfile(DEFAULT_DB_PATH, tmp_db)
+        except Exception:
+            pass
+    return tmp_db
+
+
+DB_PATH = resolve_writable_db_path()
+
+
+def get_db_persistence_info():
+    turso_url = (os.environ.get("TURSO_DATABASE_URL") or "").strip()
+    pg_url = (os.environ.get("DATABASE_URL") or "").strip()
+    if turso_url:
+        return {
+            "mode": "turso_libsql",
+            "persistent": True,
+            "statusText": "Connected • Turso LibSQL Cloud Persistent DB"
+        }
+    if pg_url:
+        return {
+            "mode": "postgres",
+            "persistent": True,
+            "statusText": "Connected • Managed PostgreSQL Persistent DB"
+        }
+    if os.environ.get("VERCEL"):
+        return {
+            "mode": "vercel_tmp_sqlite",
+            "persistent": False,
+            "statusText": "Ephemeral • Vercel /tmp SQLite (Configure TURSO_DATABASE_URL or DATABASE_URL for permanent cloud persistence)"
+        }
+    return {
+        "mode": "local_sqlite",
+        "persistent": True,
+        "statusText": "Connected • SQLite Persistent Backend (janardan_textiles.db)"
+    }
 
 
 def get_nano_banana_api_key():
@@ -124,19 +191,153 @@ EXTRA_REFERENCE_COLOURS = [
 ]
 
 
-
 def now_iso():
     return datetime.datetime.now(datetime.timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
+PBKDF2_ITERATIONS = 260000
+
+
 def hash_password(pw):
-    return hashlib.sha256((pw or "").encode("utf-8")).hexdigest()
+    """Salted PBKDF2-HMAC-SHA256 with 260,000 iterations."""
+    salt_hex = secrets.token_hex(16)
+    dk = hashlib.pbkdf2_hmac(
+        "sha256",
+        (pw or "").encode("utf-8"),
+        bytes.fromhex(salt_hex),
+        PBKDF2_ITERATIONS
+    )
+    return f"pbkdf2_sha256${PBKDF2_ITERATIONS}${salt_hex}${dk.hex()}"
+
+
+def verify_password(pw, stored_hash):
+    """
+    Constant-time password verification supporting salted PBKDF2-HMAC-SHA256.
+    Returns (is_valid: bool, needs_rehash: bool).
+    """
+    if not pw or not stored_hash or not isinstance(stored_hash, str):
+        return False, False
+    if stored_hash.startswith("pbkdf2_sha256$"):
+        parts = stored_hash.split("$")
+        if len(parts) != 4:
+            return False, False
+        try:
+            iterations = int(parts[1])
+            salt_bytes = bytes.fromhex(parts[2])
+            expected_hex = parts[3]
+            dk = hashlib.pbkdf2_hmac("sha256", pw.encode("utf-8"), salt_bytes, iterations)
+            matched = hmac.compare_digest(dk.hex(), expected_hex)
+            return matched, (matched and iterations < PBKDF2_ITERATIONS)
+        except Exception:
+            return False, False
+    if len(stored_hash) == 64:
+        legacy_hex = hashlib.sha256(pw.encode("utf-8")).hexdigest()
+        if hmac.compare_digest(legacy_hex, stored_hash):
+            return True, True
+    return False, False
+
+
+def check_rate_limit(ip_addr, bucket_name, max_requests=20, window_seconds=60):
+    now = time.time()
+    key = f"{bucket_name}:{ip_addr or 'unknown'}"
+    with RATE_LIMIT_LOCK:
+        timestamps = RATE_LIMIT_BUCKETS.get(key, [])
+        timestamps = [t for t in timestamps if now - t < window_seconds]
+        if len(timestamps) >= max_requests:
+            RATE_LIMIT_BUCKETS[key] = timestamps
+            return False
+        timestamps.append(now)
+        RATE_LIMIT_BUCKETS[key] = timestamps
+        return True
+
+
+def check_login_lockout(ip_addr, email):
+    now = time.time()
+    key = f"{ip_addr or 'unknown'}:{(email or '').lower()}"
+    with RATE_LIMIT_LOCK:
+        entry = LOGIN_LOCKOUTS.get(key)
+        if not entry:
+            return True, 0
+        locked_until = entry.get("locked_until", 0)
+        if locked_until > now:
+            return False, int(locked_until - now)
+        if now - entry.get("first_attempt", now) > 900:
+            LOGIN_LOCKOUTS.pop(key, None)
+        return True, 0
+
+
+def record_login_failure(ip_addr, email):
+    now = time.time()
+    key = f"{ip_addr or 'unknown'}:{(email or '').lower()}"
+    with RATE_LIMIT_LOCK:
+        entry = LOGIN_LOCKOUTS.get(key)
+        if not entry or (now - entry.get("first_attempt", now) > 900):
+            entry = {"failures": 1, "first_attempt": now, "locked_until": 0}
+        else:
+            entry["failures"] = entry.get("failures", 0) + 1
+        if entry["failures"] >= 5:
+            entry["locked_until"] = now + 900
+        LOGIN_LOCKOUTS[key] = entry
+        return entry["failures"], entry["locked_until"] > now
+
+
+def clear_login_failures(ip_addr, email):
+    key = f"{ip_addr or 'unknown'}:{(email or '').lower()}"
+    with RATE_LIMIT_LOCK:
+        LOGIN_LOCKOUTS.pop(key, None)
 
 
 def get_db_connection():
-    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn = sqlite3.connect(DB_PATH, timeout=15.0, check_same_thread=False)
     conn.row_factory = sqlite3.Row
     return conn
+
+
+def record_audit_log(action, admin_user=None, target_type="", target_id="", ip_address="", details=None):
+    try:
+        with DB_LOCK:
+            conn = get_db_connection()
+            cur = conn.cursor()
+            cur.execute(
+                """INSERT INTO admin_audit_log
+                   (timestamp, admin_id, admin_email, action, target_type, target_id, ip_address, details_json)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?)""",
+                (
+                    now_iso(),
+                    (admin_user or {}).get("id") or "",
+                    (admin_user or {}).get("email") or "",
+                    str(action),
+                    str(target_type or ""),
+                    str(target_id or ""),
+                    str(ip_address or ""),
+                    json.dumps(details or {}, ensure_ascii=False)
+                )
+            )
+            conn.commit()
+            conn.close()
+    except Exception:
+        pass
+
+
+MAX_UPLOAD_BYTES = 10 * 1024 * 1024  # 10 MB per image
+
+
+def validate_image_bytes(binary_data, max_bytes=MAX_UPLOAD_BYTES):
+    """Validates image file size and magic bytes (JPEG, PNG, WebP)."""
+    if not binary_data or not isinstance(binary_data, (bytes, bytearray)):
+        return False, "", "", "Empty image payload."
+    if len(binary_data) > max_bytes:
+        return False, "", "", f"Image exceeds maximum allowed size of {max_bytes // (1024 * 1024)} MB."
+    if len(binary_data) < 12:
+        return False, "", "", "File is too small to be a valid image."
+    if binary_data[:3] == b"\xff\xd8\xff":
+        return True, "jpg", "image/jpeg", ""
+    if binary_data[:8] == b"\x89PNG\r\n\x1a\n":
+        return True, "png", "image/png", ""
+    if binary_data[:4] == b"RIFF" and binary_data[8:12] == b"WEBP":
+        return True, "webp", "image/webp", ""
+    return False, "", "", "Invalid file signature (magic bytes). Only genuine JPEG, PNG, and WebP images are permitted."
+
 
 
 DEFAULT_INITIAL_PRODUCTS = [
@@ -640,21 +841,53 @@ def init_db():
                 PRIMARY KEY (user_id, product_id)
             )
         """)
+        cur.execute("""
+            CREATE TABLE IF NOT EXISTS admin_audit_log (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                timestamp TEXT NOT NULL,
+                admin_id TEXT,
+                admin_email TEXT,
+                action TEXT NOT NULL,
+                target_type TEXT,
+                target_id TEXT,
+                ip_address TEXT,
+                details_json TEXT
+            )
+        """)
 
         ts = now_iso()
-        # Seed default users (Admin + Customer) if not present
+        load_dotenv_if_present()
+        admin_email = (os.environ.get("ADMIN_INITIAL_EMAIL") or "admin@janardhantextiles.com").strip().lower()
+        admin_init_pw = (os.environ.get("ADMIN_INITIAL_PASSWORD") or "").strip()
+
         cur.execute("SELECT COUNT(*) AS cnt FROM users")
         if cur.fetchone()["cnt"] == 0:
+            effective_admin_pw = admin_init_pw or secrets.token_urlsafe(16)
+            if not admin_init_pw:
+                print("[SECURITY NOTICE] ADMIN_INITIAL_PASSWORD not set in .env; generated ephemeral admin password for this session.")
             cur.execute(
                 "INSERT INTO users (id, name, email, phone, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                ("usr-admin-01", "Janardhan Mill Admin", "admin@janardantextiles.com", "9876543210", hash_password("admin123"), "admin", ts)
+                ("usr-admin-01", "Janardhan Mill Admin", admin_email, "9652262173", hash_password(effective_admin_pw), "admin", ts)
             )
-            cur.execute(
-                "INSERT INTO users (id, name, email, phone, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                ("usr-cust-01", "Ananya Sharma", "customer@janardantextiles.com", "9876501234", hash_password("customer123"), "customer", ts)
-            )
+        else:
+            # Upgrade any legacy unsalted SHA-256 hashes on existing admin account when ADMIN_INITIAL_PASSWORD is set
+            cur.execute("SELECT id, email, password_hash, role FROM users")
+            for urow in cur.fetchall():
+                ph = urow["password_hash"] or ""
+                if not ph.startswith("pbkdf2_sha256$"):
+                    if urow["role"] == "admin" and admin_init_pw:
+                        cur.execute(
+                            "UPDATE users SET password_hash = ?, email = ? WHERE id = ?",
+                            (hash_password(admin_init_pw), admin_email, urow["id"])
+                        )
+                    else:
+                        # Lock legacy unsalted hash by wrapping with random unguessable PBKDF2 until reset
+                        cur.execute(
+                            "UPDATE users SET password_hash = ? WHERE id = ?",
+                            (hash_password(secrets.token_urlsafe(24)), urow["id"])
+                        )
 
-        # Seed default 9 sarees if products table is empty
+        # Seed default sarees if products table is empty
         cur.execute("SELECT COUNT(*) AS cnt FROM products")
         if cur.fetchone()["cnt"] == 0:
             for idx, raw_p in enumerate(DEFAULT_INITIAL_PRODUCTS):
@@ -664,7 +897,7 @@ def init_db():
                     (norm_p["id"], idx, json.dumps(norm_p), ts)
                 )
 
-        # Ensure Janardhan Textiles contact email is set to dasaridamu9418@gmail.com in settings
+        # Ensure Janardhan Textiles contact email & clean social URLs (without ?obrf tracking) are stored
         cur.execute("SELECT value_json FROM settings WHERE key = 'site_settings'")
         row_s = cur.fetchone()
         if row_s:
@@ -684,7 +917,11 @@ def init_db():
             "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
         )
         s_data["contacts"].setdefault("instagramHandle", "@dasari_damu")
-        s_data["contacts"].setdefault("instagramUrl", "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==")
+        # Clean tracking parameter ?obrf= from Instagram URL
+        ig_url = s_data["contacts"].get("instagramUrl") or "https://www.instagram.com/dasari_damu"
+        if "?obrf=" in ig_url:
+            ig_url = ig_url.split("?obrf=")[0]
+        s_data["contacts"]["instagramUrl"] = ig_url
         s_data["contacts"].setdefault("facebookUrl", "https://www.facebook.com/share/1AvqDY71mi/")
         s_data["contacts"].setdefault("pinterestUrl", "https://pin.it/2mS5N2kh4")
         cur.execute(
@@ -702,13 +939,18 @@ def save_data_uri_if_raster(data_uri, prefix="saree"):
     match = re.match(r"^data:image/(png|jpeg|jpg|webp);base64,(.+)$", data_uri, re.IGNORECASE | re.DOTALL)
     if not match:
         return data_uri
-    ext = match.group(1).lower()
-    if ext == "jpeg":
-        ext = "jpg"
     raw_b64 = match.group(2)
     try:
         binary = base64.b64decode(raw_b64)
-        filename = f"{prefix}-{uuid.uuid4().hex[:10]}.{ext}"
+        valid, real_ext, _, err_msg = validate_image_bytes(binary)
+        if not valid:
+            raise ValueError(err_msg)
+        safe_prefix = re.sub(r"[^a-zA-Z0-9_-]", "-", str(prefix or "saree"))[:40]
+        filename = f"{safe_prefix}-{uuid.uuid4().hex[:10]}.{real_ext}"
+        # Save untouched original in assets/originals/uploads/ (Ground Rule #4)
+        orig_filepath = os.path.join(ORIGINALS_UPLOADS_DIR, filename)
+        with open(orig_filepath, "wb") as f:
+            f.write(binary)
         filepath = os.path.join(UPLOADS_DIR, filename)
         with open(filepath, "wb") as f:
             f.write(binary)
@@ -717,7 +959,8 @@ def save_data_uri_if_raster(data_uri, prefix="saree"):
             f.write(binary)
         return f"/uploads/{filename}"
     except Exception:
-        return data_uri
+        return ""
+
 
 
 def fetch_all_products(include_inactive=True):
@@ -840,7 +1083,8 @@ def resolve_reference_source_dir_for_colour(color_name):
     return None, None
 
 
-def fetch_bootstrap_payload():
+def fetch_bootstrap_payload(include_private=False):
+    persistence = get_db_persistence_info()
     with DB_LOCK:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -853,25 +1097,44 @@ def fetch_bootstrap_payload():
         if "contacts" not in settings or not isinstance(settings["contacts"], dict):
             settings["contacts"] = {}
         settings["contacts"]["emailAddress"] = "dasaridamu9418@gmail.com"
+        if "?obrf=" in str(settings["contacts"].get("instagramUrl", "")):
+            settings["contacts"]["instagramUrl"] = settings["contacts"]["instagramUrl"].split("?obrf=")[0]
 
         cur.execute("SELECT sort_order, data_json FROM products ORDER BY sort_order ASC, id ASC")
-        products = [normalize_product(json.loads(r["data_json"]), idx) for idx, r in enumerate(cur.fetchall())]
+        all_prods = [normalize_product(json.loads(r["data_json"]), idx) for idx, r in enumerate(cur.fetchall())]
+        products = all_prods if include_private else [p for p in all_prods if p.get("active", True)]
 
-        cur.execute("SELECT data_json FROM orders ORDER BY created_at DESC")
-        orders = [json.loads(r["data_json"]) for r in cur.fetchall()]
+        if include_private:
+            cur.execute("SELECT data_json FROM orders ORDER BY created_at DESC")
+            orders = [json.loads(r["data_json"]) for r in cur.fetchall()]
 
-        cur.execute("SELECT data_json FROM wholesale_enquiries ORDER BY created_at DESC")
-        wholesale = [json.loads(r["data_json"]) for r in cur.fetchall()]
+            cur.execute("SELECT data_json FROM wholesale_enquiries ORDER BY created_at DESC")
+            wholesale = [json.loads(r["data_json"]) for r in cur.fetchall()]
 
-        cur.execute("SELECT data_json FROM contact_messages ORDER BY created_at DESC")
-        contacts = [json.loads(r["data_json"]) for r in cur.fetchall()]
+            cur.execute("SELECT data_json FROM contact_messages ORDER BY created_at DESC")
+            contacts = [json.loads(r["data_json"]) for r in cur.fetchall()]
+        else:
+            orders = []
+            wholesale = []
+            contacts = []
 
         conn.close()
 
+    rzp_ready = bool(os.environ.get("RAZORPAY_KEY_ID") and os.environ.get("RAZORPAY_KEY_SECRET"))
     return {
         "ok": True,
         "seeded": bool(len(products) > 0),
-        "dbStatus": "Connected • SQLite Persistent Backend (janardan_textiles.db)",
+        "dbStatus": persistence["statusText"],
+        "persistence": persistence,
+        "paymentConfig": {
+            "codEnabled": True,
+            "razorpayConfigured": rzp_ready,
+            "onlinePaymentNotice": (
+                "Razorpay Online Payment Active"
+                if rzp_ready
+                else "Online payment coming soon — Cash on Delivery (COD) and WhatsApp Order are available now."
+            )
+        },
         "settings": settings,
         "products": products,
         "orders": orders,
@@ -900,14 +1163,24 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=ROOT_DIR, **kwargs)
 
+    def _get_client_ip(self):
+        xff = self.headers.get("X-Forwarded-For") or ""
+        if xff:
+            return xff.split(",")[0].strip()
+        return self.client_address[0] if self.client_address else "127.0.0.1"
+
     def translate_path(self, path):
         parsed_path = urllib.parse.urlparse(path).path
+        # Prevent access to sensitive dotfiles, .env, .db, or server scripts via static file handler
+        lower_p = parsed_path.lower()
+        if any(lower_p.startswith(p) for p in ("/.env", "/.git", "/janardan_textiles.db", "/server.py", "/backups")):
+            return os.path.join(ROOT_DIR, "__forbidden_nonexistent__")
         if parsed_path.startswith("/uploads/"):
-            fname = parsed_path[len("/uploads/"):].lstrip("/")
-            cand1 = os.path.join(ROOT_UPLOADS_DIR, fname.replace("/", os.sep))
+            fname = os.path.basename(parsed_path[len("/uploads/"):].lstrip("/"))
+            cand1 = os.path.join(ROOT_UPLOADS_DIR, fname)
             if os.path.exists(cand1):
                 return cand1
-            cand2 = os.path.join(UPLOADS_DIR, fname.replace("/", os.sep))
+            cand2 = os.path.join(UPLOADS_DIR, fname)
             if os.path.exists(cand2):
                 return cand2
         resolved = super().translate_path(path)
@@ -922,9 +1195,33 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         pass
 
     def end_headers(self):
-        self.send_header("Access-Control-Allow-Origin", "*")
+        origin = (self.headers.get("Origin") or "").strip()
+        allowed_raw = os.environ.get(
+            "ALLOWED_ORIGINS",
+            "http://localhost:8080,http://127.0.0.1:8080,http://localhost:4000,http://127.0.0.1:4000,https://janardhan-textiles-storefront.vercel.app"
+        )
+        allowed_set = {o.strip() for o in allowed_raw.split(",") if o.strip()}
+        if origin and (origin in allowed_set or origin.startswith("http://localhost:") or origin.startswith("http://127.0.0.1:") or origin.endswith(".vercel.app")):
+            self.send_header("Access-Control-Allow-Origin", origin)
+            self.send_header("Vary", "Origin")
+        else:
+            self.send_header("Access-Control-Allow-Origin", "http://127.0.0.1:8080")
         self.send_header("Access-Control-Allow-Methods", "GET, POST, PUT, PATCH, DELETE, OPTIONS")
         self.send_header("Access-Control-Allow-Headers", "Content-Type, Authorization")
+        self.send_header("X-Content-Type-Options", "nosniff")
+        self.send_header("X-Frame-Options", "DENY")
+        self.send_header("Referrer-Policy", "strict-origin-when-cross-origin")
+        self.send_header("Strict-Transport-Security", "max-age=31536000; includeSubDomains")
+        self.send_header(
+            "Content-Security-Policy",
+            "default-src 'self' https: data: blob:; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://unpkg.com https://checkout.razorpay.com; "
+            "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
+            "font-src 'self' https://fonts.gstatic.com data:; "
+            "img-src 'self' data: blob: https: http://localhost:4000 http://localhost:8080 http://127.0.0.1:8080; "
+            "connect-src 'self' https: http://localhost:4000 http://localhost:8080 http://127.0.0.1:4000 http://127.0.0.1:8080; "
+            "frame-ancestors 'none';"
+        )
         self.send_header("Cache-Control", "no-store, no-cache, must-revalidate, max-age=0")
         super().end_headers()
 
@@ -1007,22 +1304,24 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             return
 
         if path == "/api/health":
-            data = fetch_bootstrap_payload()
+            persistence = get_db_persistence_info()
+            products = fetch_all_products(include_inactive=False)
             return self._send_json(200, {
                 "ok": True,
-                "database": "sqlite3",
-                "dbFile": "janardan_textiles.db",
-                "seeded": data["seeded"],
+                "database": persistence["mode"],
+                "persistent": persistence["persistent"],
+                "statusText": persistence["statusText"],
+                "dbFile": os.path.basename(DB_PATH),
+                "seeded": len(products) > 0,
                 "counts": {
-                    "products": len(data["products"]),
-                    "orders": len(data["orders"]),
-                    "wholesaleEnquiries": len(data["wholesaleEnquiries"]),
-                    "contactMessages": len(data["contactMessages"])
+                    "products": len(products)
                 }
             })
 
         if path == "/api/bootstrap":
-            return self._send_json(200, fetch_bootstrap_payload())
+            user = self._get_current_user()
+            is_admin = bool(user and user.get("role") == "admin")
+            return self._send_json(200, fetch_bootstrap_payload(include_private=is_admin))
 
         # GET /api/filters -> {fabrics, colors, occasions, price:{min,max}, shipping:{flat,free_above}}
         if path == "/api/filters":
@@ -1180,28 +1479,33 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             items = [all_map[pid] for pid in pids if pid in all_map]
             return self._send_json(200, {"ok": True, "productIds": pids, "items": items})
 
-        # GET /api/orders/mine
+        # GET /api/orders/mine (Requires Authentication — never leaks other customers' orders)
         if path == "/api/orders/mine":
-            user = self._get_current_user()
+            user = self._require_auth()
+            if not user:
+                return
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
                 cur.execute("SELECT data_json FROM orders ORDER BY created_at DESC")
                 all_orders = [json.loads(r["data_json"]) for r in cur.fetchall()]
                 conn.close()
-            if not user or user.get("role") == "admin":
+            if user.get("role") == "admin":
                 mine = all_orders
             else:
-                mine = [
-                    o for o in all_orders
-                    if not o.get("user_id")
-                    or o.get("user_id") == "guest"
-                    or o.get("user_id") == user["id"]
-                    or (user.get("email") and o.get("user_email") == user["email"])
-                    or (user.get("phone") and o.get("phone") == user["phone"])
-                ]
-                if not mine:
-                    mine = all_orders
+                u_email = (user.get("email") or "").strip().lower()
+                u_phone = re.sub(r"\D", "", user.get("phone") or "")
+                mine = []
+                for o in all_orders:
+                    o_uid = o.get("user_id")
+                    o_email = (o.get("user_email") or "").strip().lower()
+                    o_phone = re.sub(r"\D", "", o.get("phone") or (o.get("address") or {}).get("phone") or "")
+                    if (
+                        (o_uid and o_uid == user["id"])
+                        or (u_email and o_email and o_email == u_email)
+                        or (u_phone and len(u_phone) >= 10 and o_phone.endswith(u_phone[-10:]))
+                    ):
+                        mine.append(o)
             return self._send_json(200, {"ok": True, "orders": mine, "items": mine})
 
         # GET /api/orders/:orderNumber
@@ -1216,7 +1520,33 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 conn.close()
             if not row:
                 return self._send_json(404, {"ok": False, "error": "Order not found"})
-            return self._send_json(200, json.loads(row["data_json"]))
+            odata = json.loads(row["data_json"])
+            user = self._get_current_user()
+            phone_param = re.sub(r"\D", "", (qs.get("phone", [""])[0] or ""))
+            order_phone = re.sub(r"\D", "", odata.get("phone") or (odata.get("address") or {}).get("phone") or "")
+            is_owner = False
+            if user:
+                if user.get("role") == "admin" or odata.get("user_id") == user["id"]:
+                    is_owner = True
+                elif user.get("email") and (odata.get("user_email") or "").lower() == user["email"].lower():
+                    is_owner = True
+            if phone_param and len(phone_param) >= 4 and order_phone.endswith(phone_param):
+                is_owner = True
+            if not is_owner:
+                # Return redacted order status summary only (no street address or phone PII)
+                return self._send_json(200, {
+                    "order_number": odata.get("order_number") or odata.get("orderId"),
+                    "orderId": odata.get("orderId") or odata.get("order_number"),
+                    "status": odata.get("status"),
+                    "payment_method": odata.get("payment_method"),
+                    "payment_status": odata.get("payment_status"),
+                    "total": odata.get("total"),
+                    "totalINR": odata.get("totalINR"),
+                    "date": odata.get("date"),
+                    "created_at": odata.get("created_at"),
+                    "items": odata.get("items", [])
+                })
+            return self._send_json(200, odata)
 
         # =====================================================================
         # ADMIN GET ENDPOINTS (/api/admin/*)
@@ -1426,6 +1756,70 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             combined_customers = list(guest_by_key.values()) + users
             return self._send_json(200, {"total": len(combined_customers), "items": combined_customers, "customers": combined_customers})
 
+        if path == "/api/admin/audit-log":
+            admin = self._require_admin()
+            if not admin:
+                return
+            limit = max(1, min(500, int(qs.get("limit", ["100"])[0] or 100)))
+            with DB_LOCK:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute(
+                    "SELECT id, timestamp, admin_id, admin_email, action, target_type, target_id, ip_address, details_json "
+                    "FROM admin_audit_log ORDER BY id DESC LIMIT ?",
+                    (limit,)
+                )
+                rows = [dict(r) for r in cur.fetchall()]
+                conn.close()
+            for r in rows:
+                try:
+                    r["details"] = json.loads(r.get("details_json") or "{}")
+                except Exception:
+                    r["details"] = {}
+            return self._send_json(200, {"ok": True, "total": len(rows), "items": rows})
+
+        if path == "/api/admin/docs":
+            admin = self._require_admin()
+            if not admin:
+                return
+            persistence = get_db_persistence_info()
+            return self._send_json(200, {
+                "ok": True,
+                "title": "Janardhan Textiles — Owner Handover & Operations Guide",
+                "persistence": persistence,
+                "sections": [
+                    {
+                        "heading": "1. Environment Variables & Secrets (.env)",
+                        "body": (
+                            "Never commit secrets to git. Set ADMIN_INITIAL_EMAIL, ADMIN_INITIAL_PASSWORD, JWT_SECRET, "
+                            "GEMINI_API_KEY, RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET, and TURSO_DATABASE_URL / DATABASE_URL in .env or Vercel Environment Variables."
+                        )
+                    },
+                    {
+                        "heading": "2. Database Backup & Restore",
+                        "body": (
+                            "Run `python scripts/backup_db.py` to create a timestamped SQLite + JSON snapshot in `backups/`. "
+                            "Run `python scripts/restore_db.py <backup_file>` to restore safely."
+                        )
+                    },
+                    {
+                        "heading": "3. Original Photos & Image Pipeline",
+                        "body": (
+                            "Original studio photographs and admin uploads are preserved untouched in `assets/originals/`. "
+                            "Derived responsive WebP variants (480w, 720w, 1080w) are generated via `python scripts/build_responsive_images.py`."
+                        )
+                    },
+                    {
+                        "heading": "4. 360° Turntable & AI Frame Review (/admin/review-frames)",
+                        "body": (
+                            "Full-body rotation frames (`role: front | side | back | side2`) drive the 360° turntable; close-up macro shots (`role: detail`) "
+                            "drive the detail inspection cards and hotspots. Any AI-generated angle frame (`source: ai`) starts with `approved: false` "
+                            "and must be reviewed and approved in the Admin Review Frames tab before appearing on the public storefront."
+                        )
+                    }
+                ]
+            })
+
         if path.lower().endswith((".mp4", ".webm")):
             fs_path = self.translate_path(self.path)
             if os.path.isfile(fs_path):
@@ -1469,6 +1863,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
+        client_ip = self._get_client_ip()
+
         # Check if multipart/form-data upload to /api/admin/upload
         content_type = self.headers.get("Content-Type", "")
         if path == "/api/admin/upload" and "multipart/form-data" in content_type:
@@ -1476,6 +1872,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             if not admin:
                 return
             length = int(self.headers.get("Content-Length", "0"))
+            if length > MAX_UPLOAD_BYTES * 6:
+                return self._send_json(413, {"ok": False, "error": "Upload payload exceeds maximum allowed size."})
             raw_bytes = self.rfile.read(length) if length > 0 else b""
             boundary_match = re.search(r"boundary=([^\s;]+)", content_type)
             urls = []
@@ -1494,16 +1892,18 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                         file_bytes = file_bytes[:-2]
                     fn_match = re.search(r'filename="([^"]+)"', headers_Bytes)
                     if fn_match and len(file_bytes) > 0:
-                        orig_name = fn_match.group(1)
-                        ext = os.path.splitext(orig_name)[1].lower()
-                        if ext not in (".jpg", ".jpeg", ".png", ".webp"):
-                            ext = ".jpg"
-                        fname = f"upload-{uuid.uuid4().hex[:10]}{ext}"
+                        valid, real_ext, _, err_msg = validate_image_bytes(file_bytes)
+                        if not valid:
+                            return self._send_json(400, {"ok": False, "error": err_msg})
+                        fname = f"upload-{uuid.uuid4().hex[:10]}.{real_ext}"
+                        with open(os.path.join(ORIGINALS_UPLOADS_DIR, fname), "wb") as f:
+                            f.write(file_bytes)
                         with open(os.path.join(UPLOADS_DIR, fname), "wb") as f:
                             f.write(file_bytes)
                         with open(os.path.join(ROOT_UPLOADS_DIR, fname), "wb") as f:
                             f.write(file_bytes)
                         urls.append(f"/uploads/{fname}")
+            record_audit_log("upload_images", admin, "upload", f"{len(urls)}_files", client_ip, {"urls": urls})
             return self._send_json(200, {"ok": True, "urls": urls})
 
         try:
@@ -1513,21 +1913,23 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
         # Auth: POST /api/auth/register
         if path == "/api/auth/register":
+            if not check_rate_limit(client_ip, "auth_register", max_requests=10, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Too many registration attempts. Please wait a minute."})
             name = (body.get("name") or "").strip()
             email = (body.get("email") or "").strip().lower()
             phone = (body.get("phone") or "").strip()
             password = body.get("password") or ""
             if not name or not email or not password:
                 return self._send_json(400, {"ok": False, "error": "Name, email, and password are required."})
-            if len(password) < 6:
-                return self._send_json(400, {"ok": False, "error": "Password must be at least 6 characters."})
+            if len(password) < 8:
+                return self._send_json(400, {"ok": False, "error": "Password must be at least 8 characters."})
             ts = now_iso()
             user_id = f"usr-{uuid.uuid4().hex[:8]}"
-            token = f"tok-{uuid.uuid4().hex}{uuid.uuid4().hex[:8]}"
+            token = f"tok-{secrets.token_hex(24)}"
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
-                cur.execute("SELECT id FROM users WHERE email = ?", (email,))
+                cur.execute("SELECT id FROM users WHERE LOWER(email) = ?", (email,))
                 if cur.fetchone():
                     conn.close()
                     return self._send_json(409, {"ok": False, "error": "An account with this email already exists."})
@@ -1543,28 +1945,59 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
         # Auth: POST /api/auth/login
         if path == "/api/auth/login":
+            if not check_rate_limit(client_ip, "auth_login", max_requests=15, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Too many login requests. Please wait a minute."})
             email = (body.get("email") or "").strip().lower()
             password = body.get("password") or ""
             if not email or not password:
                 return self._send_json(400, {"ok": False, "error": "Email and password are required."})
+
+            allowed_login, wait_secs = check_login_lockout(client_ip, email)
+            if not allowed_login:
+                return self._send_json(429, {
+                    "ok": False,
+                    "error": f"Account temporarily locked due to 5 failed login attempts. Try again in {max(1, wait_secs // 60)} minutes."
+                })
+
+            # Support both janardhantextiles.com and janardantextiles.com admin email alias
+            candidate_emails = [email]
+            if email == "admin@janardantextiles.com":
+                candidate_emails.append("admin@janardhantextiles.com")
+            elif email == "admin@janardhantextiles.com":
+                candidate_emails.append("admin@janardantextiles.com")
+
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
+                placeholders = ",".join("?" for _ in candidate_emails)
                 cur.execute(
-                    "SELECT id, name, email, phone, role, password_hash FROM users WHERE LOWER(email) = ?",
-                    (email,)
+                    f"SELECT id, name, email, phone, role, password_hash FROM users WHERE LOWER(email) IN ({placeholders})",
+                    tuple(candidate_emails)
                 )
                 row = cur.fetchone()
-                if not row or row["password_hash"] != hash_password(password):
+                valid_pw, needs_rehash = verify_password(password, row["password_hash"]) if row else (False, False)
+                if not row or not valid_pw:
                     conn.close()
+                    failures, is_locked = record_login_failure(client_ip, email)
+                    record_audit_log("login_failed", {"email": email}, "user", email, client_ip, {"failures": failures, "locked": is_locked})
+                    if is_locked:
+                        return self._send_json(429, {
+                            "ok": False,
+                            "error": "Too many failed login attempts (5). Account locked for 15 minutes."
+                        })
                     return self._send_json(401, {"ok": False, "error": "Invalid email or password."})
-                token = f"tok-{uuid.uuid4().hex}{uuid.uuid4().hex[:8]}"
+
+                clear_login_failures(client_ip, email)
+                if needs_rehash:
+                    cur.execute("UPDATE users SET password_hash = ? WHERE id = ?", (hash_password(password), row["id"]))
+                token = f"tok-{secrets.token_hex(24)}"
                 cur.execute(
                     "INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)",
                     (token, row["id"], now_iso())
                 )
                 conn.commit()
                 conn.close()
+
             user_obj = {
                 "id": row["id"],
                 "name": row["name"],
@@ -1572,19 +2005,104 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 "phone": row["phone"] or "",
                 "role": row["role"]
             }
+            if user_obj["role"] == "admin":
+                record_audit_log("login_success", user_obj, "session", user_obj["id"], client_ip, {})
             return self._send_json(200, {"ok": True, "token": token, "user": user_obj})
 
-        # Razorpay Online Payment endpoints -> Honest 501 when Razorpay keys are not set
-        if path in ("/api/payments/razorpay/order", "/api/payments/razorpay/verify"):
-            if not os.environ.get("RAZORPAY_KEY_ID") or not os.environ.get("RAZORPAY_KEY_SECRET"):
+        # Razorpay Online Payment endpoints -> Server-side order creation & HMAC signature verification
+        if path == "/api/payments/razorpay/order":
+            key_id = (os.environ.get("RAZORPAY_KEY_ID") or "").strip()
+            key_secret = (os.environ.get("RAZORPAY_KEY_SECRET") or "").strip()
+            if not key_id or not key_secret:
                 return self._send_json(501, {
                     "ok": False,
-                    "error": "Online payment is not set up yet. Please select Cash on Delivery (COD) or configure Razorpay API keys."
+                    "error": "Online payment is not set up yet. Please select Cash on Delivery (COD) or WhatsApp Order."
                 })
+            raw_items = body.get("items") or []
+            if not raw_items:
+                return self._send_json(400, {"ok": False, "error": "Cart items are required to create a payment order."})
+            subtotal = 0
+            with DB_LOCK:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                for item in raw_items:
+                    pid = item.get("product_id") or item.get("productId") or item.get("id")
+                    qty = int(item.get("quantity") or item.get("qty") or 1)
+                    if qty <= 0:
+                        conn.close()
+                        return self._send_json(400, {"ok": False, "error": f"Invalid quantity for {pid}"})
+                    cur.execute("SELECT data_json FROM products WHERE id = ?", (pid,))
+                    prow = cur.fetchone()
+                    if not prow:
+                        conn.close()
+                        return self._send_json(404, {"ok": False, "error": f"Product '{pid}' not found."})
+                    pdata = normalize_product(json.loads(prow["data_json"]))
+                    if not pdata.get("active", True) or int(pdata.get("stock", 0)) < qty or int(pdata.get("price", 0)) <= 0:
+                        conn.close()
+                        return self._send_json(400, {"ok": False, "error": f"Product '{pdata.get('name', pid)}' is unavailable for online payment."})
+                    subtotal += int(pdata["price"]) * qty
+                conn.close()
+            amount_paise = subtotal * 100
+            receipt_id = f"rcpt-{uuid.uuid4().hex[:10]}"
+            auth_b64 = base64.b64encode(f"{key_id}:{key_secret}".encode("utf-8")).decode("ascii")
+            req = urllib.request.Request(
+                "https://api.razorpay.com/v1/orders",
+                data=json.dumps({"amount": amount_paise, "currency": "INR", "receipt": receipt_id}).encode("utf-8"),
+                headers={"Authorization": f"Basic {auth_b64}", "Content-Type": "application/json"},
+                method="POST"
+            )
+            try:
+                with urllib.request.urlopen(req, timeout=15) as resp:
+                    rzp_data = json.loads(resp.read().decode("utf-8"))
+                return self._send_json(200, {
+                    "ok": True,
+                    "keyId": key_id,
+                    "razorpayOrderId": rzp_data.get("id"),
+                    "amount": amount_paise,
+                    "currency": "INR",
+                    "receipt": receipt_id
+                })
+            except Exception as ex:
+                return self._send_json(502, {"ok": False, "error": f"Razorpay order creation failed: {ex}"})
 
-        # Seed / Reset Demo
+        if path == "/api/payments/razorpay/verify":
+            key_id = (os.environ.get("RAZORPAY_KEY_ID") or "").strip()
+            key_secret = (os.environ.get("RAZORPAY_KEY_SECRET") or "").strip()
+            if not key_id or not key_secret:
+                return self._send_json(501, {
+                    "ok": False,
+                    "error": "Online payment is not set up yet. Please select Cash on Delivery (COD)."
+                })
+            rzp_order_id = (body.get("razorpay_order_id") or "").strip()
+            rzp_payment_id = (body.get("razorpay_payment_id") or "").strip()
+            rzp_signature = (body.get("razorpay_signature") or "").strip()
+            if not rzp_order_id or not rzp_payment_id or not rzp_signature:
+                return self._send_json(400, {"ok": False, "error": "Missing Razorpay payment verification parameters."})
+            expected_sig = hmac.new(
+                key_secret.encode("utf-8"),
+                f"{rzp_order_id}|{rzp_payment_id}".encode("utf-8"),
+                hashlib.sha256
+            ).hexdigest()
+            if not hmac.compare_digest(expected_sig, rzp_signature):
+                return self._send_json(400, {"ok": False, "error": "Invalid Razorpay payment signature."})
+            return self._send_json(200, {"ok": True, "verified": True, "paymentId": rzp_payment_id})
+
+        # Seed / Reset Demo (Disabled in production; requires Admin + confirmation token in dev)
         if path in ("/api/seed", "/api/reset-demo"):
+            if is_production_env():
+                return self._send_json(403, {
+                    "ok": False,
+                    "error": "Database seed and reset endpoints are disabled in production."
+                })
+            admin = self._require_admin()
+            if not admin:
+                return
             force = (path == "/api/reset-demo") or bool(body.get("force"))
+            if force and body.get("confirm_token") != "CONFIRM_RESET_DATABASE":
+                return self._send_json(400, {
+                    "ok": False,
+                    "error": "Confirmation token 'CONFIRM_RESET_DATABASE' is required to reset database tables."
+                })
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
@@ -1613,42 +2131,16 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                             (norm_p["id"], idx, json.dumps(norm_p), ts)
                         )
 
-                    for i, ord_item in enumerate(body.get("orders", [])):
-                        created = ord_item.get("createdAt") or f"2026-10-{14 + i:02d}T10:00:00"
-                        oid = ord_item.get("order_number") or ord_item.get("orderId") or f"JT-ORD-{1001 + i}"
-                        ord_item["order_number"] = oid
-                        ord_item["orderId"] = oid
-                        cur.execute(
-                            "INSERT INTO orders (order_id, created_at, status, total_inr, data_json) VALUES (?, ?, ?, ?, ?)",
-                            (
-                                oid,
-                                created,
-                                ord_item.get("status", "placed"),
-                                int(ord_item.get("total", ord_item.get("totalINR", 0))),
-                                json.dumps(ord_item)
-                            )
-                        )
-
-                    for enq in body.get("wholesaleEnquiries", []):
-                        cur.execute(
-                            "INSERT INTO wholesale_enquiries (enquiry_id, created_at, status, data_json) VALUES (?, ?, ?, ?)",
-                            (
-                                enq["enquiryId"],
-                                enq.get("createdAt") or ts,
-                                enq.get("status", "New Enquiry"),
-                                json.dumps(enq)
-                            )
-                        )
-
                     conn.commit()
                 conn.close()
 
-            return self._send_json(200, fetch_bootstrap_payload())
+            record_audit_log("seed_or_reset", admin, "database", path, client_ip, {"force": force})
+            return self._send_json(200, fetch_bootstrap_payload(include_private=True))
 
-        # Create Order: POST /api/orders
-        # Supports both Prompt 1 contract ({items:[{product_id,quantity}], address:{name,phone,line1,line2,city,state,pincode}, payment_method:"cod"|"online"})
-        # and existing demo format.
+        # Create Order: POST /api/orders (Atomic transaction, server-authoritative pricing & stock validation)
         if path == "/api/orders":
+            if not check_rate_limit(client_ip, "create_order", max_requests=20, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Too many order requests. Please wait a moment."})
             user = self._get_current_user()
             address = body.get("address") or {}
             customer_name = (address.get("name") or body.get("customerName") or (user["name"] if user else "")).strip()
@@ -1664,125 +2156,168 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             if not customer_name or not phone or not city or not raw_items:
                 return self._send_json(400, {"ok": False, "error": "Missing required address fields or cart items."})
 
-            if payment_method == "online" and not os.environ.get("RAZORPAY_KEY_ID"):
+            digits_phone = re.sub(r"\D", "", phone)
+            if len(digits_phone) < 10 or len(digits_phone) > 15:
+                return self._send_json(400, {"ok": False, "error": "Please enter a valid 10-digit phone number."})
+
+            if pincode and not re.match(r"^\d{6}$", pincode):
+                return self._send_json(400, {"ok": False, "error": "Please enter a valid 6-digit Indian PIN code."})
+
+            if payment_method == "online" and (not os.environ.get("RAZORPAY_KEY_ID") or not os.environ.get("RAZORPAY_KEY_SECRET")):
                 return self._send_json(501, {"ok": False, "error": "Online payment is not set up yet. Please use Cash on Delivery (COD)."})
 
             created_at = now_iso()
-            order_number = body.get("order_number") or body.get("orderId") or f"JT-{datetime.datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().int % 9000 + 1000}"
+            order_number = f"JT-{datetime.datetime.now().strftime('%Y%m%d')}-{secrets.randbelow(9000) + 1000}"
 
             with DB_LOCK:
                 conn = get_db_connection()
+                conn.isolation_level = None  # Manual transaction management for BEGIN IMMEDIATE
                 cur = conn.cursor()
+                try:
+                    cur.execute("BEGIN IMMEDIATE")
+                    enriched_items = []
+                    subtotal = 0
+                    for item in raw_items:
+                        pid = item.get("product_id") or item.get("productId") or item.get("id")
+                        try:
+                            qty = int(item.get("quantity") or item.get("qty") or 1)
+                        except Exception:
+                            qty = 0
+                        if qty <= 0 or qty > 100:
+                            cur.execute("ROLLBACK")
+                            conn.close()
+                            return self._send_json(400, {"ok": False, "error": f"Invalid quantity for {pid}"})
+                        cur.execute("SELECT data_json FROM products WHERE id = ?", (pid,))
+                        prow = cur.fetchone()
+                        if not prow:
+                            cur.execute("ROLLBACK")
+                            conn.close()
+                            return self._send_json(404, {"ok": False, "error": f"Product '{pid}' not found."})
+                        pdata = normalize_product(json.loads(prow["data_json"]))
+                        if not pdata.get("active", True):
+                            cur.execute("ROLLBACK")
+                            conn.close()
+                            return self._send_json(400, {"ok": False, "error": f"'{pdata['name']}' is currently inactive and unavailable."})
+                        unit_price = int(pdata.get("price") or 0)
+                        if unit_price <= 0 or pdata.get("isSamplePrice") or pdata.get("priceOnRequest"):
+                            cur.execute("ROLLBACK")
+                            conn.close()
+                            return self._send_json(400, {
+                                "ok": False,
+                                "error": f"'{pdata['name']}' is Price on Request and cannot be purchased via direct checkout. Please enquire on WhatsApp."
+                            })
+                        avail_stock = int(pdata.get("stock", 0))
+                        if avail_stock < qty or pdata.get("stock_status") == "out_of_stock":
+                            cur.execute("ROLLBACK")
+                            conn.close()
+                            return self._send_json(400, {
+                                "ok": False,
+                                "error": f"Insufficient stock for '{pdata['name']}' (requested {qty}, available {avail_stock})."
+                            })
 
-                enriched_items = []
-                subtotal = 0
-                for item in raw_items:
-                    pid = item.get("product_id") or item.get("productId") or item.get("id")
-                    qty = int(item.get("quantity") or item.get("qty") or 1)
-                    if qty <= 0:
-                        conn.close()
-                        return self._send_json(400, {"ok": False, "error": f"Invalid quantity for {pid}"})
-                    cur.execute("SELECT data_json FROM products WHERE id = ?", (pid,))
-                    prow = cur.fetchone()
-                    if not prow:
-                        conn.close()
-                        return self._send_json(404, {"ok": False, "error": f"Product '{pid}' not found."})
-                    pdata = normalize_product(json.loads(prow["data_json"]))
-                    avail_stock = int(pdata.get("stock", 0))
-                    if avail_stock < qty or pdata.get("stock_status") == "out_of_stock":
-                        conn.close()
-                        return self._send_json(400, {
-                            "ok": False,
-                            "error": f"Insufficient stock for '{pdata['name']}' (requested {qty}, available {avail_stock})."
+                        # Atomic stock deduction
+                        new_stock = avail_stock - qty
+                        pdata["stock"] = new_stock
+                        pdata["stockQty"] = new_stock
+                        pdata = normalize_product(pdata)
+                        cur.execute(
+                            "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
+                            (json.dumps(pdata), created_at, pid)
+                        )
+
+                        subtotal += unit_price * qty
+                        enriched_items.append({
+                            "product_id": pid,
+                            "productId": pid,
+                            "sku": pdata["sku"],
+                            "name": pdata["name"],
+                            "fabric": pdata["fabric"],
+                            "color": pdata["color"],
+                            "price": unit_price,
+                            "priceINR": unit_price,
+                            "quantity": qty,
+                            "qty": qty,
+                            "image": pdata.get("image", ""),
+                            "isSamplePrice": False
                         })
 
-                    # Deduct stock
-                    new_stock = max(0, avail_stock - qty)
-                    pdata["stock"] = new_stock
-                    pdata["stockQty"] = new_stock
-                    pdata = normalize_product(pdata)
-                    cur.execute(
-                        "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
-                        (json.dumps(pdata), created_at, pid)
-                    )
-
-                    unit_price = int(pdata["price"])
-                    subtotal += unit_price * qty
-                    enriched_items.append({
-                        "product_id": pid,
-                        "productId": pid,
-                        "sku": pdata["sku"],
-                        "name": pdata["name"],
-                        "fabric": pdata["fabric"],
-                        "color": pdata["color"],
-                        "price": unit_price,
-                        "priceINR": unit_price,
-                        "quantity": qty,
-                        "qty": qty,
-                        "image": pdata.get("image", ""),
-                        "isSamplePrice": False
-                    })
-
-                shipping_fee = 0
-                total_inr = subtotal + shipping_fee
-                new_order = {
-                    "order_number": order_number,
-                    "orderId": order_number,
-                    "user_id": user["id"] if user else None,
-                    "user_email": user["email"] if user else None,
-                    "customerName": customer_name,
-                    "phone": phone,
-                    "city": city,
-                    "address": {
-                        "name": customer_name,
+                    shipping_fee = 0
+                    total_inr = subtotal + shipping_fee
+                    new_order = {
+                        "order_number": order_number,
+                        "orderId": order_number,
+                        "user_id": user["id"] if user else None,
+                        "user_email": user["email"] if user else None,
+                        "customerName": customer_name,
                         "phone": phone,
-                        "line1": line1,
-                        "line2": line2,
                         "city": city,
-                        "state": state_name,
-                        "pincode": pincode
-                    },
-                    "payment_method": payment_method,
-                    "payment_status": "Pending (COD)" if payment_method == "cod" else "Pending",
-                    "status": "placed",
-                    "subtotal": subtotal,
-                    "shipping": shipping_fee,
-                    "total": total_inr,
-                    "totalINR": total_inr,
-                    "items": enriched_items,
-                    "date": created_at[:10],
-                    "created_at": created_at,
-                    "createdAt": created_at,
-                    "isDemoOrder": False
-                }
+                        "address": {
+                            "name": customer_name,
+                            "phone": phone,
+                            "line1": line1,
+                            "line2": line2,
+                            "city": city,
+                            "state": state_name,
+                            "pincode": pincode
+                        },
+                        "payment_method": payment_method,
+                        "payment_status": "Pending (COD)" if payment_method == "cod" else "Paid (Verified)",
+                        "status": "placed",
+                        "subtotal": subtotal,
+                        "shipping": shipping_fee,
+                        "total": total_inr,
+                        "totalINR": total_inr,
+                        "items": enriched_items,
+                        "date": created_at[:10],
+                        "created_at": created_at,
+                        "createdAt": created_at,
+                        "isDemoOrder": False
+                    }
 
-                cur.execute(
-                    "INSERT INTO orders (order_id, created_at, status, total_inr, data_json) VALUES (?, ?, ?, ?, ?)",
-                    (order_number, created_at, "placed", total_inr, json.dumps(new_order))
-                )
-                conn.commit()
+                    cur.execute(
+                        "INSERT INTO orders (order_id, created_at, status, total_inr, data_json) VALUES (?, ?, ?, ?, ?)",
+                        (order_number, created_at, "placed", total_inr, json.dumps(new_order))
+                    )
+                    cur.execute("COMMIT")
+                except Exception as tx_err:
+                    try:
+                        cur.execute("ROLLBACK")
+                    except Exception:
+                        pass
+                    conn.close()
+                    return self._send_json(500, {"ok": False, "error": f"Order transaction failed: {tx_err}"})
                 conn.close()
 
-            payload = fetch_bootstrap_payload()
+            is_admin = bool(user and user.get("role") == "admin")
+            payload = fetch_bootstrap_payload(include_private=is_admin)
             payload["order_number"] = order_number
             payload["order"] = new_order
             payload["createdOrder"] = new_order
             return self._send_json(201, payload)
 
-        # Wholesale Enquiry: POST /api/wholesale
+        # Wholesale Enquiry: POST /api/wholesale (Honeypot + Rate limit + Validation)
         if path == "/api/wholesale":
-            enquiry_id = body.get("enquiryId") or f"WS-DEMO-{uuid.uuid4().int % 900 + 100}"
+            if not check_rate_limit(client_ip, "wholesale_enquiry", max_requests=10, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Too many enquiries submitted. Please wait a minute."})
+            if body.get("website") or body.get("_gotcha") or body.get("honeypot"):
+                return self._send_json(200, {"ok": True, "spamFiltered": True})
+            business_name = (body.get("businessName") or "").strip()[:160]
+            contact_person = (body.get("contactPerson") or "").strip()[:120]
+            phone = (body.get("phone") or "").strip()[:30]
+            if not (business_name or contact_person) or not phone:
+                return self._send_json(400, {"ok": False, "error": "Business/contact name and phone number are required."})
+            enquiry_id = f"WS-{secrets.randbelow(9000) + 1000}"
             created_at = now_iso()
             enquiry = {
                 "enquiryId": enquiry_id,
-                "businessName": (body.get("businessName") or "").strip(),
-                "contactPerson": (body.get("contactPerson") or "").strip(),
-                "phone": (body.get("phone") or "").strip(),
-                "city": (body.get("city") or "").strip(),
-                "sareeInterest": body.get("sareeInterest") or "Assorted Catalogue",
-                "estimatedQuantity": (body.get("estimatedQuantity") or "").strip(),
+                "businessName": business_name,
+                "contactPerson": contact_person,
+                "phone": phone,
+                "city": (body.get("city") or "").strip()[:100],
+                "sareeInterest": str(body.get("sareeInterest") or "Assorted Catalogue")[:200],
+                "estimatedQuantity": (body.get("estimatedQuantity") or "").strip()[:80],
                 "status": "New Enquiry",
-                "notes": (body.get("notes") or "Standard catalogue enquiry").strip(),
+                "notes": (body.get("notes") or "Standard catalogue enquiry").strip()[:1000],
                 "createdAt": created_at
             }
             with DB_LOCK:
@@ -1796,15 +2331,24 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 conn.close()
             return self._send_json(201, {"ok": True, "enquiry": enquiry})
 
-        # Contact Message: POST /api/contact
+        # Contact Message: POST /api/contact (Honeypot + Rate limit + Validation)
         if path == "/api/contact":
+            if not check_rate_limit(client_ip, "contact_message", max_requests=10, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Too many messages submitted. Please wait a minute."})
+            if body.get("website") or body.get("_gotcha") or body.get("honeypot"):
+                return self._send_json(200, {"ok": True, "spamFiltered": True})
+            sender_name = (body.get("name") or "").strip()[:120]
+            sender_contact = (body.get("contact") or "").strip()[:120]
+            sender_msg = (body.get("message") or "").strip()[:2000]
+            if not sender_name or not sender_contact or not sender_msg:
+                return self._send_json(400, {"ok": False, "error": "Name, phone/email, and message are required."})
             msg_id = f"MSG-{uuid.uuid4().hex[:6].upper()}"
             created_at = now_iso()
             msg_obj = {
                 "messageId": msg_id,
-                "name": (body.get("name") or "").strip(),
-                "contact": (body.get("contact") or "").strip(),
-                "message": (body.get("message") or "").strip(),
+                "name": sender_name,
+                "contact": sender_contact,
+                "message": sender_msg,
                 "status": "Unread",
                 "createdAt": created_at,
                 "date": created_at[:10]
@@ -1829,15 +2373,17 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             urls = []
             for idx, img_data in enumerate(raw_images):
                 saved = save_data_uri_if_raster(img_data, prefix=f"admin-upload-{idx + 1}")
+                if not saved:
+                    return self._send_json(400, {"ok": False, "error": f"Image #{idx + 1} failed magic-byte or 10 MB size validation."})
                 urls.append(saved)
+            record_audit_log("upload_images_json", admin, "upload", f"{len(urls)}_files", client_ip, {"urls": urls})
             return self._send_json(200, {"ok": True, "urls": urls})
 
-        # Create Product: POST /api/admin/products or POST /api/products
+        # Create Product: POST /api/admin/products or POST /api/products (Requires Admin on BOTH)
         if path in ("/api/admin/products", "/api/products"):
-            if path == "/api/admin/products":
-                admin = self._require_admin()
-                if not admin:
-                    return
+            admin = self._require_admin()
+            if not admin:
+                return
             sku = (body.get("sku") or body.get("id") or f"jt-saree-{uuid.uuid4().hex[:4]}").strip()
             name = (body.get("name") or "").strip()
             fabric = (body.get("fabric") or "").strip()
@@ -1933,8 +2479,13 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 "errors": errors
             })
 
-        # Generate Single Saree View (Server-Side Nano Banana API — never exposes key to browser)
+        # Generate Single Saree View (Admin-only, Server-Side Nano Banana API)
         if path == "/api/sarees/generate-view":
+            admin = self._require_admin()
+            if not admin:
+                return
+            if not check_rate_limit(client_ip, "saree_gen", max_requests=10, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Generation rate limit reached. Please wait a minute."})
             api_key = get_nano_banana_api_key()
             if not api_key:
                 return self._send_json(503, {
@@ -1966,8 +2517,13 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             saved_url = save_data_uri_if_raster(data_uri, prefix=f"{saree.get('id', 'saree')}-v{view_index + 1}")
             return self._send_json(200, {"ok": True, "url": saved_url})
 
-        # Generate Saree (5-View Gallery + New Catalogue Product Card): POST /api/sarees/generate
+        # Generate Saree (Admin-only, 5-View Gallery + New Catalogue Product Card): POST /api/sarees/generate
         if path == "/api/sarees/generate":
+            admin = self._require_admin()
+            if not admin:
+                return
+            if not check_rate_limit(client_ip, "saree_gen", max_requests=10, window_seconds=60):
+                return self._send_json(429, {"ok": False, "error": "Generation rate limit reached. Please wait a minute."})
             if not GENERATION_LOCK.acquire(blocking=False):
                 return self._send_json(429, {
                     "ok": False,
@@ -2246,19 +2802,28 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         except Exception as e:
             return self._send_json(400, {"ok": False, "error": f"Invalid JSON: {e}"})
 
-        # PUT /api/products/<id>
+        # PUT /api/products/<id> (Requires Admin)
         m_prod = re.match(r"^/api/products/([^/]+)$", path)
         if m_prod:
+            admin = self._require_admin()
+            if not admin:
+                return
             product_id = urllib.parse.unquote(m_prod.group(1))
+            record_audit_log("product_update", admin, "product", product_id, self._get_client_ip(), {"fields": list(body.keys())})
             return self._update_product_record(product_id, body)
 
-        # PUT /api/products/<id>/gallery/<idx>
+        # PUT /api/products/<id>/gallery/<idx> (Requires Admin)
         m_gal = re.match(r"^/api/products/([^/]+)/gallery/(\d+)$", path)
         if m_gal:
+            admin = self._require_admin()
+            if not admin:
+                return
             product_id = urllib.parse.unquote(m_gal.group(1))
             view_idx = int(m_gal.group(2))
             new_url = body.get("url") or ""
             stored_url = save_data_uri_if_raster(new_url, prefix=f"{product_id}-v{view_idx + 1}")
+            if new_url.startswith("data:") and not stored_url:
+                return self._send_json(400, {"ok": False, "error": "Invalid image upload (failed magic-byte or 10 MB size check)."})
             ts = now_iso()
 
             with DB_LOCK:
@@ -2276,6 +2841,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                         pdata["gallery"][view_idx]["alt"] = body["alt"]
                     if "isSampleImage" in body:
                         pdata["gallery"][view_idx]["isSampleImage"] = bool(body["isSampleImage"])
+                pdata["updatedAt"] = ts
                 pdata = normalize_product(pdata)
                 cur.execute(
                     "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
@@ -2283,9 +2849,13 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+            record_audit_log("gallery_update", admin, "product_gallery", f"{product_id}[{view_idx}]", self._get_client_ip(), {"url": stored_url})
             return self._send_json(200, {"ok": True, "url": stored_url, "product": pdata})
 
         if path == "/api/settings/contacts":
+            admin = self._require_admin()
+            if not admin:
+                return
             ts = now_iso()
             with DB_LOCK:
                 conn = get_db_connection()
@@ -2300,9 +2870,13 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+            record_audit_log("settings_contacts_update", admin, "settings", "contacts", self._get_client_ip(), {})
             return self._send_json(200, {"ok": True, "settings": settings})
 
         if path == "/api/settings/policies":
+            admin = self._require_admin()
+            if not admin:
+                return
             ts = now_iso()
             with DB_LOCK:
                 conn = get_db_connection()
@@ -2317,6 +2891,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+            record_audit_log("settings_policies_update", admin, "settings", "policies", self._get_client_ip(), {})
             return self._send_json(200, {"ok": True, "settings": settings})
 
         return self._send_json(404, {"ok": False, "error": f"Unknown PUT endpoint: {path}"})
@@ -2432,21 +3007,25 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             pid = urllib.parse.unquote(m_admin_prod.group(1))
             return self._update_product_record(pid, body)
 
-        # Admin Order Status Update: PATCH /api/admin/orders/:number/status or PATCH /api/orders/:id
+        # Admin Order Status Update: PATCH /api/admin/orders/:number/status or PATCH /api/orders/:id (Requires Admin on BOTH)
         m_admin_ord = re.match(r"^/api/admin/orders/([^/]+)/status$", path)
         m_ord = re.match(r"^/api/orders/([^/]+)$", path)
         if m_admin_ord or m_ord:
-            if m_admin_ord:
-                admin = self._require_admin()
-                if not admin:
-                    return
-                order_id = urllib.parse.unquote(m_admin_ord.group(1))
-            else:
-                order_id = urllib.parse.unquote(m_ord.group(1))
+            admin = self._require_admin()
+            if not admin:
+                return
+            order_id = urllib.parse.unquote((m_admin_ord or m_ord).group(1))
 
             new_status = (body.get("status") or "").strip()
             if not new_status:
                 return self._send_json(400, {"ok": False, "error": "Missing status"})
+
+            valid_statuses = {"placed", "confirmed", "packed", "shipped", "delivered", "cancelled"}
+            if new_status.lower() not in valid_statuses:
+                return self._send_json(400, {
+                    "ok": False,
+                    "error": f"Invalid order status '{new_status}'. Allowed: {', '.join(sorted(valid_statuses))}."
+                })
 
             ts = now_iso()
             with DB_LOCK:
@@ -2459,10 +3038,19 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     return self._send_json(404, {"ok": False, "error": "Order not found"})
                 odata = json.loads(row["data_json"])
                 prev_status = str(odata.get("status", "")).lower()
+
+                # Prevent reopening a cancelled order whose stock has already been restored
+                if prev_status == "cancelled" and new_status.lower() != "cancelled":
+                    conn.close()
+                    return self._send_json(400, {
+                        "ok": False,
+                        "error": "Cancelled orders cannot be reopened because stock has already been restored."
+                    })
+
                 odata["status"] = new_status
 
-                # Restore stock if transitioning to cancelled
-                if new_status.lower() == "cancelled" and prev_status != "cancelled":
+                # Restore stock atomically if transitioning to cancelled for the first time
+                if new_status.lower() == "cancelled" and prev_status != "cancelled" and not odata.get("stock_restored"):
                     for item in odata.get("items", []):
                         pid = item.get("product_id") or item.get("productId")
                         qty = int(item.get("quantity") or item.get("qty") or 1)
@@ -2487,13 +3075,19 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+            record_audit_log("order_status_update", admin, "order", order_id, self._get_client_ip(), {"from": prev_status, "to": new_status})
             return self._send_json(200, {"ok": True, "order": odata})
 
-        # Wholesale status
+        # Wholesale status (Requires Admin)
         m_ws = re.match(r"^/api/wholesale/([^/]+)$", path)
         if m_ws:
+            admin = self._require_admin()
+            if not admin:
+                return
             enquiry_id = urllib.parse.unquote(m_ws.group(1))
-            new_status = body.get("status")
+            new_status = (body.get("status") or "").strip()
+            if not new_status:
+                return self._send_json(400, {"ok": False, "error": "Missing status"})
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
@@ -2510,13 +3104,19 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+            record_audit_log("wholesale_status_update", admin, "wholesale", enquiry_id, self._get_client_ip(), {"status": new_status})
             return self._send_json(200, {"ok": True, "enquiry": wdata})
 
-        # Contact message status
+        # Contact message status (Requires Admin)
         m_msg = re.match(r"^/api/contact/([^/]+)$", path)
         if m_msg:
+            admin = self._require_admin()
+            if not admin:
+                return
             message_id = urllib.parse.unquote(m_msg.group(1))
-            new_status = body.get("status")
+            new_status = (body.get("status") or "").strip()
+            if not new_status:
+                return self._send_json(400, {"ok": False, "error": "Missing status"})
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
@@ -2533,6 +3133,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 )
                 conn.commit()
                 conn.close()
+            record_audit_log("contact_status_update", admin, "contact", message_id, self._get_client_ip(), {"status": new_status})
             return self._send_json(200, {"ok": True, "contactMessage": mdata})
 
         return self._send_json(404, {"ok": False, "error": f"Unknown PATCH endpoint: {path}"})

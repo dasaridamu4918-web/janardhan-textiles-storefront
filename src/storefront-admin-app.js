@@ -12,10 +12,8 @@
   // 1. API Base URL Configuration (VITE_API_URL / NEXT_PUBLIC_API_URL)
   const detectedPort = window.location.port;
   const defaultApiBase =
-    detectedPort === "4000" || detectedPort === "8080"
-      ? ""
-      : window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1"
-      ? "http://localhost:4000"
+    window.location.protocol === "file:"
+      ? "http://localhost:8080"
       : "";
 
   window.VITE_API_URL = window.VITE_API_URL !== undefined ? window.VITE_API_URL : defaultApiBase;
@@ -178,26 +176,7 @@
     },
 
     getUsers() {
-      const defaults = [
-        {
-          id: "usr-admin-01",
-          name: "Janardhan Mill Admin",
-          email: "admin@janardantextiles.com",
-          phone: "9652262173",
-          password: "admin123",
-          role: "admin",
-          created_at: "2026-01-01T10:00:00Z"
-        },
-        {
-          id: "usr-cust-01",
-          name: "Ananya Sharma",
-          email: "customer@janardantextiles.com",
-          phone: "9876501234",
-          password: "customer123",
-          role: "customer",
-          created_at: "2026-01-02T10:00:00Z"
-        }
-      ];
+      const defaults = [];
       try {
         const raw = localStorage.getItem("jt_local_users_v1");
         if (raw) {
@@ -1283,7 +1262,7 @@
 
   // 6. Authentication & Wishlist API Wiring
   app.syncAuthHeaderUI = function () {
-    const labelEl = document.getElementById("header-auth-label");
+    const labelEl = (() => { const admBtn = document.getElementById("header-admin-nav-btn"); if (admBtn) admBtn.classList.toggle("hidden", !(app.state.currentUser && app.state.currentUser.role === "admin")); return document.getElementById("header-auth-label"); })();
     const btnEl = document.getElementById("header-auth-btn");
     const u = this.state.currentUser;
     if (labelEl) {
@@ -4354,27 +4333,8 @@
             </button>
           </form>
 
-          <!-- Quick Demo Account Autofill Pills -->
-          <div class="pt-3 border-t border-gold/30 space-y-2 text-xs">
-            <p class="font-semibold text-ink-muted">Quick Test Accounts (Click to Autofill):</p>
-            <div class="grid grid-cols-2 gap-2">
-              <button
-                type="button"
-                onclick="app.state.authTab='login'; app.renderCurrentPage(); app.quickFillAuth('customer@janardantextiles.com', 'customer123')"
-                class="p-2 rounded-xl bg-[#F5EFE4] border border-gold/40 text-left hover:bg-gold/20"
-              >
-                <span class="font-bold text-ink block">Customer Login</span>
-                <span class="text-[10px] text-ink-muted truncate block">customer@janardantextiles.com</span>
-              </button>
-              <button
-                type="button"
-                onclick="app.state.authTab='login'; app.renderCurrentPage(); app.quickFillAuth('admin@janardantextiles.com', 'admin123')"
-                class="p-2 rounded-xl bg-[#F5EFE4] border border-gold/40 text-left hover:bg-gold/20"
-              >
-                <span class="font-bold text-teal block">Admin Login</span>
-                <span class="text-[10px] text-ink-muted truncate block">admin@janardantextiles.com</span>
-              </button>
-            </div>
+          <div class="pt-3 border-t border-gold/30 text-xs text-ink-muted text-center">
+            Protected with salted PBKDF2-HMAC-SHA256 authentication.
           </div>
         </div>
       </div>
@@ -4713,7 +4673,7 @@
               </div>
               <div>
                 <label for="admin-login-password" class="block text-xs font-semibold text-ink-muted mb-1">Admin Password *</label>
-                <input id="admin-login-password" name="password" type="password" required value="admin123" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+                <input id="admin-login-password" name="password" type="password" required placeholder="Enter admin password from .env" class="w-full px-3.5 py-2.5 rounded-xl border border-gold/45 bg-ivory text-ink"/>
               </div>
               <button type="submit" id="admin-login-submit" class="w-full py-3 rounded-full bg-teal text-ivory font-bold text-sm hover:bg-teal-light shadow-md">
                 Sign In to Admin Panel →
@@ -6399,7 +6359,7 @@
       this.state.settings.contacts.whatsappUrl =
         "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.";
       this.state.settings.contacts.instagramHandle = "@dasari_damu";
-      this.state.settings.contacts.instagramUrl = "https://www.instagram.com/dasari_damu?obrf=MXJnZTZvdjRvNm10MA==";
+      this.state.settings.contacts.instagramUrl = "https://www.instagram.com/dasari_damu";
       this.state.settings.contacts.facebookUrl = "https://www.facebook.com/share/1AvqDY71mi/";
       this.state.settings.contacts.pinterestUrl = "https://pin.it/2mS5N2kh4";
       this.state.settings.contacts.emailAddress = "dasaridamu9418@gmail.com";

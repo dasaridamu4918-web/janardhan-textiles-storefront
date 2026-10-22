@@ -1084,19 +1084,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated haldi yellow silk blouse with crimson-and-gold Paithani sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-031.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-031.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-031/1-front.jpg",
+      "/public/images/sarees/saree-031/2-back-pallu.jpg",
+      "/public/images/sarees/saree-031/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-031/4-macro.jpg",
+      "/public/images/sarees/saree-031/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-031.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-031/1-front.jpg"
   },
   {
     "id": "saree-032",
@@ -1120,17 +1115,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching terracotta raw silk blouse with antique gold embroidered sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-032.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-032.jpg",
+      "/public/images/sarees/saree-032/1-front.jpg",
       "/public/images/sarees/saree-032/2-back-pallu.jpg",
       "/public/images/sarees/saree-032/3-pallu-detail.jpg",
-      "",
-      ""
+      "/public/images/sarees/saree-032/4-macro.jpg",
+      "/public/images/sarees/saree-032/5-blouse.jpg"
     ],
-    "missingViews": [
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-032.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-032/1-front.jpg"
   },
   {
     "id": "saree-033",
@@ -1154,17 +1146,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated olive moss silk blouse with copper zari woven sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-033.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-033.jpg",
+      "/public/images/sarees/saree-033/1-front.jpg",
       "/public/images/sarees/saree-033/2-back-pallu.jpg",
       "/public/images/sarees/saree-033/3-pallu-detail.jpg",
-      "",
-      ""
+      "/public/images/sarees/saree-033/4-macro.jpg",
+      "/public/images/sarees/saree-033/5-blouse.jpg"
     ],
-    "missingViews": [
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-033.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-033/1-front.jpg"
   },
   {
     "id": "saree-034",
@@ -1188,17 +1177,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted burnt sienna silk blouse with gold zari border on elbow sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-034.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-034.jpg",
+      "/public/images/sarees/saree-034/1-front.jpg",
       "/public/images/sarees/saree-034/2-back-pallu.jpg",
       "/public/images/sarees/saree-034/3-pallu-detail.jpg",
-      "",
-      ""
+      "/public/images/sarees/saree-034/4-macro.jpg",
+      "/public/images/sarees/saree-034/5-blouse.jpg"
     ],
-    "missingViews": [
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-034.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-034/1-front.jpg"
   },
   {
     "id": "saree-035",
@@ -1222,16 +1208,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Contrast deep maroon silk blouse with heavy gold zari temple sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-035.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-035.jpg",
+      "/public/images/sarees/saree-035/1-front.jpg",
       "/public/images/sarees/saree-035/2-back-pallu.jpg",
       "/public/images/sarees/saree-035/3-pallu-detail.jpg",
       "/public/images/sarees/saree-035/4-macro.jpg",
-      ""
+      "/public/images/sarees/saree-035/5-blouse.jpg"
     ],
-    "missingViews": [
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-035.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-035/1-front.jpg"
   },
   {
     "id": "saree-036",
@@ -1255,18 +1239,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated sage green silk-linen blouse with scalloped gold embroidered cuffs",
     "primaryImage": "/public/images/sarees/generated/saree-036.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-036.jpg",
+      "/public/images/sarees/saree-036/1-front.jpg",
       "/public/images/sarees/saree-036/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-036/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-036/4-macro.jpg",
+      "/public/images/sarees/saree-036/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-036.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-036/1-front.jpg"
   },
   {
     "id": "saree-037",
@@ -1290,18 +1270,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching copper-bronze tissue blouse with zardozi embroidered neckline and sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-037.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-037.jpg",
+      "/public/images/sarees/saree-037/1-front.jpg",
       "/public/images/sarees/saree-037/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-037/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-037/4-macro.jpg",
+      "/public/images/sarees/saree-037/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-037.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-037/1-front.jpg"
   },
   {
     "id": "saree-038",
@@ -1325,18 +1301,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated sandstone taupe silk blouse with rose-gold scalloped sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-038.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-038.jpg",
+      "/public/images/sarees/saree-038/1-front.jpg",
       "/public/images/sarees/saree-038/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-038/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-038/4-macro.jpg",
+      "/public/images/sarees/saree-038/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-038.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-038/1-front.jpg"
   },
   {
     "id": "saree-039",
@@ -1360,18 +1332,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching brick red silk blouse with woven gold kalka sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-039.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-039.jpg",
+      "/public/images/sarees/saree-039/1-front.jpg",
       "/public/images/sarees/saree-039/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-039/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-039/4-macro.jpg",
+      "/public/images/sarees/saree-039/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-039.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-039/1-front.jpg"
   },
   {
     "id": "saree-040",
@@ -1395,17 +1363,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Contrast espresso-brown silk blouse with golden Muga zari sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-040.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-040.jpg",
+      "/public/images/sarees/saree-040/1-front.jpg",
       "/public/images/sarees/saree-040/2-back-pallu.jpg",
       "/public/images/sarees/saree-040/3-pallu-detail.jpg",
-      "",
-      ""
+      "/public/images/sarees/saree-040/4-macro.jpg",
+      "/public/images/sarees/saree-040/5-blouse.jpg"
     ],
-    "missingViews": [
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-040.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-040/1-front.jpg"
   },
   {
     "id": "saree-041",
