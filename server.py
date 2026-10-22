@@ -1351,7 +1351,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         self.send_header(
             "Content-Security-Policy",
             "default-src 'self' https: data: blob:; "
-            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdnjs.cloudflare.com https://unpkg.com https://checkout.razorpay.com; "
+            "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.tailwindcss.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://unpkg.com https://checkout.razorpay.com; "
             "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; "
             "font-src 'self' https://fonts.gstatic.com data:; "
             "img-src 'self' data: blob: https: http://localhost:4000 http://localhost:8080 http://127.0.0.1:8080; "
@@ -1437,6 +1437,45 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         if path == "/favicon.ico":
             self.send_response(204)
             self.end_headers()
+            return
+
+        if path == "/robots.txt":
+            robots_body = (
+                "User-agent: *\n"
+                "Allow: /\n"
+                "Disallow: /api/admin/\n"
+                "Disallow: /backups/\n"
+                "Sitemap: https://janardhan-textiles-storefront.vercel.app/sitemap.xml\n"
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/plain; charset=utf-8")
+            self.send_header("Content-Length", str(len(robots_body)))
+            self.end_headers()
+            self.wfile.write(robots_body)
+            return
+
+        if path == "/sitemap.xml":
+            prods = fetch_all_products(include_inactive=False)
+            base_loc = "https://janardhan-textiles-storefront.vercel.app"
+            entries = [
+                f"  <url><loc>{base_loc}/</loc><changefreq>daily</changefreq><priority>1.0</priority></url>",
+                f"  <url><loc>{base_loc}/#shop</loc><changefreq>daily</changefreq><priority>0.9</priority></url>",
+                f"  <url><loc>{base_loc}/#wholesale</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>",
+            ]
+            for p in prods:
+                pid = p.get("id") or p.get("sku")
+                entries.append(f"  <url><loc>{base_loc}/?product={pid}#product/{pid}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>")
+            xml_bytes = (
+                '<?xml version="1.0" encoding="UTF-8"?>\n'
+                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+                + "\n".join(entries)
+                + "\n</urlset>\n"
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "application/xml; charset=utf-8")
+            self.send_header("Content-Length", str(len(xml_bytes)))
+            self.end_headers()
+            self.wfile.write(xml_bytes)
             return
 
         if path == "/api/health":

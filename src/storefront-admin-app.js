@@ -6405,8 +6405,86 @@
         ShowcaseScrollEngine.mount();
     }
 
+    this.syncSeoAndStructuredData();
     this.syncReactBitsForRoute();
   };
+
+  app.syncSeoAndStructuredData = function () {
+    const page = this.state.currentPage || "home";
+    const prodJsonLdEl = document.getElementById("jt-product-jsonld");
+    const descMeta = document.querySelector('meta[name="description"]');
+    const ogTitle = document.getElementById("og-title-meta");
+
+    if (page === "product") {
+      const saree =
+        (this.state.products || []).find((p) => (p.id || p.sku) === this.state.selectedProductId) ||
+        (this.state.products || [])[0];
+      if (saree) {
+        const pricing = this.getPricing(saree);
+        const title = `${saree.name} (${saree.fabric}) | Janardhan Textiles`;
+        document.title = title;
+        if (ogTitle) ogTitle.setAttribute("content", title);
+        if (descMeta && saree.description) descMeta.setAttribute("content", saree.description);
+
+        if (prodJsonLdEl) {
+          const schemaObj = {
+            "@context": "https://schema.org",
+            "@type": "Product",
+            name: saree.name,
+            sku: saree.sku || saree.id,
+            description: saree.description || `${saree.color} ${saree.fabric} saree by Janardhan Textiles.`,
+            image: (saree.images || []).map((u) => new URL(u, window.location.origin).href),
+            brand: {
+              "@type": "Brand",
+              name: "Janardhan Textiles"
+            },
+            material: saree.fabric,
+            color: saree.color
+          };
+          if (!pricing.priceOnRequest && pricing.finalINR > 0) {
+            schemaObj.offers = {
+              "@type": "Offer",
+              priceCurrency: "INR",
+              price: String(pricing.finalINR),
+              availability: this.isProductOutOfStock(saree)
+                ? "https://schema.org/OutOfStock"
+                : "https://schema.org/InStock",
+              url: window.location.href
+            };
+          }
+          prodJsonLdEl.textContent = JSON.stringify(schemaObj);
+        }
+        return;
+      }
+    }
+
+    const titles = {
+      home: "Janardhan Textiles | Saree Showcase & Collection",
+      shop: "Saree Catalogue (24 Per Page) | Janardhan Textiles",
+      wholesale: "Wholesale & Bulk Loom Enquiries | Janardhan Textiles",
+      about: "About Our Power-Loom Weaving | Janardhan Textiles",
+      contact: "Contact & WhatsApp Mill Desk | Janardhan Textiles",
+      policies: "Shipping, Returns & Store Policies | Janardhan Textiles",
+      admin: "Admin Panel | Janardhan Textiles"
+    };
+    const nextTitle = titles[page] || titles.home;
+    document.title = nextTitle;
+    if (ogTitle) ogTitle.setAttribute("content", nextTitle);
+    if (prodJsonLdEl) prodJsonLdEl.textContent = "";
+  };
+
+  if (typeof window !== "undefined" && !window.__JT_ESC_BOUND__) {
+    window.__JT_ESC_BOUND__ = true;
+    window.addEventListener("keydown", (e) => {
+      if (e.key === "Escape") {
+        if (app.state.lightboxOpen) app.closeLightbox();
+        app.closeCartDrawer?.();
+        app.closeMobileFilterSheet?.();
+        document.getElementById("order-detail-modal")?.classList.add("hidden");
+        if (app.state.reactBits?.modalOpen) app.closeFlowingMenuModal?.();
+      }
+    });
+  }
 
   // ============================================================================
   // 17. REACT BITS ANIMATED COMPONENTS (SplashCursor, FlowingMenu, CurvedLoop)

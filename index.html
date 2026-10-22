@@ -12,6 +12,28 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/public/images/sarees/jt-saree-09/1-front.jpg">
   <title>Janardhan Textiles | Saree Showcase &amp; Collection</title>
+  <link id="canonical-link" rel="canonical" href="https://janardhan-textiles-storefront.vercel.app/">
+  <meta property="og:site_name" content="Janardhan Textiles">
+  <meta property="og:title" id="og-title-meta" content="Janardhan Textiles | Saree Showcase &amp; Collection">
+  <meta property="og:description" id="og-desc-meta" content="Janardhan Textiles — Champagne Tissue Saree with Floral and Peacock Embroidery. Five-view saree gallery, 360-degree turntable, and power-loom collection.">
+  <meta property="og:type" content="website">
+  <meta property="og:image" id="og-image-meta" content="https://janardhan-textiles-storefront.vercel.app/public/images/sarees/jt-saree-09/1-front.jpg">
+  <script id="jt-org-jsonld" type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ClothingStore",
+    "name": "Janardhan Textiles",
+    "url": "https://janardhan-textiles-storefront.vercel.app/",
+    "telephone": "+91-9652262173",
+    "email": "dasaridamu9418@gmail.com",
+    "sameAs": [
+      "https://www.instagram.com/dasari_damu",
+      "https://www.facebook.com/share/1AvqDY71mi/",
+      "https://pin.it/2mS5N2kh4"
+    ]
+  }
+  </script>
+  <script id="jt-product-jsonld" type="application/ld+json"></script>
 
   <!-- Preload initial 0° 360 turntable frame & featured saree views -->
   <link rel="preload" as="image" href="/public/assets/saree-360/frames/frame-000.webp" fetchpriority="high" />
@@ -1058,6 +1080,7 @@
   </style>
 </head>
 <body class="woven-bg min-h-screen flex flex-col selection:bg-gold/40 selection:text-ink">
+  <a href="#app-viewport" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-teal focus:text-gold focus:font-bold">Skip to main content</a>
 
   <!-- Sticky Storefront Header with Prominent Search, Navigation, Wishlist, Account & Cart -->
   <header class="sticky top-0 z-40 w-full max-w-full overflow-x-clip bg-[#FAF8F5]/95 backdrop-blur-md border-b border-gold/40 shadow-[0_1px_8px_rgba(35,29,22,0.06)]">
@@ -2240,6 +2263,20 @@
       bindDragSpin(boxEl) {
         if (!boxEl || boxEl.dataset.dragSpinBound === "true") return;
         boxEl.dataset.dragSpinBound = "true";
+        boxEl.setAttribute("tabindex", "0");
+        boxEl.setAttribute("role", "region");
+        boxEl.setAttribute("aria-label", "Interactive 360-degree Saree Turntable. Use Left and Right arrow keys or drag to rotate.");
+        boxEl.addEventListener("keydown", (e) => {
+          if (e.key === "ArrowRight") {
+            e.preventDefault();
+            const cur = this.progressToDegree(this.currentProgress);
+            this.setDegree(this.normalizeDegree(cur + 15));
+          } else if (e.key === "ArrowLeft") {
+            e.preventDefault();
+            const cur = this.progressToDegree(this.currentProgress);
+            this.setDegree(this.normalizeDegree(cur - 15));
+          }
+        });
         let dragging = false;
         let startX = 0;
         let startDeg = 0;

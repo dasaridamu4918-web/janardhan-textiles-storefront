@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /api/admin/
+Disallow: /backups/
+Sitemap: https://janardhan-textiles-storefront.vercel.app/sitemap.xml

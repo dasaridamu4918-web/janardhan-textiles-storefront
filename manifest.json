@@ -1,11 +1,9 @@
 {
-  "name": "Janardhan Textiles — Saree Showcase & Collection",
+  "name": "Janardhan Textiles \u2014 Saree Showcase & Collection",
   "short_name": "Janardhan Textiles",
-  "description": "Janardhan Textiles — Champagne Tissue Saree 360° Showcase, Saree Catalogue, and Direct Mill Ordering.",
-  "start_url": "/?source=pwa",
-  "scope": "/",
+  "description": "Power-loom saree manufacturer offering 5-view studio galleries, 360-degree drape inspection, and retail & wholesale saree collections.",
+  "start_url": "/",
   "display": "standalone",
-  "orientation": "portrait",
   "background_color": "#FAF6EE",
   "theme_color": "#6B1D2F",
   "icons": [
@@ -13,7 +11,7 @@
       "src": "/public/images/sarees/jt-saree-09/1-front.jpg",
       "sizes": "512x512",
       "type": "image/jpeg",
-      "purpose": "any maskable"
+      "purpose": "any"
     }
   ]
 }
