@@ -584,17 +584,92 @@
         pointer-events: none;
       }
 
+      html.is-scroll-driven .showcase-stage {
+        background: radial-gradient(ellipse at 50% 42%, #1C1622 0%, #0F0D14 55%, #07060A 100%);
+      }
+
+      .stage-brand-watermark {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        pointer-events: none;
+        z-index: 4;
+        opacity: 0.065;
+        transition: transform 0.12s ease-out;
+      }
+
+      .stage-brand-watermark img {
+        width: min(68vw, 520px);
+        height: auto;
+        filter: sepia(1) saturate(2.2) hue-rotate(8deg) brightness(1.15);
+        user-select: none;
+      }
+
       .saree-360-frame-box {
         position: relative;
         height: 100%;
         max-height: calc(100svh - 8.25rem);
         max-width: calc(100vw - 1.5rem);
-        aspect-ratio: 9 / 16;
+        aspect-ratio: 3 / 4;
         border-radius: 1.25rem;
         overflow: hidden;
-        box-shadow: 0 20px 50px rgba(35, 22, 25, 0.16), 0 0 0 1px rgba(196, 161, 90, 0.45);
-        background: #B39E88;
+        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(196, 161, 90, 0.55);
+        background: radial-gradient(ellipse at 50% 40%, #C5B29B 0%, #9E8A74 100%);
         contain: layout paint;
+        pointer-events: auto;
+        cursor: grab;
+        touch-action: pan-y;
+      }
+
+      .saree-360-frame-box:active {
+        cursor: grabbing;
+      }
+
+      .saree-360-ai-disclosure {
+        position: absolute;
+        bottom: 0.6rem;
+        left: 0.6rem;
+        right: 0.6rem;
+        z-index: 6;
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        gap: 0.35rem;
+        padding: 0.28rem 0.65rem;
+        border-radius: 0.75rem;
+        background: rgba(15, 13, 20, 0.84);
+        backdrop-filter: blur(6px);
+        border: 1px solid rgba(196, 161, 90, 0.45);
+        color: #FAF6EE;
+        font-size: 0.62rem;
+        line-height: 1.25;
+      }
+
+      .saree-360-hotspot-strip {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.3rem;
+        flex-wrap: wrap;
+      }
+
+      .saree-360-hotspot-btn {
+        padding: 0.16rem 0.48rem;
+        border-radius: 999px;
+        background: rgba(196, 161, 90, 0.22);
+        border: 1px solid rgba(196, 161, 90, 0.65);
+        color: #FAF6EE;
+        font-size: 0.58rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.18s ease;
+      }
+
+      .saree-360-hotspot-btn:hover {
+        background: #C4A15A;
+        color: #1A1215;
       }
 
       .saree-360-poster-fallback,
@@ -1601,8 +1676,8 @@
       queuedSet: new Set(),
       activeLoads: 0,
       maxConcurrentLoads: 12,
-      maxCachedFrames: 360,
-      preloadWindowRadius: 24,
+      maxCachedFrames: 48,
+      preloadWindowRadius: 12,
       anchorStepDegrees: 15,
       anchorReadyCount: 0,
       anchorSettledCount: 0,
@@ -1616,7 +1691,7 @@
       scrollDirection: 1,
       rafId: null,
       lastRafTimestamp: 0,
-      frameCacheBustVersion: "360-v5",
+      frameCacheBustVersion: "360-v6",
 
       formatIndex(num) {
         return String(num).padStart(2, "0");
@@ -1946,6 +2021,12 @@
 
         this.lastDrawnScrubIndex = best.actualDeg;
         this.lastDisplayedExact = best.isExact;
+
+        const wm = document.getElementById("stage-brand-watermark");
+        if (wm) {
+          const shiftX = Math.sin((normDeg * Math.PI) / 180) * -18;
+          wm.style.transform = `translate3d(${shiftX.toFixed(1)}px, 0, 0)`;
+        }
       },
 
       drawScrubFrame(progress, scrubIdxOverride = null) {
@@ -2113,6 +2194,8 @@
         this.initScrubFrames();
         this.drawScrubFrame(0, 0);
         this.updateLoadingAndErrorUI();
+        const box360 = document.querySelector(".saree-360-frame-box");
+        if (box360) this.bindDragSpin(box360);
 
         const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
         if (reducedMotionQuery.matches || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
@@ -2167,11 +2250,61 @@
         ScrollTrigger.refresh();
       },
 
+      disposeFrames() {
+        for (let i = 0; i < this.scrubTotalFrames; i++) {
+          if (i !== 0 && !this.isAnchorDegree(i)) {
+            this.scrubImages[i] = null;
+            if (this.frameStates[i] === "ready") {
+              this.frameStates[i] = "idle";
+            }
+          }
+        }
+        this.frameTouchOrder = [0];
+      },
+
+      bindDragSpin(boxEl) {
+        if (!boxEl || boxEl.dataset.dragSpinBound === "true") return;
+        boxEl.dataset.dragSpinBound = "true";
+        let dragging = false;
+        let startX = 0;
+        let startDeg = 0;
+        boxEl.addEventListener("pointerdown", (e) => {
+          if (e.target && e.target.closest("button, a")) return;
+          dragging = true;
+          startX = e.clientX;
+          startDeg = this.progressToDegree(this.currentProgress);
+          try { boxEl.setPointerCapture(e.pointerId); } catch (_) {}
+        });
+        boxEl.addEventListener("pointermove", (e) => {
+          if (!dragging) return;
+          const dx = e.clientX - startX;
+          const nextDeg = this.normalizeDegree(startDeg + Math.round(dx * 0.65));
+          this.setDegree(nextDeg);
+        });
+        const endDrag = () => { dragging = false; };
+        boxEl.addEventListener("pointerup", endDrag);
+        boxEl.addEventListener("pointercancel", endDrag);
+      },
+
+      openDetailHotspot(galleryIndex) {
+        if (window.app && typeof window.app.openProductDetail === "function") {
+          window.app.state.selectedProductId = "jt-saree-09";
+          window.app.state.selectedGalleryIndex = galleryIndex;
+          window.app.openProductDetail("jt-saree-09");
+          setTimeout(() => {
+            if (typeof window.app.selectGalleryView === "function") {
+              window.app.selectGalleryView(galleryIndex);
+            }
+          }, 60);
+        }
+      },
+
       unmount() {
         if (this.rafId !== null) {
           window.cancelAnimationFrame(this.rafId);
           this.rafId = null;
         }
+        this.disposeFrames();
         if (this.scrollTriggerInstance) {
           this.scrollTriggerInstance.kill();
           this.scrollTriggerInstance = null;
@@ -2775,7 +2908,7 @@
                     <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
                     <img
                       id="saree-360-poster-fallback"
-                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v5"
+                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v6"
                       alt="Champagne Tissue Saree 360-degree turntable view"
                       class="saree-360-poster-fallback"
                       fetchpriority="high"

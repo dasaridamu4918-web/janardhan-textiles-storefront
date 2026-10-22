@@ -1580,16 +1580,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated indigo blue silk blouse with copper-gold zari border sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-047.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-047.jpg",
+      "/public/images/sarees/saree-047/1-front.jpg",
       "/public/images/sarees/saree-047/2-back-pallu.jpg",
       "/public/images/sarees/saree-047/3-pallu-detail.jpg",
       "/public/images/sarees/saree-047/4-macro.jpg",
-      ""
+      "/public/images/sarees/saree-047/5-blouse.jpg"
     ],
-    "missingViews": [
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-047.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-047/1-front.jpg"
   },
   {
     "id": "saree-048",
@@ -1613,18 +1611,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching prussian blue silk blouse with antique silver zari sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-048.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-048.jpg",
+      "/public/images/sarees/saree-048/1-front.jpg",
       "/public/images/sarees/saree-048/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-048/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-048/4-macro.jpg",
+      "/public/images/sarees/saree-048/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-048.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-048/1-front.jpg"
   },
   {
     "id": "saree-049",
@@ -1648,18 +1642,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated mint jade silk blouse with woven gold floral sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-049.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-049.jpg",
+      "/public/images/sarees/saree-049/1-front.jpg",
       "/public/images/sarees/saree-049/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-049/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-049/4-macro.jpg",
+      "/public/images/sarees/saree-049/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-049.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-049/1-front.jpg"
   },
   {
     "id": "saree-050",
@@ -1683,19 +1673,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted periwinkle silk blouse with champagne gold scalloped sleeve cuffs",
     "primaryImage": "/public/images/sarees/generated/saree-050.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-050.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-050/1-front.jpg",
+      "/public/images/sarees/saree-050/2-back-pallu.jpg",
+      "/public/images/sarees/saree-050/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-050/4-macro.jpg",
+      "/public/images/sarees/saree-050/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-050.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-050/1-front.jpg"
   },
   {
     "id": "saree-051",
@@ -1719,19 +1704,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated vermilion red silk blouse with gold zari brocade sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-051.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-051.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-051/1-front.jpg",
+      "/public/images/sarees/saree-051/2-back-pallu.jpg",
+      "/public/images/sarees/saree-051/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-051/4-macro.jpg",
+      "/public/images/sarees/saree-051/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-051.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-051/1-front.jpg"
   },
   {
     "id": "saree-052",
@@ -1756,13 +1736,12 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-052.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-052.jpg",
-      "",
+      "/public/images/sarees/saree-052/2-back-pallu.jpg",
       "",
       "",
       ""
     ],
     "missingViews": [
-      "2-back-pallu.jpg",
       "3-pallu-detail.jpg",
       "4-macro.jpg",
       "5-blouse.jpg"

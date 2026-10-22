@@ -847,13 +847,57 @@ def normalize_product(prod, idx=0):
         p["gallery"] = gal
         p["missingViews"] = missing_views
 
-    # Build unified `views[]` array (full-body yaw frames + detail close-ups)
+    # Build unified `views[]` array (full-body yaw frames + detail close-ups, never mixing detail shots into rotation ring)
     extra_views = p.get("extraYawViews") if isinstance(p.get("extraYawViews"), list) else []
+    if sku == "jt-saree-09" and not extra_views:
+        jt09_yaw_defs = [
+            (6, "yaw_045", "45° Front-Right Angle (AI-Assisted Preview)", "yaw-045.jpg", "side", 45),
+            (7, "yaw_090", "90° Right Profile (AI-Assisted Preview)", "yaw-090.jpg", "side", 90),
+            (8, "yaw_135", "135° Back-Right Angle (AI-Assisted Preview)", "yaw-135.jpg", "side", 135),
+            (9, "yaw_225", "225° Back-Left Angle (AI-Assisted Preview)", "yaw-225.jpg", "side2", 225),
+            (10, "yaw_270", "270° Left Profile (AI-Assisted Preview)", "yaw-270.jpg", "side2", 270),
+            (11, "yaw_315", "315° Front-Left Angle (AI-Assisted Preview)", "yaw-315.jpg", "side2", 315),
+        ]
+        overrides = p.get("viewApprovals") if isinstance(p.get("viewApprovals"), dict) else {}
+        for ord_num, ykey, ylabel, yfname, yrole, yyaw in jt09_yaw_defs:
+            disk_p = os.path.join(SAREES_IMAGES_DIR, "jt-saree-09", yfname)
+            if os.path.exists(disk_p):
+                vid = f"{sku}-yaw-{yyaw:03d}"
+                is_app = bool(overrides.get(vid, True))
+                extra_views.append(enrich_view_entry(
+                    sku, ord_num, ykey, ylabel, yfname,
+                    f"/public/images/sarees/jt-saree-09/{yfname}",
+                    p.get("name", ""), p.get("fabric", ""), p.get("color", ""),
+                    {"id": vid, "role": yrole, "yaw": yyaw, "source": "ai", "approved": is_app}
+                ))
     views_list = list(p["gallery"])
+    overrides = p.get("viewApprovals") if isinstance(p.get("viewApprovals"), dict) else {}
+    for v_item in views_list:
+        if isinstance(v_item, dict) and v_item.get("id") in overrides:
+            v_item["approved"] = bool(overrides[v_item["id"]])
     for ev in extra_views:
         if isinstance(ev, dict) and ev.get("url"):
+            if ev.get("id") in overrides:
+                ev["approved"] = bool(overrides[ev["id"]])
             views_list.append(ev)
     p["views"] = views_list
+
+    # Honest viewer mode calculation: only approved full-body views (front/side/back/side2) count toward 360 rotation
+    full_body_views = [
+        v for v in views_list
+        if isinstance(v, dict)
+        and v.get("role") in ("front", "side", "back", "side2")
+        and v.get("url")
+        and not v.get("missingView")
+        and (v.get("source") == "real" or v.get("approved", True))
+    ]
+    full_body_views.sort(key=lambda x: (x.get("yaw") if x.get("yaw") is not None else 999))
+    p["fullBodyViews"] = full_body_views
+    p["detailViews"] = [v for v in views_list if isinstance(v, dict) and v.get("role") == "detail" and v.get("url") and not v.get("missingView")]
+    p["fullBodyYawCount"] = len(full_body_views)
+    p["viewerMode"] = "360_mode" if len(full_body_views) >= 8 else ("multi_angle_mode" if len(full_body_views) >= 4 else "product_views_mode")
+    p["hasApprovedAiAngles"] = any(v.get("source") == "ai" and v.get("approved", True) for v in full_body_views)
+    p["aiDisclosure"] = "AI-assisted angle preview — see original photos below" if p["hasApprovedAiAngles"] else "" 
     p["images"] = [g.get("url") for g in p["gallery"] if g and g.get("url")]
     p["image"] = p["images"][0] if p["images"] else ""
     p["blurDataUrl"] = (p["gallery"][0].get("blurDataUrl") if p.get("gallery") else "") or ""
@@ -1859,6 +1903,37 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
             combined_customers = list(guest_by_key.values()) + users
             return self._send_json(200, {"total": len(combined_customers), "items": combined_customers, "customers": combined_customers})
+
+        if path == "/api/admin/review-frames":
+            admin = self._require_admin()
+            if not admin:
+                return
+            with DB_LOCK:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute("SELECT data_json FROM products ORDER BY sort_order ASC")
+                prods = [normalize_product(json.loads(r["data_json"]), i) for i, r in enumerate(cur.fetchall())]
+                conn.close()
+            items = []
+            for p in prods:
+                ai_views = [v for v in p.get("views", []) if v.get("source") == "ai" and v.get("url")]
+                real_views = [v for v in p.get("views", []) if v.get("source") == "real" and v.get("url")]
+                if ai_views or p.get("id") == "jt-saree-09":
+                    items.append({
+                        "id": p["id"],
+                        "sku": p["sku"],
+                        "name": p["name"],
+                        "fabric": p.get("fabric", ""),
+                        "color": p.get("color", ""),
+                        "viewerMode": p.get("viewerMode", "product_views_mode"),
+                        "fullBodyYawCount": p.get("fullBodyYawCount", 0),
+                        "hasApprovedAiAngles": p.get("hasApprovedAiAngles", False),
+                        "aiDisclosure": p.get("aiDisclosure", ""),
+                        "realViews": real_views,
+                        "aiViews": ai_views,
+                        "views": p.get("views", [])
+                    })
+            return self._send_json(200, {"ok": True, "items": items})
 
         if path == "/api/admin/audit-log":
             admin = self._require_admin()
@@ -3120,6 +3195,47 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             body = self._read_json_body()
         except Exception as e:
             return self._send_json(400, {"ok": False, "error": f"Invalid JSON: {e}"})
+
+        # Admin Review Frames Approval Toggle: PATCH /api/admin/products/:id/views/:viewId
+        if path.startswith("/api/admin/products/") and "/views/" in path:
+            admin = self._require_admin()
+            if not admin:
+                return
+            rem = path[len("/api/admin/products/"):]
+            parts = rem.split("/views/", 1)
+            product_id = urllib.parse.unquote(parts[0]).strip("/")
+            view_id = urllib.parse.unquote(parts[1]).strip("/")
+            if "approved" not in body and "role" not in body and "yaw" not in body:
+                return self._send_json(400, {"ok": False, "error": "Expected approved, role, or yaw in request body."})
+            ts = now_iso()
+            with DB_LOCK:
+                conn = get_db_connection()
+                cur = conn.cursor()
+                cur.execute("SELECT data_json FROM products WHERE id = ?", (product_id,))
+                row = cur.fetchone()
+                if not row:
+                    conn.close()
+                    return self._send_json(404, {"ok": False, "error": f"Product '{product_id}' not found."})
+                pdata = json.loads(row["data_json"])
+                approvals = pdata.get("viewApprovals") if isinstance(pdata.get("viewApprovals"), dict) else {}
+                if "approved" in body:
+                    approvals[view_id] = bool(body["approved"])
+                pdata["viewApprovals"] = approvals
+                if isinstance(pdata.get("gallery"), list):
+                    for g in pdata["gallery"]:
+                        if isinstance(g, dict) and (g.get("id") == view_id or g.get("key") == view_id):
+                            if "approved" in body:
+                                g["approved"] = bool(body["approved"])
+                            if "role" in body:
+                                g["role"] = str(body["role"])
+                            if "yaw" in body:
+                                g["yaw"] = body["yaw"]
+                norm_p = normalize_product(pdata)
+                cur.execute("UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?", (json.dumps(norm_p), ts, product_id))
+                conn.commit()
+                conn.close()
+            record_audit_log("review_frame_toggle", admin, "product_view", f"{product_id}:{view_id}", self._get_client_ip(), body)
+            return self._send_json(200, {"ok": True, "product": norm_p})
 
         # Admin Inline Quick Stock Edit: PATCH /api/admin/products/:id/stock
         m_stock = re.match(r"^/api/admin/products/([^/]+)/stock$", path)

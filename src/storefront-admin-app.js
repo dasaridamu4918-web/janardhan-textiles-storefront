@@ -2937,9 +2937,13 @@
                 )
                 .join("")}
             </div>
-            <!-- 360° Portrait 9:16 Saree Turntable Scroll-Scrub Stage -->
+            <!-- Subtle Gold Brand Emblem Counter-Parallax Watermark -->
+            <div id="stage-brand-watermark" class="stage-brand-watermark" aria-hidden="true">
+              <img src="${window.__ASSET_BASE_PATH__ || ""}/public/images/logo/janardhan-logo.png" alt="" loading="lazy" />
+            </div>
+            <!-- 360° Portrait 3:4 Full-Body Saree Turntable Scroll-Scrub & Drag Stage -->
             <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
-              <div class="saree-360-frame-box">
+              <div class="saree-360-frame-box" title="Scroll or drag horizontally to rotate 360°">
                 <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
                   <span class="saree-360-loading-dot" aria-hidden="true"></span>
                   <span id="saree-360-loading-text">Loading 360° views…</span>
@@ -2951,7 +2955,7 @@
                 <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
                 <img
                   id="saree-360-poster-fallback"
-                  src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v5"
+                  src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v6"
                   alt="Champagne Tissue Saree 360-degree turntable view"
                   class="saree-360-poster-fallback"
                   fetchpriority="high"
@@ -2961,9 +2965,17 @@
                   id="saree-360-canvas"
                   class="saree-360-canvas"
                   width="720"
-                  height="1280"
+                  height="960"
                   aria-label="Champagne Tissue Saree 360-degree turntable view"
                 ></canvas>
+                <div class="saree-360-ai-disclosure">
+                  <span><strong>360° Mode:</strong> AI-assisted angle preview — see original photos below</span>
+                  <div class="saree-360-hotspot-strip" aria-label="Inspect Real Studio Macro Details">
+                    <button type="button" class="saree-360-hotspot-btn" onclick="ShowcaseScrollEngine.openDetailHotspot(2)">⊕ Pallu Detail</button>
+                    <button type="button" class="saree-360-hotspot-btn" onclick="ShowcaseScrollEngine.openDetailHotspot(3)">⊕ Zari Macro</button>
+                    <button type="button" class="saree-360-hotspot-btn" onclick="ShowcaseScrollEngine.openDetailHotspot(4)">⊕ Blouse &amp; Border</button>
+                  </div>
+                </div>
               </div>
             </div>
             <div class="stage-vignette" aria-hidden="true"></div>
@@ -3288,13 +3300,49 @@
                 />
               </div>
 
-              <div class="bg-[#F5EFE4] text-ink border-t border-gold/30 px-3 sm:px-4 py-2.5 flex items-center justify-between gap-2 text-xs">
-                <span id="product-main-label" class="font-semibold text-ink truncate">${activeLabel}</span>
+              <div class="bg-[#F5EFE4] text-ink border-t border-gold/30 px-3 sm:px-4 py-2.5 flex flex-wrap items-center justify-between gap-2 text-xs">
+                <div class="flex flex-wrap items-center gap-2 min-w-0">
+                  <span id="product-main-label" class="font-semibold text-ink truncate">${activeLabel}</span>
+                  <span class="px-2 py-0.5 rounded-full bg-ivory border border-gold/50 text-[10px] font-bold text-teal uppercase tracking-wider">
+                    ${saree.viewerMode === "360_mode" ? "360° Mode (8 Full-Body Angles)" : `Product Views (${(saree.gallery || []).filter((g) => g && g.url && !g.missingView).length} Studio Photos)`}
+                  </span>
+                </div>
                 <button type="button" onclick="app.openLightbox()" class="shrink-0 font-semibold text-teal hover:underline">
                   Full Screen Zoom ⤢
                 </button>
               </div>
             </div>
+
+            ${
+              saree.viewerMode === "360_mode" && Array.isArray(saree.fullBodyViews) && saree.fullBodyViews.length >= 8
+                ? `
+              <div class="rounded-2xl bg-[#120E16] text-ivory border border-gold/55 p-3.5 sm:p-4 space-y-2.5 shadow-md" aria-label="Interactive 360-Degree Full-Body Angle Scrubber">
+                <div class="flex flex-wrap items-center justify-between gap-2">
+                  <div class="flex items-center gap-2">
+                    <span class="px-2.5 py-0.5 rounded-full bg-gold text-ink font-bold text-[10px] uppercase tracking-wider">360° Full-Body Rotation</span>
+                    <span id="detail-360-yaw-readout" class="font-mono text-xs text-gold font-bold">0° Front View (Original Studio Photo)</span>
+                  </div>
+                  <span class="text-[11px] text-ivory/80">${saree.aiDisclosure || "AI-assisted angle preview — see original photos below"}</span>
+                </div>
+                <div class="grid grid-cols-4 sm:grid-cols-8 gap-1.5">
+                  ${saree.fullBodyViews
+                    .map(
+                      (yv) => `
+                    <button
+                      type="button"
+                      onclick="app.selectDetailYawAngle('${(yv.url || "").replace(/'/g, "\\'")}', '${(yv.label || "").replace(/'/g, "\\'")}', '${yv.source || "ai"}')"
+                      class="py-1.5 px-2 rounded-lg border border-gold/40 bg-white/5 hover:bg-gold hover:text-ink text-[11px] font-bold transition-colors text-center"
+                    >
+                      ${yv.yaw}° ${yv.source === "real" ? "★" : ""}
+                    </button>
+                  `
+                    )
+                    .join("")}
+                </div>
+              </div>
+            `
+                : ""
+            }
 
             <!-- Thumbnails -->
             <div id="gallery-thumbnails-strip" class="flex sm:grid sm:grid-cols-5 gap-2.5 overflow-x-auto no-scrollbar pb-2" role="tablist">
@@ -3514,6 +3562,22 @@
     if (!img) return;
     img.style.transformOrigin = "50% 50%";
     img.style.transform = "scale(1)";
+  };
+
+  app.selectDetailYawAngle = function (rawUrl, label, source) {
+    const mainImg = document.getElementById("product-main-image");
+    const activePill = document.getElementById("detail-active-view-pill");
+    const mainLabel = document.getElementById("product-main-label");
+    const yawReadout = document.getElementById("detail-360-yaw-readout");
+    const resolved = this.resolveImageUrl(rawUrl, "Saree", label);
+    if (mainImg) {
+      mainImg.src = resolved;
+      mainImg.alt = label;
+      mainImg.setAttribute("data-missing-view", "false");
+    }
+    if (activePill) activePill.textContent = label;
+    if (mainLabel) mainLabel.textContent = label;
+    if (yawReadout) yawReadout.textContent = label;
   };
 
   app.selectGalleryView = function (index) {
