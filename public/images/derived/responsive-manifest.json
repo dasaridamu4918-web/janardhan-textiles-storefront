@@ -4665,5 +4665,564 @@
     },
     "srcset": "/public/images/derived/saree-049__2-back-pallu-480w.webp?v=1792638423 480w, /public/images/derived/saree-049__2-back-pallu-720w.webp?v=1792638423 720w, /public/images/derived/saree-049__2-back-pallu-1080w.webp?v=1792638423 1080w",
     "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMBAgT/xAAfEAACAgICAwEAAAAAAAAAAAAAAQIRAyExUQQSYRP/xAAWAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAYEQEAAwEAAAAAAAAAAAAAAAAAASFBEf/aAAwDAQACEQMRAD8A3HjqFpLSs7njjWk7S3ZwppeO5e3wvkyXXSRlqteR41fAKN7AqRzQlHCoRi2+dbLxuVPtJP4wA5aZm2fm+0ABL//Z"
+  },
+  "/public/images/sarees/saree-047/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638558,
+    "webpUrl": "/public/images/derived/saree-047__5-blouse-720w.webp?v=1792638558",
+    "variants": {
+      "480w": "/public/images/derived/saree-047__5-blouse-480w.webp?v=1792638558",
+      "720w": "/public/images/derived/saree-047__5-blouse-720w.webp?v=1792638558",
+      "1080w": "/public/images/derived/saree-047__5-blouse-1080w.webp?v=1792638558"
+    },
+    "srcset": "/public/images/derived/saree-047__5-blouse-480w.webp?v=1792638558 480w, /public/images/derived/saree-047__5-blouse-720w.webp?v=1792638558 720w, /public/images/derived/saree-047__5-blouse-1080w.webp?v=1792638558 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAUDAQT/xAAjEAABAwMEAgMAAAAAAAAAAAABAAIDBBEhEhMxQQVxImGh/8QAFgEBAQEAAAAAAAAAAAAAAAAAAQIA/8QAGREBAQADAQAAAAAAAAAAAAAAAAEREiEx/9oADAMBAAIRAxEAPwDOSWOma3cvngALaWSmMUQje1znX469qP5aZx1vZf4EN9LlBKH6XgZARrNcrl7hU22kYRax6dpvoIpZ55m0zKaZ72NLbZB7PX6plKRHHqIFsY+kRM8MWNQ64REUs//Z"
+  },
+  "/public/images/sarees/saree-048/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638703,
+    "webpUrl": "/public/images/derived/saree-048__3-pallu-detail-720w.webp?v=1792638703",
+    "variants": {
+      "480w": "/public/images/derived/saree-048__3-pallu-detail-480w.webp?v=1792638703",
+      "720w": "/public/images/derived/saree-048__3-pallu-detail-720w.webp?v=1792638703",
+      "1080w": "/public/images/derived/saree-048__3-pallu-detail-1080w.webp?v=1792638703"
+    },
+    "srcset": "/public/images/derived/saree-048__3-pallu-detail-480w.webp?v=1792638703 480w, /public/images/derived/saree-048__3-pallu-detail-720w.webp?v=1792638703 720w, /public/images/derived/saree-048__3-pallu-detail-1080w.webp?v=1792638703 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGQABAAIDAAAAAAAAAAAAAAAAAAUGAQME/8QAIxAAAgICAQMFAQAAAAAAAAAAAQIAAwQREiExUQUUJGGx4f/EABYBAQEBAAAAAAAAAAAAAAAAAAMCBP/EABgRAQEBAQEAAAAAAAAAAAAAAAABETFB/9oADAMBAAIRAxEAPwCs3H5I667zv9Gp5s9x8hR+yMyH3YGHiSSX+zOJR20wewfZ/hiXmJ91McV8RMkDcTOZWqaGfMQmqwoDs9JufDuyMhnYsCzb1xPSIjW2UcmrFUdVIGU8gBuIiEt//9k="
+  },
+  "/public/images/sarees/saree-048/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638880,
+    "webpUrl": "/public/images/derived/saree-048__4-macro-720w.webp?v=1792638880",
+    "variants": {
+      "480w": "/public/images/derived/saree-048__4-macro-480w.webp?v=1792638880",
+      "720w": "/public/images/derived/saree-048__4-macro-720w.webp?v=1792638880",
+      "1080w": "/public/images/derived/saree-048__4-macro-1080w.webp?v=1792638880"
+    },
+    "srcset": "/public/images/derived/saree-048__4-macro-480w.webp?v=1792638880 480w, /public/images/derived/saree-048__4-macro-720w.webp?v=1792638880 720w, /public/images/derived/saree-048__4-macro-1080w.webp?v=1792638880 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGQABAQEAAwAAAAAAAAAAAAAAAAUDAgQG/8QAJhAAAgIBAwIGAwAAAAAAAAAAAQIAAxEEITESQQUyQ1Fh0VJT4f/EABYBAQEBAAAAAAAAAAAAAAAAAAMAAv/EABkRAAMBAQEAAAAAAAAAAAAAAAABEhEhMf/aAAwDAQACEQMRAD8A8zQHVw1XUCu/UvInMkli1jsxPOdyZvoLVrsOWCZGMng+4MoX1LqkqCAAr6nOR7fMesfQp1cI+F/REtjQaTG5tJ77j6iVooOt4ZpKAQ9rg2ruVfy4+5QvsSshVBNvZFO/8ERBbb9GSwxxrfz04+ChMREOmalH/9k="
+  },
+  "/public/images/sarees/saree-048/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639067,
+    "webpUrl": "/public/images/derived/saree-048__5-blouse-720w.webp?v=1792639067",
+    "variants": {
+      "480w": "/public/images/derived/saree-048__5-blouse-480w.webp?v=1792639067",
+      "720w": "/public/images/derived/saree-048__5-blouse-720w.webp?v=1792639067",
+      "1080w": "/public/images/derived/saree-048__5-blouse-1080w.webp?v=1792639067"
+    },
+    "srcset": "/public/images/derived/saree-048__5-blouse-480w.webp?v=1792639067 480w, /public/images/derived/saree-048__5-blouse-720w.webp?v=1792639067 720w, /public/images/derived/saree-048__5-blouse-1080w.webp?v=1792639067 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAUGAgT/xAAlEAACAgEEAgAHAAAAAAAAAAABAgADEQQFEiExQRMjMkJRcZH/xAAWAQEBAQAAAAAAAAAAAAAAAAABAgD/xAAbEQACAgMBAAAAAAAAAAAAAAAAEQECEhMyUf/aAAwDAQACEQMRAD8AqW6nT6Wyuu18PZ9K4nQqWlXsdiGsfwTnqZnfFu1Ove+psohCdfaB1n+z1vuddNKA2PbaFHn1+5sGkOSZc+Ev4iZtN4u4L84ePcStM+kbYKW+XJVtdpQAGwheQHczejUjUVHHKsOA+RnIPURGnI36KjaZCxPD36EREXIKD//Z"
+  },
+  "/public/images/sarees/saree-049/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638539,
+    "webpUrl": "/public/images/derived/saree-049__3-pallu-detail-720w.webp?v=1792638539",
+    "variants": {
+      "480w": "/public/images/derived/saree-049__3-pallu-detail-480w.webp?v=1792638539",
+      "720w": "/public/images/derived/saree-049__3-pallu-detail-720w.webp?v=1792638539",
+      "1080w": "/public/images/derived/saree-049__3-pallu-detail-1080w.webp?v=1792638539"
+    },
+    "srcset": "/public/images/derived/saree-049__3-pallu-detail-480w.webp?v=1792638539 480w, /public/images/derived/saree-049__3-pallu-detail-720w.webp?v=1792638539 720w, /public/images/derived/saree-049__3-pallu-detail-1080w.webp?v=1792638539 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMEAQL/xAAjEAACAgEDAwUAAAAAAAAAAAAAAQIDIRESUQQUQSIjMYGh/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgED/8QAGBEBAQEBAQAAAAAAAAAAAAAAAAEhETH/2gAMAwEAAhEDEQA/AO3uWmvylGRauWsEuWv1Eb3tiovymzzRP263yosxuavt4ungE/sCNj6qyXcKLWiSSyinS+qitZwtrxwwA2dC5sa9kfIAEr//2Q=="
+  },
+  "/public/images/sarees/saree-049/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638650,
+    "webpUrl": "/public/images/derived/saree-049__4-macro-720w.webp?v=1792638650",
+    "variants": {
+      "480w": "/public/images/derived/saree-049__4-macro-480w.webp?v=1792638650",
+      "720w": "/public/images/derived/saree-049__4-macro-720w.webp?v=1792638650",
+      "1080w": "/public/images/derived/saree-049__4-macro-1080w.webp?v=1792638650"
+    },
+    "srcset": "/public/images/derived/saree-049__4-macro-480w.webp?v=1792638650 480w, /public/images/derived/saree-049__4-macro-720w.webp?v=1792638650 720w, /public/images/derived/saree-049__4-macro-1080w.webp?v=1792638650 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAQCA//EACYQAAEEAQIEBwAAAAAAAAAAAAEAAgMRIRJBBAUTURQjMWFjcZL/xAAXAQADAQAAAAAAAAAAAAAAAAAAAgMB/8QAGhEAAwEAAwAAAAAAAAAAAAAAAAECERJRYf/aAAwDAQACEQMRAD8AvhZ5Wh1Oz6dl3LqddBzDv2Kl6hjADBqBF13WIZZA0mSwCcA7KWiKGUl8V5Lr3win8T8cn4KI3wbjPZM3mkPD1HIHl10aGB9laPMINYLY9Z98BEQlhOrbeFzeJY5oN1YtERMYf//Z"
+  },
+  "/public/images/sarees/saree-049/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638775,
+    "webpUrl": "/public/images/derived/saree-049__5-blouse-720w.webp?v=1792638775",
+    "variants": {
+      "480w": "/public/images/derived/saree-049__5-blouse-480w.webp?v=1792638775",
+      "720w": "/public/images/derived/saree-049__5-blouse-720w.webp?v=1792638775",
+      "1080w": "/public/images/derived/saree-049__5-blouse-1080w.webp?v=1792638775"
+    },
+    "srcset": "/public/images/derived/saree-049__5-blouse-480w.webp?v=1792638775 480w, /public/images/derived/saree-049__5-blouse-720w.webp?v=1792638775 720w, /public/images/derived/saree-049__5-blouse-1080w.webp?v=1792638775 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMEAQX/xAAiEAABBAEEAgMAAAAAAAAAAAABAAIDERITITFBBCJhgbH/xAAWAQEBAQAAAAAAAAAAAAAAAAACAQP/xAAXEQEBAQEAAAAAAAAAAAAAAAAAAQIx/9oADAMBAAIRAxEAPwDrcWnHa6tVHhhsTQwCzZPysksUl6wuw6wF6UU0kwdhgHNq76tZLdWMWkEWh8bc3ccoqSD5sWUDya+laGUCQkV7Nb+kIiOhvUnvGZ37RESWV//Z"
+  },
+  "/public/images/sarees/saree-050/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792399424,
+    "webpUrl": "/public/images/derived/saree-050__1-front-720w.webp?v=1792399424",
+    "variants": {
+      "480w": "/public/images/derived/saree-050__1-front-480w.webp?v=1792399424",
+      "720w": "/public/images/derived/saree-050__1-front-720w.webp?v=1792399424",
+      "1080w": "/public/images/derived/saree-050__1-front-1080w.webp?v=1792399424"
+    },
+    "srcset": "/public/images/derived/saree-050__1-front-480w.webp?v=1792399424 480w, /public/images/derived/saree-050__1-front-720w.webp?v=1792399424 720w, /public/images/derived/saree-050__1-front-1080w.webp?v=1792399424 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAIDAf/EACEQAAICAQQCAwAAAAAAAAAAAAABAhEDBBIhURMxIiOB/8QAFwEBAQEBAAAAAAAAAAAAAAAAAAECA//EABYRAQEBAAAAAAAAAAAAAAAAAAABMf/aAAwDAQACEQMRAD8ApRWPFuq66K2KWNON/pyEvobi+aoYMl4kukYmOjF41foGjk7BBMovDp5/FvjiuSNG3KEU017ttAFG3ifaABB//9k="
+  },
+  "/public/images/sarees/saree-050/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638901,
+    "webpUrl": "/public/images/derived/saree-050__2-back-pallu-720w.webp?v=1792638901",
+    "variants": {
+      "480w": "/public/images/derived/saree-050__2-back-pallu-480w.webp?v=1792638901",
+      "720w": "/public/images/derived/saree-050__2-back-pallu-720w.webp?v=1792638901",
+      "1080w": "/public/images/derived/saree-050__2-back-pallu-1080w.webp?v=1792638901"
+    },
+    "srcset": "/public/images/derived/saree-050__2-back-pallu-480w.webp?v=1792638901 480w, /public/images/derived/saree-050__2-back-pallu-720w.webp?v=1792638901 720w, /public/images/derived/saree-050__2-back-pallu-1080w.webp?v=1792638901 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMBAv/EACIQAAICAgEDBQAAAAAAAAAAAAECABEDIQQSEzFBUWGBof/EABYBAQEBAAAAAAAAAAAAAAAAAAIBAP/EABcRAQEBAQAAAAAAAAAAAAAAAAARIUH/2gAMAwEAAhEDEQA/ANChMfUADQmqFdbUGh7zjIwHFu7sgfsphyEqT6ahmU0TjF+IlCxuIVQzqRiCKpJG9bnfGY1TKR9REXEV7fyIiIWf/9k="
+  },
+  "/public/images/sarees/saree-050/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639055,
+    "webpUrl": "/public/images/derived/saree-050__3-pallu-detail-720w.webp?v=1792639055",
+    "variants": {
+      "480w": "/public/images/derived/saree-050__3-pallu-detail-480w.webp?v=1792639055",
+      "720w": "/public/images/derived/saree-050__3-pallu-detail-720w.webp?v=1792639055",
+      "1080w": "/public/images/derived/saree-050__3-pallu-detail-1080w.webp?v=1792639055"
+    },
+    "srcset": "/public/images/derived/saree-050__3-pallu-detail-480w.webp?v=1792639055 480w, /public/images/derived/saree-050__3-pallu-detail-720w.webp?v=1792639055 720w, /public/images/derived/saree-050__3-pallu-detail-1080w.webp?v=1792639055 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMCBAX/xAAjEAEAAgEDAgcAAAAAAAAAAAABAAIDBBESITEUQlFhYoGh/8QAFgEBAQEAAAAAAAAAAAAAAAAAAAIB/8QAFxEBAAMAAAAAAAAAAAAAAAAAAAERMf/aAAwDAQACEQMRAD8AzkC2WtUOPHr9yukR0lFPISF18RV9CNG76agvUs1/WStW2AbL07xL1BqO/ciKHn5r8LVPjM6S+1Le2ViInCNdRloAc6xESba//9k="
+  },
+  "/public/images/sarees/saree-050/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639147,
+    "webpUrl": "/public/images/derived/saree-050__4-macro-720w.webp?v=1792639147",
+    "variants": {
+      "480w": "/public/images/derived/saree-050__4-macro-480w.webp?v=1792639147",
+      "720w": "/public/images/derived/saree-050__4-macro-720w.webp?v=1792639147",
+      "1080w": "/public/images/derived/saree-050__4-macro-1080w.webp?v=1792639147"
+    },
+    "srcset": "/public/images/derived/saree-050__4-macro-480w.webp?v=1792639147 480w, /public/images/derived/saree-050__4-macro-720w.webp?v=1792639147 720w, /public/images/derived/saree-050__4-macro-1080w.webp?v=1792639147 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMCAf/EACIQAAICAgEDBQAAAAAAAAAAAAECAAMRMSEEQVESIkJicf/EABYBAQEBAAAAAAAAAAAAAAAAAAEAAv/EABoRAAMBAAMAAAAAAAAAAAAAAAABEVECEjH/2gAMAwEAAhEDEQA/AKV1LX33yF3LpQHUO6BVByBvnzMVgVkkDLHc21zIo4OT51B8sNJabPS1k5y3P2iS9FJ5ZrMnfvMSj0qiauFVcnHYfsrSoV7i/wAjomIgvKLOmok5B4OuIiJnuxh//9k="
+  },
+  "/public/images/sarees/saree-050/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639278,
+    "webpUrl": "/public/images/derived/saree-050__5-blouse-720w.webp?v=1792639278",
+    "variants": {
+      "480w": "/public/images/derived/saree-050__5-blouse-480w.webp?v=1792639278",
+      "720w": "/public/images/derived/saree-050__5-blouse-720w.webp?v=1792639278",
+      "1080w": "/public/images/derived/saree-050__5-blouse-1080w.webp?v=1792639278"
+    },
+    "srcset": "/public/images/derived/saree-050__5-blouse-480w.webp?v=1792639278 480w, /public/images/derived/saree-050__5-blouse-720w.webp?v=1792639278 720w, /public/images/derived/saree-050__5-blouse-1080w.webp?v=1792639278 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEAf/EACAQAAIBAwQDAAAAAAAAAAAAAAABAgMRIRITIlEEMZH/xAAXAQADAQAAAAAAAAAAAAAAAAAAAQID/8QAFxEBAAMAAAAAAAAAAAAAAAAAAAERMf/aAAwDAQACEQMRAD8A7CCXv4dXjyUM8m7tkayqN7sb2i1jtGyNRyp6rWvhLpEU0ZdtdAvZAAz1qnBRjLEmkUVRaVFPAA4wjdABJv/Z"
+  },
+  "/public/images/sarees/saree-051/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398438,
+    "webpUrl": "/public/images/derived/saree-051__1-front-720w.webp?v=1792398438",
+    "variants": {
+      "480w": "/public/images/derived/saree-051__1-front-480w.webp?v=1792398438",
+      "720w": "/public/images/derived/saree-051__1-front-720w.webp?v=1792398438",
+      "1080w": "/public/images/derived/saree-051__1-front-1080w.webp?v=1792398438"
+    },
+    "srcset": "/public/images/derived/saree-051__1-front-480w.webp?v=1792398438 480w, /public/images/derived/saree-051__1-front-720w.webp?v=1792398438 720w, /public/images/derived/saree-051__1-front-1080w.webp?v=1792398438 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAIDBAH/xAAfEAACAwACAgMAAAAAAAAAAAABAgADEQQhBTETMlH/xAAWAQEBAQAAAAAAAAAAAAAAAAADAgT/xAAZEQEBAQADAAAAAAAAAAAAAAABAAIhIjH/2gAMAwEAAhEDEQA/ADZTQXC7g3JyhxcpxSMG9yRO8R8bsqRM/j7NOj6hAIK8lpzkcLWmsb6iTLHYlRVdytVw7QFJJXBnczeODBqwQdKlW69REl9lw9Ut3xH9EREqK//Z"
+  },
+  "/public/images/sarees/saree-051/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638642,
+    "webpUrl": "/public/images/derived/saree-051__2-back-pallu-720w.webp?v=1792638642",
+    "variants": {
+      "480w": "/public/images/derived/saree-051__2-back-pallu-480w.webp?v=1792638642",
+      "720w": "/public/images/derived/saree-051__2-back-pallu-720w.webp?v=1792638642",
+      "1080w": "/public/images/derived/saree-051__2-back-pallu-1080w.webp?v=1792638642"
+    },
+    "srcset": "/public/images/derived/saree-051__2-back-pallu-480w.webp?v=1792638642 480w, /public/images/derived/saree-051__2-back-pallu-720w.webp?v=1792638642 720w, /public/images/derived/saree-051__2-back-pallu-1080w.webp?v=1792638642 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAECAwT/xAAkEAABBAIBAgcAAAAAAAAAAAABAAIDEQQSMSEiBRNBUWGBsf/EABcBAAMBAAAAAAAAAAAAAAAAAAECAwT/xAAaEQADAAMBAAAAAAAAAAAAAAAAARECEiEi/9oADAMBAAIRAxEAPwCDrDCXkdGi0hcJmkhpFcWOVnkuvFbRu3V9K2DITCb4Ffijew0LFaNgxi+EVy42iYmc2Y10cLOx5AdZ1G3p8LTw7uheK16irCIhO0dPzDbyj7hERMTP/9k="
+  },
+  "/public/images/sarees/saree-051/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638761,
+    "webpUrl": "/public/images/derived/saree-051__3-pallu-detail-720w.webp?v=1792638761",
+    "variants": {
+      "480w": "/public/images/derived/saree-051__3-pallu-detail-480w.webp?v=1792638761",
+      "720w": "/public/images/derived/saree-051__3-pallu-detail-720w.webp?v=1792638761",
+      "1080w": "/public/images/derived/saree-051__3-pallu-detail-1080w.webp?v=1792638761"
+    },
+    "srcset": "/public/images/derived/saree-051__3-pallu-detail-480w.webp?v=1792638761 480w, /public/images/derived/saree-051__3-pallu-detail-720w.webp?v=1792638761 720w, /public/images/derived/saree-051__3-pallu-detail-1080w.webp?v=1792638761 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGQABAAIDAAAAAAAAAAAAAAAAAAEEAgMF/8QAIBAAAQQBBQEBAAAAAAAAAAAAAQACAxEEEhMhMUFRkf/EABUBAQEAAAAAAAAAAAAAAAAAAAME/8QAGhEAAwEAAwAAAAAAAAAAAAAAAAECEQMSIf/aAAwDAQACEQMRAD8AiPbhZqeCT4Akjt6TW5oAk5FKtmkSCCG+SSVvheBjRX20D8pTt+lcyumswMQtFYNX2iQA5mbOWujlHdEBRDksbBHbrIjBq/URHRVxrZRc3CefqIiQlP/Z"
+  },
+  "/public/images/sarees/saree-051/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792638922,
+    "webpUrl": "/public/images/derived/saree-051__4-macro-720w.webp?v=1792638922",
+    "variants": {
+      "480w": "/public/images/derived/saree-051__4-macro-480w.webp?v=1792638922",
+      "720w": "/public/images/derived/saree-051__4-macro-720w.webp?v=1792638922",
+      "1080w": "/public/images/derived/saree-051__4-macro-1080w.webp?v=1792638922"
+    },
+    "srcset": "/public/images/derived/saree-051__4-macro-480w.webp?v=1792638922 480w, /public/images/derived/saree-051__4-macro-720w.webp?v=1792638922 720w, /public/images/derived/saree-051__4-macro-1080w.webp?v=1792638922 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAQFA//EACgQAAEEAQEFCQAAAAAAAAAAAAEAAgMEESEFEhMiMRVBUWFxgZGSwf/EABkBAAIDAQAAAAAAAAAAAAAAAAACAQMEBf/EABkRAAMBAQEAAAAAAAAAAAAAAAABEQISIf/aAAwDAQACEQMRAD8Aw6ez48h1gl2W5DQFtV60hwYmNEYHNgY9vVT1q77PMHHTlJH4uxmmpRO3zmJg+Fhd0zqtrCmSoaAAQQgeaLK7Vtno2No7gQchEcsSMrrxGHHBJaOupUdy86zvaN4cZ01wHHxREInHrpFxgdcO+6IieFp//9k="
+  },
+  "/public/images/sarees/saree-051/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639074,
+    "webpUrl": "/public/images/derived/saree-051__5-blouse-720w.webp?v=1792639074",
+    "variants": {
+      "480w": "/public/images/derived/saree-051__5-blouse-480w.webp?v=1792639074",
+      "720w": "/public/images/derived/saree-051__5-blouse-720w.webp?v=1792639074",
+      "1080w": "/public/images/derived/saree-051__5-blouse-1080w.webp?v=1792639074"
+    },
+    "srcset": "/public/images/derived/saree-051__5-blouse-480w.webp?v=1792639074 480w, /public/images/derived/saree-051__5-blouse-720w.webp?v=1792639074 720w, /public/images/derived/saree-051__5-blouse-1080w.webp?v=1792639074 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAAMAAAAAAAAAAAAAAAAAAAIDBP/EACIQAAEEAgIBBQAAAAAAAAAAAAEAAgMRBBITIVEFMTJBYf/EABUBAQEAAAAAAAAAAAAAAAAAAAQD/8QAGxEAAgMAAwAAAAAAAAAAAAAAAAIBAxEhMYH/2gAMAwEAAhEDEQA/AIGSOGRkZ+TvbwFLVjQGMs6ttx8LFmRvZMco0RYa0HtXcjosWPol+Q8NNfQR5adGLWsxpdwhFdQHVWioHww+puvgiuwXElQGXvPHGK1DgiKbdi6+U8Nu/wCoiKgQ/9k="
+  },
+  "/public/images/sarees/saree-052/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398494,
+    "webpUrl": "/public/images/derived/saree-052__1-front-720w.webp?v=1792398494",
+    "variants": {
+      "480w": "/public/images/derived/saree-052__1-front-480w.webp?v=1792398494",
+      "720w": "/public/images/derived/saree-052__1-front-720w.webp?v=1792398494",
+      "1080w": "/public/images/derived/saree-052__1-front-1080w.webp?v=1792398494"
+    },
+    "srcset": "/public/images/derived/saree-052__1-front-480w.webp?v=1792398494 480w, /public/images/derived/saree-052__1-front-720w.webp?v=1792398494 720w, /public/images/derived/saree-052__1-front-1080w.webp?v=1792398494 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGQABAQADAQAAAAAAAAAAAAAAAAMBAgQF/8QAIRAAAgIBBAIDAAAAAAAAAAAAAQIAEQMEBTFREiETIiT/xAAWAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAXEQEBAQEAAAAAAAAAAAAAAAAAAQIh/9oADAMBAAIRAxEAPwAaw4C/jdDgTGBhmQkKRXc2Lfkcq3sqRIbflskdLxMm8kuaocQviJQt7iKENSjY9FlCqSStCjc5tsRxkTyUj6lTYiIVebx6HxHsRERQ/9k="
+  },
+  "/public/images/sarees/saree-052/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639184,
+    "webpUrl": "/public/images/derived/saree-052__2-back-pallu-720w.webp?v=1792639184",
+    "variants": {
+      "480w": "/public/images/derived/saree-052__2-back-pallu-480w.webp?v=1792639184",
+      "720w": "/public/images/derived/saree-052__2-back-pallu-720w.webp?v=1792639184",
+      "1080w": "/public/images/derived/saree-052__2-back-pallu-1080w.webp?v=1792639184"
+    },
+    "srcset": "/public/images/derived/saree-052__2-back-pallu-480w.webp?v=1792639184 480w, /public/images/derived/saree-052__2-back-pallu-720w.webp?v=1792639184 720w, /public/images/derived/saree-052__2-back-pallu-1080w.webp?v=1792639184 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMBAgT/xAAiEAACAgEEAQUAAAAAAAAAAAABAgARIQMEEjEFEzJRkaH/xAAXAQADAQAAAAAAAAAAAAAAAAAAAgMB/8QAFxEBAQEBAAAAAAAAAAAAAAAAABEhIv/aAAwDAQACEQMRAD8AwgaOgXoGpqMuqW4KeK1RI7kd41bHByzAfsrtHJRifbivqSXnNcnTF9RKFsxNI8u+Rl26oEZjyBNZxKeOPPRa7HXYqIga4v6R+RERAj//2Q=="
+  },
+  "/public/images/sarees/saree-052/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639327,
+    "webpUrl": "/public/images/derived/saree-052__3-pallu-detail-720w.webp?v=1792639327",
+    "variants": {
+      "480w": "/public/images/derived/saree-052__3-pallu-detail-480w.webp?v=1792639327",
+      "720w": "/public/images/derived/saree-052__3-pallu-detail-720w.webp?v=1792639327",
+      "1080w": "/public/images/derived/saree-052__3-pallu-detail-1080w.webp?v=1792639327"
+    },
+    "srcset": "/public/images/derived/saree-052__3-pallu-detail-480w.webp?v=1792639327 480w, /public/images/derived/saree-052__3-pallu-detail-720w.webp?v=1792639327 720w, /public/images/derived/saree-052__3-pallu-detail-1080w.webp?v=1792639327 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEAv/EACAQAAICAQQDAQAAAAAAAAAAAAECAAMRBBIhMRNBYYH/xAAXAQADAQAAAAAAAAAAAAAAAAAAAgME/8QAFhEBAQEAAAAAAAAAAAAAAAAAAAEC/9oADAMBAAIRAxEAPwCiIqKWYgKPZnIFbgCvcVx23uNQQ2jsz7wAf2Q0S1oFfnecBsnuQapJYt4xnqJfaPkQTY77BZQpPABB4mei1QVXcM56J+xED5rYbDmIiBX/2Q=="
+  },
+  "/public/images/sarees/saree-052/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639488,
+    "webpUrl": "/public/images/derived/saree-052__4-macro-720w.webp?v=1792639488",
+    "variants": {
+      "480w": "/public/images/derived/saree-052__4-macro-480w.webp?v=1792639488",
+      "720w": "/public/images/derived/saree-052__4-macro-720w.webp?v=1792639488",
+      "1080w": "/public/images/derived/saree-052__4-macro-1080w.webp?v=1792639488"
+    },
+    "srcset": "/public/images/derived/saree-052__4-macro-480w.webp?v=1792639488 480w, /public/images/derived/saree-052__4-macro-720w.webp?v=1792639488 720w, /public/images/derived/saree-052__4-macro-1080w.webp?v=1792639488 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMCBAX/xAAlEAACAgEDAwQDAAAAAAAAAAABAgADEQQhQRITMQUiMlFCceH/xAAWAQEBAQAAAAAAAAAAAAAAAAAABAL/xAAXEQEBAQEAAAAAAAAAAAAAAAAAARES/9oADAMBAAIRAxEAPwDi9JuKC3TN86iSAeRPYLK1JVh1ryvOP5OHX09ha3pGWrbqbGxYHz+5vqdcMoBUecHyJPYtlxU+mHPtYkcGJMajbbuAfURlOo1prS7NqbBnJxWv3IaKw2UPXaBmtzWwHO+0RAr2bPxtTHHtiIjWH//Z"
+  },
+  "/public/images/sarees/saree-052/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639625,
+    "webpUrl": "/public/images/derived/saree-052__5-blouse-720w.webp?v=1792639625",
+    "variants": {
+      "480w": "/public/images/derived/saree-052__5-blouse-480w.webp?v=1792639625",
+      "720w": "/public/images/derived/saree-052__5-blouse-720w.webp?v=1792639625",
+      "1080w": "/public/images/derived/saree-052__5-blouse-1080w.webp?v=1792639625"
+    },
+    "srcset": "/public/images/derived/saree-052__5-blouse-480w.webp?v=1792639625 480w, /public/images/derived/saree-052__5-blouse-720w.webp?v=1792639625 720w, /public/images/derived/saree-052__5-blouse-1080w.webp?v=1792639625 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAQDAf/EACUQAAICAQMCBwEAAAAAAAAAAAECABEDBCFREzEFEhQiQZGhwf/EABgBAAIDAAAAAAAAAAAAAAAAAAIDAAEE/8QAGREBAAIDAAAAAAAAAAAAAAAAAAECERIx/9oADAMBAAIRAxEAPwAAiFQxALGgOZ3oFV93diTXEg8Qx5cjHKtqmKvr5myavzlaRmodr3rmKaIplt0hEoCgi7iEUk1ufp6UjY2RXEmWlyY3FC1K/l/yIgydTin1QXaxttERIvWH/9k="
+  },
+  "/public/images/sarees/saree-053/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398590,
+    "webpUrl": "/public/images/derived/saree-053__1-front-720w.webp?v=1792398590",
+    "variants": {
+      "480w": "/public/images/derived/saree-053__1-front-480w.webp?v=1792398590",
+      "720w": "/public/images/derived/saree-053__1-front-720w.webp?v=1792398590",
+      "1080w": "/public/images/derived/saree-053__1-front-1080w.webp?v=1792398590"
+    },
+    "srcset": "/public/images/derived/saree-053__1-front-480w.webp?v=1792398590 480w, /public/images/derived/saree-053__1-front-720w.webp?v=1792398590 720w, /public/images/derived/saree-053__1-front-1080w.webp?v=1792398590 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAIDAf/EACMQAAIBAwMEAwAAAAAAAAAAAAECAAMRIQQiURITIyQxQWH/xAAWAQEBAQAAAAAAAAAAAAAAAAADAQT/xAAYEQEBAQEBAAAAAAAAAAAAAAABAAIxQf/aAAwDAQACEQMRAD8AoKKdLqtewvidVVdMA45hW9diGyVIk6ap4x+CF7ac5HC0GmL/ABE0LG8SxUMppad9pO36zM9EGKi+ObiIkeyZ0mUt+0eRERLHf//Z"
+  },
+  "/public/images/sarees/saree-053/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639454,
+    "webpUrl": "/public/images/derived/saree-053__2-back-pallu-720w.webp?v=1792639454",
+    "variants": {
+      "480w": "/public/images/derived/saree-053__2-back-pallu-480w.webp?v=1792639454",
+      "720w": "/public/images/derived/saree-053__2-back-pallu-720w.webp?v=1792639454",
+      "1080w": "/public/images/derived/saree-053__2-back-pallu-1080w.webp?v=1792639454"
+    },
+    "srcset": "/public/images/derived/saree-053__2-back-pallu-480w.webp?v=1792639454 480w, /public/images/derived/saree-053__2-back-pallu-720w.webp?v=1792639454 720w, /public/images/derived/saree-053__2-back-pallu-1080w.webp?v=1792639454 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMCAQT/xAAiEAACAgIBAwUAAAAAAAAAAAAAAQIRAyFBBBMxEiJRUmH/xAAWAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAZEQEBAAMBAAAAAAAAAAAAAAAAEQESQSL/2gAMAwEAAhEDEQA/AOxgoY/UldGnGElcE6rkyneH2y29FVNKKj9Vv9Mut5jWvM8avwCjlsChLIpYoJJPSdtb4NdFPu4ebVeUAHV3zFO0/lAAUP/Z"
+  },
+  "/public/images/sarees/saree-053/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639604,
+    "webpUrl": "/public/images/derived/saree-053__3-pallu-detail-720w.webp?v=1792639604",
+    "variants": {
+      "480w": "/public/images/derived/saree-053__3-pallu-detail-480w.webp?v=1792639604",
+      "720w": "/public/images/derived/saree-053__3-pallu-detail-720w.webp?v=1792639604",
+      "1080w": "/public/images/derived/saree-053__3-pallu-detail-1080w.webp?v=1792639604"
+    },
+    "srcset": "/public/images/derived/saree-053__3-pallu-detail-480w.webp?v=1792639604 480w, /public/images/derived/saree-053__3-pallu-detail-720w.webp?v=1792639604 720w, /public/images/derived/saree-053__3-pallu-detail-1080w.webp?v=1792639604 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAIDBAH/xAAiEAACAgICAQUBAAAAAAAAAAABAgARAyEEEkEiQlFhcfD/xAAWAQEBAQAAAAAAAAAAAAAAAAADAgT/xAAZEQEAAwEBAAAAAAAAAAAAAAAAARESITH/2gAMAwEAAhEDEQA/AIZFC5UHmq/Jo4oD4F0dqJTlboA3urUlx8pA6rd0Tfj+3An1pqc2lS/ETlRLEycxcxIpWrQsC5Zwkdcnr7MoFWRURJrpdTmmzqn3ERKE/9k="
+  },
+  "/public/images/sarees/saree-053/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639698,
+    "webpUrl": "/public/images/derived/saree-053__4-macro-720w.webp?v=1792639698",
+    "variants": {
+      "480w": "/public/images/derived/saree-053__4-macro-480w.webp?v=1792639698",
+      "720w": "/public/images/derived/saree-053__4-macro-720w.webp?v=1792639698",
+      "1080w": "/public/images/derived/saree-053__4-macro-1080w.webp?v=1792639698"
+    },
+    "srcset": "/public/images/derived/saree-053__4-macro-480w.webp?v=1792639698 480w, /public/images/derived/saree-053__4-macro-720w.webp?v=1792639698 720w, /public/images/derived/saree-053__4-macro-1080w.webp?v=1792639698 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAQCAwX/xAAhEAACAQMFAAMAAAAAAAAAAAABAgADESEEEjFBUTJx4f/EABcBAQEBAQAAAAAAAAAAAAAAAAACBAX/xAAaEQEAAQUAAAAAAAAAAAAAAAAAAgESITFR/9oADAMBAAIRAxEAPwCPTqlPUCxJDdT06FK96jDJ+I8H7IkZFqWRbsefqVUqt2suNvAmd0K8dS4BIssTGOxELtik0iBQKuSKnXgmnIRztJGfYiEQztQGawzERCn/2Q=="
+  },
+  "/public/images/sarees/saree-053/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639835,
+    "webpUrl": "/public/images/derived/saree-053__5-blouse-720w.webp?v=1792639835",
+    "variants": {
+      "480w": "/public/images/derived/saree-053__5-blouse-480w.webp?v=1792639835",
+      "720w": "/public/images/derived/saree-053__5-blouse-720w.webp?v=1792639835",
+      "1080w": "/public/images/derived/saree-053__5-blouse-1080w.webp?v=1792639835"
+    },
+    "srcset": "/public/images/derived/saree-053__5-blouse-480w.webp?v=1792639835 480w, /public/images/derived/saree-053__5-blouse-720w.webp?v=1792639835 720w, /public/images/derived/saree-053__5-blouse-1080w.webp?v=1792639835 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAIDBAH/xAAhEAACAgICAQUAAAAAAAAAAAABAgARAyEEQTETIkJRYf/EABgBAAIDAAAAAAAAAAAAAAAAAAECAAME/8QAGxEAAgMAAwAAAAAAAAAAAAAAAAECAxITMlH/2gAMAwEAAhEDEQA/AOoFVgnyPiSXiqEZqUOxsmpi5TuC2RL9pAsdDuauLyg+EaJbxKWzZGtSSInGAaqJb6ynf3EOgcD9KMrYxgfVA6lOOhx2XGSpI0e4iBj1dTYMli9b/IiIpNM//9k="
+  },
+  "/public/images/sarees/saree-054/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398774,
+    "webpUrl": "/public/images/derived/saree-054__1-front-720w.webp?v=1792398774",
+    "variants": {
+      "480w": "/public/images/derived/saree-054__1-front-480w.webp?v=1792398774",
+      "720w": "/public/images/derived/saree-054__1-front-720w.webp?v=1792398774",
+      "1080w": "/public/images/derived/saree-054__1-front-1080w.webp?v=1792398774"
+    },
+    "srcset": "/public/images/derived/saree-054__1-front-480w.webp?v=1792398774 480w, /public/images/derived/saree-054__1-front-720w.webp?v=1792398774 720w, /public/images/derived/saree-054__1-front-1080w.webp?v=1792398774 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAQCAwX/xAAiEAACAQMEAgMAAAAAAAAAAAABAgADESEEBRIxExQiI1H/xAAXAQADAQAAAAAAAAAAAAAAAAAAAgMB/8QAGBEBAQADAAAAAAAAAAAAAAAAAAEhMUH/2gAMAwEAAhEDEQA/AD/Rp2qBeRUXtM6ap51Pxtbqadh6VQhslCJJtdXk+euEl1aTFUmmL9ROhbPUTSp9WrUtBVAUsSthbMj2pWFdAQwupBupxEQNNPU8R/RERAr/2Q=="
+  },
+  "/public/images/sarees/saree-054/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640006,
+    "webpUrl": "/public/images/derived/saree-054__2-back-pallu-720w.webp?v=1792640006",
+    "variants": {
+      "480w": "/public/images/derived/saree-054__2-back-pallu-480w.webp?v=1792640006",
+      "720w": "/public/images/derived/saree-054__2-back-pallu-720w.webp?v=1792640006",
+      "1080w": "/public/images/derived/saree-054__2-back-pallu-1080w.webp?v=1792640006"
+    },
+    "srcset": "/public/images/derived/saree-054__2-back-pallu-480w.webp?v=1792640006 480w, /public/images/derived/saree-054__2-back-pallu-720w.webp?v=1792640006 720w, /public/images/derived/saree-054__2-back-pallu-1080w.webp?v=1792640006 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMCBP/EACEQAAICAgEEAwAAAAAAAAAAAAECAAMRIQQFEhMxQVGB/8QAFwEAAwEAAAAAAAAAAAAAAAAAAAECA//EABgRAQEAAwAAAAAAAAAAAAAAAAARISJB/9oADAMBAAIRAxEAPwDL4o45swNRU4uewKhCpgAkez8yPPcDhLg57nAleDYWrck6yNfky62moaxn1EoW3EaXH1Gp14ila2YqwOF3NdK7jTYH0cg7BiIHcR1+I/YiIgl//9k="
+  },
+  "/public/images/sarees/saree-054/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640107,
+    "webpUrl": "/public/images/derived/saree-054__3-pallu-detail-720w.webp?v=1792640107",
+    "variants": {
+      "480w": "/public/images/derived/saree-054__3-pallu-detail-480w.webp?v=1792640107",
+      "720w": "/public/images/derived/saree-054__3-pallu-detail-720w.webp?v=1792640107",
+      "1080w": "/public/images/derived/saree-054__3-pallu-detail-1080w.webp?v=1792640107"
+    },
+    "srcset": "/public/images/derived/saree-054__3-pallu-detail-480w.webp?v=1792640107 480w, /public/images/derived/saree-054__3-pallu-detail-720w.webp?v=1792640107 720w, /public/images/derived/saree-054__3-pallu-detail-1080w.webp?v=1792640107 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAQCAwX/xAAlEAACAgIBAQkBAAAAAAAAAAABAgADESEEMgUSFCIjMUFCUXH/xAAWAQEBAQAAAAAAAAAAAAAAAAACAQP/xAAXEQEBAQEAAAAAAAAAAAAAAAAAATER/9oADAMBAAIRAxEAPwCblUowqUL6jtoj8xKEpqSulkRQTpiB76nPmWhFqtI6czPHvL8ahydlt/3OJjdbzHc0jPxE0c5iLoIu1hZ4MIqZ8313JOG1qqiMtmnz3QD+5zESHMe2UGeoxESg/9k="
+  },
+  "/public/images/sarees/saree-054/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640237,
+    "webpUrl": "/public/images/derived/saree-054__4-macro-720w.webp?v=1792640237",
+    "variants": {
+      "480w": "/public/images/derived/saree-054__4-macro-480w.webp?v=1792640237",
+      "720w": "/public/images/derived/saree-054__4-macro-720w.webp?v=1792640237",
+      "1080w": "/public/images/derived/saree-054__4-macro-1080w.webp?v=1792640237"
+    },
+    "srcset": "/public/images/derived/saree-054__4-macro-480w.webp?v=1792640237 480w, /public/images/derived/saree-054__4-macro-720w.webp?v=1792640237 720w, /public/images/derived/saree-054__4-macro-1080w.webp?v=1792640237 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAUEAgP/xAAmEAABAwIFAwUAAAAAAAAAAAABAAIDERIEEyEiUQUxQRRSYWKR/8QAFgEBAQEAAAAAAAAAAAAAAAAAAgAE/8QAGREBAQEAAwAAAAAAAAAAAAAAABEBAjFR/9oADAMBAAIRAxEAPwCVEwMHBPkLTBhjPOI2nb3efheUZLANtzj2HJVGKKTB4ehhvMmriOVma7GkR2ijYjQaCjgi49I062y6/ZEZno3U3pQY6TMlrtqGjgcqjBIWSXOcbKUNPKIrl2Tbns9w/EREU//Z"
+  },
+  "/public/images/sarees/saree-054/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640388,
+    "webpUrl": "/public/images/derived/saree-054__5-blouse-720w.webp?v=1792640388",
+    "variants": {
+      "480w": "/public/images/derived/saree-054__5-blouse-480w.webp?v=1792640388",
+      "720w": "/public/images/derived/saree-054__5-blouse-720w.webp?v=1792640388",
+      "1080w": "/public/images/derived/saree-054__5-blouse-1080w.webp?v=1792640388"
+    },
+    "srcset": "/public/images/derived/saree-054__5-blouse-480w.webp?v=1792640388 480w, /public/images/derived/saree-054__5-blouse-720w.webp?v=1792640388 720w, /public/images/derived/saree-054__5-blouse-1080w.webp?v=1792640388 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEBf/EACQQAAIBAwIGAwAAAAAAAAAAAAECAAMEERIxBSEiQVFhI0KR/8QAGAEBAAMBAAAAAAAAAAAAAAAAAQACAwT/xAAYEQEBAQEBAAAAAAAAAAAAAAAAAQIRE//aAAwDAQACEQMRAD8AjWuadq1NGGWfYDsJbQgRqnSXfGMDtOTxGm1w9SooOpcAc9gNzLWtyi0UpgFj9mJ39TG10zMbcL4P5EyniIBI0Hl7iHannF7qootKpxuMe+c5egLSYIcMwIB8REaMNFC/+CnnRnSM9I8REQ5F3//Z"
+  },
+  "/public/images/sarees/saree-055/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398974,
+    "webpUrl": "/public/images/derived/saree-055__1-front-720w.webp?v=1792398974",
+    "variants": {
+      "480w": "/public/images/derived/saree-055__1-front-480w.webp?v=1792398974",
+      "720w": "/public/images/derived/saree-055__1-front-720w.webp?v=1792398974",
+      "1080w": "/public/images/derived/saree-055__1-front-1080w.webp?v=1792398974"
+    },
+    "srcset": "/public/images/derived/saree-055__1-front-480w.webp?v=1792398974 480w, /public/images/derived/saree-055__1-front-720w.webp?v=1792398974 720w, /public/images/derived/saree-055__1-front-1080w.webp?v=1792398974 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAAMBAAAAAAAAAAAAAAAAAAEDBAL/xAAhEAACAgEEAgMAAAAAAAAAAAABAgARAwQFEiETMSRRYf/EABYBAQEBAAAAAAAAAAAAAAAAAAECA//EABcRAQEBAQAAAAAAAAAAAAAAAAABAiH/2gAMAwEAAhEDEQA/AJIGHCX43QuhIwkZUsA9SWb4jlT2VIlO35LX8CzJvJLmuzjF+olhbuIoU6hWw6LJxUklaFdzPtgfkoZSLU3Y9REKvN5W7xH7EREUP//Z"
+  },
+  "/public/images/sarees/saree-055/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639630,
+    "webpUrl": "/public/images/derived/saree-055__2-back-pallu-720w.webp?v=1792639630",
+    "variants": {
+      "480w": "/public/images/derived/saree-055__2-back-pallu-480w.webp?v=1792639630",
+      "720w": "/public/images/derived/saree-055__2-back-pallu-720w.webp?v=1792639630",
+      "1080w": "/public/images/derived/saree-055__2-back-pallu-1080w.webp?v=1792639630"
+    },
+    "srcset": "/public/images/derived/saree-055__2-back-pallu-480w.webp?v=1792639630 480w, /public/images/derived/saree-055__2-back-pallu-720w.webp?v=1792639630 720w, /public/images/derived/saree-055__2-back-pallu-1080w.webp?v=1792639630 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMCAQT/xAAiEAACAQQCAQUAAAAAAAAAAAAAAQIDERIhBDFBBRMUUaH/xAAWAQEBAQAAAAAAAAAAAAAAAAABAgP/xAAXEQEBAQEAAAAAAAAAAAAAAAAAESJB/9oADAMBAAIRAxEAPwDjSpUc0k7Go41L4J2Xl+SVaS+PCz7kkU4026bv0kn+GXW0zWHTV+gUctgUvNyouFGEcZN5X1s36dJzoNPTVltMAOquV/af2gAKH//Z"
+  },
+  "/public/images/sarees/saree-055/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639736,
+    "webpUrl": "/public/images/derived/saree-055__3-pallu-detail-720w.webp?v=1792639736",
+    "variants": {
+      "480w": "/public/images/derived/saree-055__3-pallu-detail-480w.webp?v=1792639736",
+      "720w": "/public/images/derived/saree-055__3-pallu-detail-720w.webp?v=1792639736",
+      "1080w": "/public/images/derived/saree-055__3-pallu-detail-1080w.webp?v=1792639736"
+    },
+    "srcset": "/public/images/derived/saree-055__3-pallu-detail-480w.webp?v=1792639736 480w, /public/images/derived/saree-055__3-pallu-detail-720w.webp?v=1792639736 720w, /public/images/derived/saree-055__3-pallu-detail-1080w.webp?v=1792639736 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAQDBQL/xAAmEAACAQIFAwUBAAAAAAAAAAABAgADEQQSITFRQUJxFCMyUmGB/8QAGAEAAgMAAAAAAAAAAAAAAAAAAQMAAgT/xAAZEQEBAQADAAAAAAAAAAAAAAAAARECEiH/2gAMAwEAAhEDEQA/ANqlBXwpZLG2s5eIp3Cm1z8bc8Sv1RRc1M79D1Eyqg1AUTZ9jwehiGzjOtxySlIknMv9XWJ7LU7+4q5+7zEto+LMGr4tgxJSkO7Yt44lOIGRgKKnKBp+REFJ2oWp3YnIdT9hERIG1//Z"
+  },
+  "/public/images/sarees/saree-055/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792639879,
+    "webpUrl": "/public/images/derived/saree-055__4-macro-720w.webp?v=1792639879",
+    "variants": {
+      "480w": "/public/images/derived/saree-055__4-macro-480w.webp?v=1792639879",
+      "720w": "/public/images/derived/saree-055__4-macro-720w.webp?v=1792639879",
+      "1080w": "/public/images/derived/saree-055__4-macro-1080w.webp?v=1792639879"
+    },
+    "srcset": "/public/images/derived/saree-055__4-macro-480w.webp?v=1792639879 480w, /public/images/derived/saree-055__4-macro-720w.webp?v=1792639879 720w, /public/images/derived/saree-055__4-macro-1080w.webp?v=1792639879 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEAv/EACQQAAEEAgAGAwEAAAAAAAAAAAEAAgMRBBITITFBQlEUIpHh/8QAGAEAAgMAAAAAAAAAAAAAAAAAAAIBAwT/xAAWEQEBAQAAAAAAAAAAAAAAAAAAARH/2gAMAwEAAhEDEQA/AMuFiFkbnEPay+QVsbGEEerbPMk13K6lkfI4NBOjDX9UmcQSat86quoVFa9dcVg8XFFV2ZjRuLPqdTV16RCWYnWME/l9kOR8bGln83HSK/Z7oiCxlbjgtFi+XVERBn//2Q=="
+  },
+  "/public/images/sarees/saree-055/5-blouse.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640056,
+    "webpUrl": "/public/images/derived/saree-055__5-blouse-720w.webp?v=1792640056",
+    "variants": {
+      "480w": "/public/images/derived/saree-055__5-blouse-480w.webp?v=1792640056",
+      "720w": "/public/images/derived/saree-055__5-blouse-720w.webp?v=1792640056",
+      "1080w": "/public/images/derived/saree-055__5-blouse-1080w.webp?v=1792640056"
+    },
+    "srcset": "/public/images/derived/saree-055__5-blouse-480w.webp?v=1792640056 480w, /public/images/derived/saree-055__5-blouse-720w.webp?v=1792640056 720w, /public/images/derived/saree-055__5-blouse-1080w.webp?v=1792640056 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEAv/EACEQAQACAgEEAwEAAAAAAAAAAAEAAgMRIQQSE1ExQXGx/8QAFwEBAQEBAAAAAAAAAAAAAAAAAwIBBP/EABgRAQEBAQEAAAAAAAAAAAAAAAABAhEx/9oADAMBAAIRAxEAPwDo7KIWeX4I8XbUqu7PLMvWY8jvMcFE0H2SmLPa9uCprWz0QuuiZlinjPUS2iJQ2Tr83ZhrUdlrEjjyhkedrU/sRJpceNtcw1PyIiaKv//Z"
+  },
+  "/public/images/sarees/saree-056/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398501,
+    "webpUrl": "/public/images/derived/saree-056__1-front-720w.webp?v=1792398501",
+    "variants": {
+      "480w": "/public/images/derived/saree-056__1-front-480w.webp?v=1792398501",
+      "720w": "/public/images/derived/saree-056__1-front-720w.webp?v=1792398501",
+      "1080w": "/public/images/derived/saree-056__1-front-1080w.webp?v=1792398501"
+    },
+    "srcset": "/public/images/derived/saree-056__1-front-480w.webp?v=1792398501 480w, /public/images/derived/saree-056__1-front-720w.webp?v=1792398501 720w, /public/images/derived/saree-056__1-front-1080w.webp?v=1792398501 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMEAv/EACMQAQACAgEDBAMAAAAAAAAAAAEAAgMRBAUSIRMjMXFBUWH/xAAXAQEBAQEAAAAAAAAAAAAAAAACAQAD/8QAFxEBAQEBAAAAAAAAAAAAAAAAAAECIf/aAAwDAQACEQMRAD8AX9jjuSte5D4nHFynJLaohUE3+RlLu+DkS3lon0TL03MOWujQ4TR9MDvJLmruM38RKNvMSAlnpbHwsoVVaIadzN0urVxljVu1q+P7ESlm8b/Sf2RETC//2Q=="
+  },
+  "/public/images/sarees/saree-056/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640236,
+    "webpUrl": "/public/images/derived/saree-056__2-back-pallu-720w.webp?v=1792640236",
+    "variants": {
+      "480w": "/public/images/derived/saree-056__2-back-pallu-480w.webp?v=1792640236",
+      "720w": "/public/images/derived/saree-056__2-back-pallu-720w.webp?v=1792640236",
+      "1080w": "/public/images/derived/saree-056__2-back-pallu-1080w.webp?v=1792640236"
+    },
+    "srcset": "/public/images/derived/saree-056__2-back-pallu-480w.webp?v=1792640236 480w, /public/images/derived/saree-056__2-back-pallu-720w.webp?v=1792640236 720w, /public/images/derived/saree-056__2-back-pallu-1080w.webp?v=1792640236 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAFwABAQEBAAAAAAAAAAAAAAAAAAMBBP/EACIQAQACAgICAQUAAAAAAAAAAAEAAgMRBCETMVEFMkFxkf/EABcBAAMBAAAAAAAAAAAAAAAAAAACAwH/xAAXEQEBAQEAAAAAAAAAAAAAAAAAESJC/9oADAMBAAIRAxEAPwDLawYHJo6iljLe5SlilQ1ZPb+ZHn3D6bZHaoH9leHZPKv2qWD9kmtM1jjN+olG3fqIFcvK1TCU1uwj8yvAuZcVuk0ndjW4iablbxPyREQK/9k="
+  },
+  "/public/images/sarees/saree-057/1-front.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792398586,
+    "webpUrl": "/public/images/derived/saree-057__1-front-720w.webp?v=1792398586",
+    "variants": {
+      "480w": "/public/images/derived/saree-057__1-front-480w.webp?v=1792398586",
+      "720w": "/public/images/derived/saree-057__1-front-720w.webp?v=1792398586",
+      "1080w": "/public/images/derived/saree-057__1-front-1080w.webp?v=1792398586"
+    },
+    "srcset": "/public/images/derived/saree-057__1-front-480w.webp?v=1792398586 480w, /public/images/derived/saree-057__1-front-720w.webp?v=1792398586 720w, /public/images/derived/saree-057__1-front-1080w.webp?v=1792398586 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMCBAH/xAAiEAEAAgICAgEFAAAAAAAAAAABAAIDEQQhBRIxE1FSgaH/xAAWAQEBAQAAAAAAAAAAAAAAAAADAgT/xAAZEQEBAQADAAAAAAAAAAAAAAAAAQIhMTL/2gAMAwEAAhEDEQA/APbaw4G5Xejepnj3M9XVU0CbPkmrWHh5Et21T9SHj8vtY/Ex6/sG3lozmXFUcZv4iUbO4lDS5FLY+FlCqrXRruc/jRPSttj6o9PTESb2TPmx3fSfuREShv/Z"
+  },
+  "/public/images/sarees/saree-057/2-back-pallu.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640051,
+    "webpUrl": "/public/images/derived/saree-057__2-back-pallu-720w.webp?v=1792640051",
+    "variants": {
+      "480w": "/public/images/derived/saree-057__2-back-pallu-480w.webp?v=1792640051",
+      "720w": "/public/images/derived/saree-057__2-back-pallu-720w.webp?v=1792640051",
+      "1080w": "/public/images/derived/saree-057__2-back-pallu-1080w.webp?v=1792640051"
+    },
+    "srcset": "/public/images/derived/saree-057__2-back-pallu-480w.webp?v=1792640051 480w, /public/images/derived/saree-057__2-back-pallu-720w.webp?v=1792640051 720w, /public/images/derived/saree-057__2-back-pallu-1080w.webp?v=1792640051 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMEAQL/xAAhEAACAgICAgMBAAAAAAAAAAABAgARAwQSITGhE1Fxkf/EABYBAQEBAAAAAAAAAAAAAAAAAAMCBP/EABkRAQEAAwEAAAAAAAAAAAAAAAABERIiMf/aAAwDAQACEQMRAD8AEDFgLgDoTmEtlDck417kttr1FCm2dgK9y+s9py+1Un9qDnpokmmUzjF+IlCe4lDZNq0OJFBJVrNdz1o5CEVXBUgcTY/kRIvppOWr4+/MREsL/9k="
+  },
+  "/public/images/sarees/saree-057/3-pallu-detail.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640166,
+    "webpUrl": "/public/images/derived/saree-057__3-pallu-detail-720w.webp?v=1792640166",
+    "variants": {
+      "480w": "/public/images/derived/saree-057__3-pallu-detail-480w.webp?v=1792640166",
+      "720w": "/public/images/derived/saree-057__3-pallu-detail-720w.webp?v=1792640166",
+      "1080w": "/public/images/derived/saree-057__3-pallu-detail-1080w.webp?v=1792640166"
+    },
+    "srcset": "/public/images/derived/saree-057__3-pallu-detail-480w.webp?v=1792640166 480w, /public/images/derived/saree-057__3-pallu-detail-720w.webp?v=1792640166 720w, /public/images/derived/saree-057__3-pallu-detail-1080w.webp?v=1792640166 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAMFAQT/xAAjEAACAgEEAAcAAAAAAAAAAAABAgARAwQFEiEjJDEyUYGR/8QAFgEBAQEAAAAAAAAAAAAAAAAABAID/8QAGhEBAQACAwAAAAAAAAAAAAAAAAERMQISMv/aAAwDAQACEQMRAD8AovDGtvYE4GOot6ARRQEhuDeXxJfbPPTiZUVEJ74+2/WGu8FyTrlPgPiJa4mjFnbjkHh5KFC/2Q0eYvrE7s2e/qIkXZPDxWmcguIiWM//2Q=="
+  },
+  "/public/images/sarees/saree-057/4-macro.jpg": {
+    "width": 896,
+    "height": 1200,
+    "updatedAt": 1792640309,
+    "webpUrl": "/public/images/derived/saree-057__4-macro-720w.webp?v=1792640309",
+    "variants": {
+      "480w": "/public/images/derived/saree-057__4-macro-480w.webp?v=1792640309",
+      "720w": "/public/images/derived/saree-057__4-macro-720w.webp?v=1792640309",
+      "1080w": "/public/images/derived/saree-057__4-macro-1080w.webp?v=1792640309"
+    },
+    "srcset": "/public/images/derived/saree-057__4-macro-480w.webp?v=1792640309 480w, /public/images/derived/saree-057__4-macro-720w.webp?v=1792640309 720w, /public/images/derived/saree-057__4-macro-1080w.webp?v=1792640309 1080w",
+    "blurDataUrl": "data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDABIMDRANCxIQDhAUExIVGywdGxgYGzYnKSAsQDlEQz85Pj1HUGZXR0thTT0+WXlaYWltcnNyRVV9hnxvhWZwcm7/2wBDARMUFBsXGzQdHTRuST5Jbm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm5ubm7/wAARCAAYABIDASIAAhEBAxEB/8QAGAABAQEBAQAAAAAAAAAAAAAAAAUBBAP/xAAkEAACAQQCAQQDAAAAAAAAAAABAgMABBESITFBBSJxkRMygf/EABgBAAMBAQAAAAAAAAAAAAAAAAIDBAEF/8QAGxEBAQABBQAAAAAAAAAAAAAAAAERAgMSIVH/2gAMAwEAAhEDEQA/APKxmS9twjZ/JGNZR1nHRrZrBoNSTlG5B81xxstjcxMoGr+2Q/PR+6t6u0bxOpZQOCB5qKzx0s8KmiFMcxZ/lK1kk2PtbulCdmJzETXIibOrft8Vb9NuTLAImOXiOrZ846P1SlFS9zvS6lOygs6qxGSNDwaUpWp3/9k="
   }
 }

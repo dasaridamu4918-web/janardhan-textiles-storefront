@@ -1267,15 +1267,13 @@
       "format": "JPEG",
       "fileSizeBytes": 630689,
       "views": {
-        "1-front.jpg": "/public/images/sarees/generated/saree-053.jpg",
+        "1-front.jpg": "/public/images/sarees/saree-053/1-front.jpg",
         "2-back-pallu.jpg": "/public/images/sarees/saree-053/2-back-pallu.jpg",
         "3-pallu-detail.jpg": "/public/images/sarees/saree-053/3-pallu-detail.jpg",
         "4-macro.jpg": "/public/images/sarees/saree-053/4-macro.jpg",
-        "5-blouse.jpg": null
+        "5-blouse.jpg": "/public/images/sarees/saree-053/5-blouse.jpg"
       },
-      "missingViews": [
-        "5-blouse.jpg"
-      ]
+      "missingViews": []
     },
     {
       "id": "saree-054",
@@ -1293,18 +1291,13 @@
       "format": "JPEG",
       "fileSizeBytes": 680766,
       "views": {
-        "1-front.jpg": "/public/images/sarees/generated/saree-054.jpg",
-        "2-back-pallu.jpg": null,
-        "3-pallu-detail.jpg": null,
-        "4-macro.jpg": null,
-        "5-blouse.jpg": null
+        "1-front.jpg": "/public/images/sarees/saree-054/1-front.jpg",
+        "2-back-pallu.jpg": "/public/images/sarees/saree-054/2-back-pallu.jpg",
+        "3-pallu-detail.jpg": "/public/images/sarees/saree-054/3-pallu-detail.jpg",
+        "4-macro.jpg": "/public/images/sarees/saree-054/4-macro.jpg",
+        "5-blouse.jpg": "/public/images/sarees/saree-054/5-blouse.jpg"
       },
-      "missingViews": [
-        "2-back-pallu.jpg",
-        "3-pallu-detail.jpg",
-        "4-macro.jpg",
-        "5-blouse.jpg"
-      ]
+      "missingViews": []
     },
     {
       "id": "saree-055",
@@ -1322,16 +1315,13 @@
       "format": "JPEG",
       "fileSizeBytes": 661420,
       "views": {
-        "1-front.jpg": "/public/images/sarees/generated/saree-055.jpg",
+        "1-front.jpg": "/public/images/sarees/saree-055/1-front.jpg",
         "2-back-pallu.jpg": "/public/images/sarees/saree-055/2-back-pallu.jpg",
         "3-pallu-detail.jpg": "/public/images/sarees/saree-055/3-pallu-detail.jpg",
-        "4-macro.jpg": null,
-        "5-blouse.jpg": null
+        "4-macro.jpg": "/public/images/sarees/saree-055/4-macro.jpg",
+        "5-blouse.jpg": "/public/images/sarees/saree-055/5-blouse.jpg"
       },
-      "missingViews": [
-        "4-macro.jpg",
-        "5-blouse.jpg"
-      ]
+      "missingViews": []
     },
     {
       "id": "saree-056",
@@ -1350,13 +1340,12 @@
       "fileSizeBytes": 694825,
       "views": {
         "1-front.jpg": "/public/images/sarees/generated/saree-056.jpg",
-        "2-back-pallu.jpg": null,
+        "2-back-pallu.jpg": "/public/images/sarees/saree-056/2-back-pallu.jpg",
         "3-pallu-detail.jpg": null,
         "4-macro.jpg": null,
         "5-blouse.jpg": null
       },
       "missingViews": [
-        "2-back-pallu.jpg",
         "3-pallu-detail.jpg",
         "4-macro.jpg",
         "5-blouse.jpg"
@@ -1379,15 +1368,12 @@
       "fileSizeBytes": 651071,
       "views": {
         "1-front.jpg": "/public/images/sarees/generated/saree-057.jpg",
-        "2-back-pallu.jpg": null,
-        "3-pallu-detail.jpg": null,
-        "4-macro.jpg": null,
+        "2-back-pallu.jpg": "/public/images/sarees/saree-057/2-back-pallu.jpg",
+        "3-pallu-detail.jpg": "/public/images/sarees/saree-057/3-pallu-detail.jpg",
+        "4-macro.jpg": "/public/images/sarees/saree-057/4-macro.jpg",
         "5-blouse.jpg": null
       },
       "missingViews": [
-        "2-back-pallu.jpg",
-        "3-pallu-detail.jpg",
-        "4-macro.jpg",
         "5-blouse.jpg"
       ]
     },
