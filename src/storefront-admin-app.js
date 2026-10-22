@@ -994,7 +994,7 @@
     catalogueResult: {
       total: 0,
       page: 1,
-      limit: 8,
+      limit: 24,
       pages: 1,
       items: [],
       loading: false,
@@ -1058,20 +1058,22 @@
   // 3. Pricing & Stock Helpers (Prompt 1 Honesty Rules)
   app.getPricing = function (saree) {
     if (!saree) {
-      return { originalINR: 0, mrp: 0, discountPct: 0, finalINR: 0, hasDiscount: false, isSamplePrice: false };
+      return { originalINR: 0, mrp: 0, discountPct: 0, finalINR: 0, hasDiscount: false, isSamplePrice: false, priceOnRequest: true };
     }
     const finalINR = Math.round(Number(saree.price !== undefined ? saree.price : saree.priceINR || 0));
+    const priceOnRequest = Boolean(saree.priceOnRequest || saree.isSamplePrice || finalINR <= 0);
     const mrpVal = Math.round(Number(saree.mrp !== undefined && saree.mrp !== null ? saree.mrp : saree.originalPriceINR || 0));
-    const hasDiscount = mrpVal > finalINR && finalINR > 0;
+    const hasDiscount = !priceOnRequest && mrpVal > finalINR && finalINR > 0;
     const discountPct = hasDiscount ? Math.round(((mrpVal - finalINR) / mrpVal) * 100) : 0;
     return {
       originalINR: hasDiscount ? mrpVal : finalINR,
       mrp: hasDiscount ? mrpVal : 0,
       discountPct,
-      finalINR,
+      finalINR: priceOnRequest ? 0 : finalINR,
       hasDiscount,
       discountLabel: hasDiscount ? `${discountPct}% OFF` : "",
-      isSamplePrice: false
+      isSamplePrice: false,
+      priceOnRequest
     };
   };
 
@@ -1128,7 +1130,7 @@
       availability,
       sort,
       page,
-      limit: 8,
+      limit: 24,
       featured,
       bestseller
     };
@@ -1527,7 +1529,7 @@
     if (cq.bestseller) params.set("bestseller", cq.bestseller);
     params.set("sort", cq.sort || "newest");
     params.set("page", String(cq.page || 1));
-    params.set("limit", String(cq.limit || 8));
+    params.set("limit", String(cq.limit || 24));
 
     try {
       const data = await BACKEND_API.request(`/api/products?${params.toString()}`);
@@ -1535,7 +1537,7 @@
       this.state.catalogueResult = {
         total: Number(data.total || items.length),
         page: Number(data.page || 1),
-        limit: Number(data.limit || 8),
+        limit: Number(data.limit || 24),
         pages: Number(data.pages || 1),
         items: append ? [...(this.state.catalogueResult.items || []), ...items] : items,
         loading: false,
@@ -1573,7 +1575,7 @@
       else if (cq.sort === "price_desc") filtered.sort((a, b) => this.getPricing(b).finalINR - this.getPricing(a).finalINR);
       else if (cq.sort === "name") filtered.sort((a, b) => a.name.localeCompare(b.name));
 
-      const limit = cq.limit || 8;
+      const limit = cq.limit || 24;
       const page = cq.page || 1;
       const start = (page - 1) * limit;
       const paged = filtered.slice(start, start + limit);
@@ -1648,16 +1650,17 @@
       <article data-product-card="${pid}" class="jt-product-card group bg-[#FAF8F5] rounded-2xl border ${
       saree.isGeneratedSaree ? "border-2 border-gold shadow-md" : "border-gold/35 shadow-sm"
     } hover:shadow-xl flex flex-col overflow-hidden min-w-0">
-        <div class="relative aspect-[3/4] bg-[#EFE6D5] overflow-hidden">
+        <div class="relative aspect-[3/4] bg-[#EFE6D5] overflow-hidden" style="${(saree.blurDataUrl || (firstGallerySlot && firstGallerySlot.blurDataUrl)) ? `background-image:url('${saree.blurDataUrl || firstGallerySlot.blurDataUrl}');background-size:cover;background-position:center;` : ''}">
           <img
             src="${primaryImg}"
+            ${(saree.srcset || (firstGallerySlot && firstGallerySlot.srcset)) ? `srcset="${saree.srcset || firstGallerySlot.srcset}" sizes="(max-width: 640px) 48vw, (max-width: 1024px) 31vw, 24vw"` : ""}
             alt="${saree.name}"
             width="600"
             height="800"
             loading="lazy"
             decoding="async"
             onclick="app.openProductDetail('${pid}')"
-            onerror="this.onerror=null; this.src=createMissingViewPlaceholderSVG('${(saree.name || "").replace(/'/g, "\\'")}', 'Front view');"
+            onerror="this.onerror=null; this.srcset=''; this.src=createMissingViewPlaceholderSVG('${(saree.name || "").replace(/'/g, "\\'")}', 'Front view');"
             class="jt-product-card-img w-full h-full object-cover object-top cursor-pointer"
           />
 
@@ -1711,29 +1714,44 @@
 
           <div class="pt-2 border-t border-gold/25 space-y-2.5">
             <div class="flex flex-wrap items-baseline gap-1.5">
-              <span class="font-serif text-lg sm:text-xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
               ${
-                pricing.hasDiscount
-                  ? `<span class="text-xs text-ink-muted line-through">${this.formatINR(pricing.mrp)}</span>
-                     <span class="text-[10px] font-bold text-teal bg-gold/25 px-1.5 py-0.5 rounded">${pricing.discountLabel}</span>`
-                  : ""
+                pricing.priceOnRequest
+                  ? `<span class="font-serif text-base sm:text-lg font-bold text-teal">Price on request</span>`
+                  : `<span class="font-serif text-lg sm:text-xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
+                     ${
+                       pricing.hasDiscount
+                         ? `<span class="text-xs text-ink-muted line-through">${this.formatINR(pricing.mrp)}</span>
+                            <span class="text-[10px] font-bold text-teal bg-gold/25 px-1.5 py-0.5 rounded">${pricing.discountLabel}</span>`
+                         : ""
+                     }`
               }
             </div>
 
-            <button
-              type="button"
-              data-add-cart-btn="${pid}"
-              onclick="app.addToCart('${pid}', 1, this)"
-              ${outOfStock ? "disabled" : ""}
-              class="w-full py-2 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
-                outOfStock
-                  ? "bg-sand-deep/50 text-ink-muted cursor-not-allowed"
-                  : "bg-teal text-ivory hover:bg-teal-light active:scale-95 shadow-xs"
-              }"
-            >
-              <svg class="w-3.5 h-3.5 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
-              <span>${outOfStock ? "Out of stock" : "Add to Cart"}</span>
-            </button>
+            ${
+              pricing.priceOnRequest
+                ? `<a
+                    href="https://wa.me/919652262173?text=${encodeURIComponent(`Hi Janardhan Textiles, please share the price and availability for ${saree.name} (SKU: ${pid}).`)}"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    class="w-full py-2 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all bg-[#F5EFE4] text-ink border border-gold/60 hover:bg-gold/25"
+                  >
+                    <span>Enquire on WhatsApp</span>
+                  </a>`
+                : `<button
+                    type="button"
+                    data-add-cart-btn="${pid}"
+                    onclick="app.addToCart('${pid}', 1, this)"
+                    ${outOfStock ? "disabled" : ""}
+                    class="w-full py-2 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
+                      outOfStock
+                        ? "bg-sand-deep/50 text-ink-muted cursor-not-allowed"
+                        : "bg-teal text-ivory hover:bg-teal-light active:scale-95 shadow-xs"
+                    }"
+                  >
+                    <svg class="w-3.5 h-3.5 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <span>${outOfStock ? "Out of stock" : "Add to Cart"}</span>
+                  </button>`
+            }
           </div>
         </div>
       </article>
@@ -2289,7 +2307,7 @@
       availability: "",
       sort: "newest",
       page: 1,
-      limit: 8,
+      limit: 24,
       featured: "",
       bestseller: ""
     };
@@ -3348,12 +3366,16 @@
               ${saree.description ? `<p class="text-sm text-[#3d3327] leading-relaxed pt-1">${saree.description}</p>` : ""}
 
               <div class="pt-2 flex flex-wrap items-baseline gap-2.5">
-                <span class="font-serif text-3xl sm:text-4xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
                 ${
-                  pricing.hasDiscount
-                    ? `<span class="font-serif text-xl text-ink-muted line-through">${this.formatINR(pricing.mrp)}</span>
-                       <span class="px-2.5 py-0.5 rounded-full bg-gold/25 text-ink font-bold text-xs border border-gold/50">${pricing.discountLabel}</span>`
-                    : ""
+                  pricing.priceOnRequest
+                    ? `<span class="font-serif text-2xl sm:text-3xl font-bold text-teal">Price on request</span>`
+                    : `<span class="font-serif text-3xl sm:text-4xl font-bold text-ink">${this.formatINR(pricing.finalINR)}</span>
+                       ${
+                         pricing.hasDiscount
+                           ? `<span class="font-serif text-xl text-ink-muted line-through">${this.formatINR(pricing.mrp)}</span>
+                              <span class="px-2.5 py-0.5 rounded-full bg-gold/25 text-ink font-bold text-xs border border-gold/50">${pricing.discountLabel}</span>`
+                           : ""
+                       }`
                 }
               </div>
             </div>
@@ -5491,14 +5513,21 @@
   app.getMappedBulkProducts = function () {
     const rows = this.state.adminState.bulkCsvRows || [];
     const map = this.state.adminState.bulkColumnMap || {};
+    const existingSkus = new Set((this.state.products || []).map((p) => (p.sku || p.id || "").toLowerCase()));
     return rows.map((r, idx) => {
+      const rawPrice = map.price ? String(r[map.price] ?? "").trim() : "";
+      const isPriceOnRequest = !rawPrice || ["price on request", "por", "0", "none", "nan"].includes(rawPrice.toLowerCase());
+      const parsedPrice = isPriceOnRequest ? 0 : Number(rawPrice);
+      const skuVal = (map.sku ? String(r[map.sku] || "").trim() : "") || `jt-bulk-${String(idx + 1).padStart(3, "0")}`;
+      const isUpdate = existingSkus.has(skuVal.toLowerCase());
       const item = {
-        sku: map.sku ? r[map.sku] : "",
-        name: map.name ? r[map.name] : "",
-        fabric: map.fabric ? r[map.fabric] : "",
-        color: map.color ? r[map.color] : "",
-        occasion: map.occasion ? r[map.occasion] : "",
-        price: map.price ? Number(r[map.price]) : NaN,
+        sku: skuVal,
+        name: map.name ? String(r[map.name] || "").trim() : "",
+        fabric: map.fabric ? String(r[map.fabric] || "").trim() : "",
+        color: map.color ? String(r[map.color] || "").trim() : "",
+        occasion: map.occasion ? String(r[map.occasion] || "").trim() : "",
+        price: Number.isNaN(parsedPrice) ? 0 : parsedPrice,
+        priceOnRequest: isPriceOnRequest,
         mrp: map.mrp && r[map.mrp] ? Number(r[map.mrp]) : null,
         stock: map.stock && r[map.stock] !== "" ? Number(r[map.stock]) : 10,
         description: map.description ? r[map.description] : "",
@@ -5510,8 +5539,8 @@
       if (!item.name) rowErrors.push("Missing name");
       if (!item.fabric) rowErrors.push("Missing fabric");
       if (!item.color) rowErrors.push("Missing color");
-      if (Number.isNaN(item.price) || item.price <= 0) rowErrors.push("Invalid price");
-      return { rowNumber: idx + 1, item, rowErrors };
+      if (!isPriceOnRequest && (Number.isNaN(parsedPrice) || parsedPrice < 0)) rowErrors.push("Invalid price");
+      return { rowNumber: idx + 1, item, isUpdate, isPriceOnRequest, rowErrors };
     });
   };
 

@@ -1394,19 +1394,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated cobalt blue silk blouse with broad gold zari sleeve border",
     "primaryImage": "/public/images/sarees/generated/saree-041.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-041.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-041/1-front.jpg",
+      "/public/images/sarees/saree-041/2-back-pallu.jpg",
+      "/public/images/sarees/saree-041/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-041/4-macro.jpg",
+      "/public/images/sarees/saree-041/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-041.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-041/1-front.jpg"
   },
   {
     "id": "saree-042",
@@ -1430,19 +1425,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching turquoise silk blouse with silver-gold embroidered neckline and sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-042.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-042.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-042/1-front.jpg",
+      "/public/images/sarees/saree-042/2-back-pallu.jpg",
+      "/public/images/sarees/saree-042/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-042/4-macro.jpg",
+      "/public/images/sarees/saree-042/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-042.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-042/1-front.jpg"
   },
   {
     "id": "saree-043",
@@ -1466,19 +1456,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Fitted forest green katan silk blouse with antique gold brocade sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-043.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-043.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-043/1-front.jpg",
+      "/public/images/sarees/saree-043/2-back-pallu.jpg",
+      "/public/images/sarees/saree-043/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-043/4-macro.jpg",
+      "/public/images/sarees/saree-043/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-043.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-043/1-front.jpg"
   },
   {
     "id": "saree-044",
@@ -1502,18 +1487,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Coordinated slate blue raw silk blouse with scalloped gold embroidered sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-044.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-044.jpg",
+      "/public/images/sarees/saree-044/1-front.jpg",
       "/public/images/sarees/saree-044/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-044/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-044/4-macro.jpg",
+      "/public/images/sarees/saree-044/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-044.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-044/1-front.jpg"
   },
   {
     "id": "saree-045",
@@ -1537,19 +1518,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Contrast sindoor red silk blouse with gold temple border on sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-045.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-045.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-045/1-front.jpg",
+      "/public/images/sarees/saree-045/2-back-pallu.jpg",
+      "/public/images/sarees/saree-045/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-045/4-macro.jpg",
+      "/public/images/sarees/saree-045/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-045.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-045/1-front.jpg"
   },
   {
     "id": "saree-046",
@@ -1573,19 +1549,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching teal tissue-silk blouse with rose-gold embroidered sweetheart neckline",
     "primaryImage": "/public/images/sarees/generated/saree-046.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-046.jpg",
-      "",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-046/1-front.jpg",
+      "/public/images/sarees/saree-046/2-back-pallu.jpg",
+      "/public/images/sarees/saree-046/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-046/4-macro.jpg",
+      "/public/images/sarees/saree-046/5-blouse.jpg"
     ],
-    "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-046.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-046/1-front.jpg"
   },
   {
     "id": "saree-047",
@@ -1610,15 +1581,12 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-047.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-047.jpg",
-      "",
-      "",
-      "",
+      "/public/images/sarees/saree-047/2-back-pallu.jpg",
+      "/public/images/sarees/saree-047/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-047/4-macro.jpg",
       ""
     ],
     "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
       "5-blouse.jpg"
     ],
     "image": "/public/images/sarees/generated/saree-047.jpg"
@@ -1681,13 +1649,12 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-049.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-049.jpg",
-      "",
+      "/public/images/sarees/saree-049/2-back-pallu.jpg",
       "",
       "",
       ""
     ],
     "missingViews": [
-      "2-back-pallu.jpg",
       "3-pallu-detail.jpg",
       "4-macro.jpg",
       "5-blouse.jpg"

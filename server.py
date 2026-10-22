@@ -638,22 +638,112 @@ REQUIRED_VIEWS = [
 ]
 
 
+
+RESPONSIVE_MANIFEST_PATH = os.path.join(ROOT_DIR, "public", "images", "derived", "responsive-manifest.json")
+_RESPONSIVE_CACHE = {"mtime": 0, "data": {}}
+
+
+def get_responsive_manifest():
+    try:
+        if os.path.exists(RESPONSIVE_MANIFEST_PATH):
+            mt = int(os.path.getmtime(RESPONSIVE_MANIFEST_PATH))
+            if mt != _RESPONSIVE_CACHE["mtime"]:
+                with open(RESPONSIVE_MANIFEST_PATH, "r", encoding="utf-8") as rf:
+                    _RESPONSIVE_CACHE["data"] = json.load(rf)
+                _RESPONSIVE_CACHE["mtime"] = mt
+    except Exception:
+        pass
+    return _RESPONSIVE_CACHE["data"]
+
+
+def enrich_view_entry(sku, ord_num, key, label, fname, raw_url, p_name="", p_fabric="", p_color="", slot=None):
+    slot = slot if isinstance(slot, dict) else {}
+    clean_path = (raw_url or "").split("?")[0].strip()
+    rmap = get_responsive_manifest()
+    rmeta = rmap.get(clean_path) or {}
+
+    # Determine role & yaw for 360 viewer vs detail cards
+    role_map = {
+        "front": ("front", 0),
+        "back_pallu": ("back", 180),
+        "pallu_detail": ("detail", None),
+        "fabric_macro": ("detail", None),
+        "blouse_border": ("detail", None),
+    }
+    default_role, default_yaw = role_map.get(key, ("detail", None))
+    role = slot.get("role") or default_role
+    yaw = slot.get("yaw") if "yaw" in slot else default_yaw
+
+    # Check file mtime for cache busting (?v=updatedAt)
+    updated_at = slot.get("updatedAt") or rmeta.get("updatedAt")
+    if not updated_at and clean_path.startswith("/"):
+        fs_cand = os.path.join(ROOT_DIR, clean_path.lstrip("/").replace("/", os.sep))
+        if not os.path.exists(fs_cand):
+            fs_cand = os.path.join(ROOT_DIR, "public", clean_path.lstrip("/").replace("/", os.sep))
+        if os.path.exists(fs_cand):
+            try:
+                updated_at = int(os.path.getmtime(fs_cand))
+            except Exception:
+                updated_at = None
+
+    final_url = raw_url
+    if clean_path and updated_at and "?v=" not in raw_url:
+        final_url = f"{clean_path}?v={updated_at}"
+
+    is_real_studio = (sku == "jt-saree-09" and key in ("front", "back_pallu", "pallu_detail", "fabric_macro", "blouse_border"))
+    source = slot.get("source") or ("real" if is_real_studio else "ai")
+    approved = bool(slot.get("approved", True))
+
+    return {
+        "id": slot.get("id") or f"{sku}-view-{ord_num:02d}",
+        "order": ord_num,
+        "key": key,
+        "file": fname,
+        "role": role,
+        "yaw": yaw,
+        "label": slot.get("label") or label,
+        "url": final_url,
+        "webpUrl": rmeta.get("webpUrl") or slot.get("webpUrl") or "",
+        "srcset": rmeta.get("srcset") or slot.get("srcset") or "",
+        "blurDataUrl": rmeta.get("blurDataUrl") or slot.get("blurDataUrl") or "",
+        "source": source,
+        "approved": approved,
+        "updatedAt": updated_at or 0,
+        "missingView": not bool(clean_path),
+        "isSampleImage": False,
+        "alt": slot.get("alt") or f"{p_name or 'Saree'} — {label} ({p_fabric}, {p_color})"
+    }
+
+
 def normalize_product(prod, idx=0):
     p = dict(prod)
     sku = (p.get("sku") or p.get("id") or f"jt-saree-{idx + 1:02d}").strip()
     p["id"] = p.get("id") or sku
     p["sku"] = sku
 
-    # Price & MRP normalization
+    # Slug & Price normalization (Ground Rule #2: support Price on Request when price <= 0 or flagged)
+    p["slug"] = p.get("slug") or re.sub(r"[^a-z0-9]+", "-", f"{sku}-{p.get('name', 'saree')}".lower()).strip("-")
     raw_price = p.get("price") if p.get("price") is not None else p.get("priceINR", 0)
-    price = int(round(float(raw_price or 0)))
+    try:
+        price = int(round(float(raw_price or 0)))
+    except Exception:
+        price = 0
+    price_on_request = bool(p.get("priceOnRequest") or p.get("isSamplePrice") or price <= 0)
+    if price_on_request:
+        price = 0
     raw_mrp = p.get("mrp") if p.get("mrp") is not None else p.get("originalPriceINR", price)
-    mrp = int(round(float(raw_mrp or price)))
+    try:
+        mrp = int(round(float(raw_mrp or price)))
+    except Exception:
+        mrp = price
+    if price_on_request or mrp < price:
+        mrp = price
     p["price"] = price
     p["priceINR"] = price
     p["mrp"] = mrp
     p["originalPriceINR"] = mrp
-    p["discountPercent"] = round(((mrp - price) / mrp) * 100) if mrp > price and mrp > 0 else 0
+    p["priceOnRequest"] = price_on_request
+    p["discountPercent"] = round(((mrp - price) / mrp) * 100) if (not price_on_request and mrp > price and mrp > 0) else 0
 
     # Stock & stock_status normalization
     raw_stock = p.get("stock") if p.get("stock") is not None else p.get("stockQty")
@@ -711,17 +801,12 @@ def normalize_product(prod, idx=0):
 
     if mapped_folder and os.path.exists(os.path.join(SAREES_IMAGES_DIR, mapped_folder, "2-back-pallu.jpg")):
         gal = []
-        for ord_num, key, label, fname in REQUIRED_VIEWS:
-            url = f"/public/images/sarees/{mapped_folder}/{fname}?v=nb2"
-            gal.append({
-                "order": ord_num,
-                "key": key,
-                "label": label,
-                "url": url,
-                "missingView": False,
-                "isSampleImage": False,
-                "alt": f"{p.get('name', 'Saree')} — {label} ({p.get('fabric', '')}, {p.get('color', '')})"
-            })
+        for v_idx, (ord_num, key, label, fname) in enumerate(REQUIRED_VIEWS):
+            slot = raw_gal[v_idx] if v_idx < len(raw_gal) and isinstance(raw_gal[v_idx], dict) else None
+            base_url = f"/public/images/sarees/{mapped_folder}/{fname}"
+            if slot and slot.get("url") and not str(slot.get("url")).startswith(f"/public/images/sarees/{mapped_folder}/"):
+                base_url = str(slot.get("url"))
+            gal.append(enrich_view_entry(sku, ord_num, key, label, fname, base_url, p.get("name", ""), p.get("fabric", ""), p.get("color", ""), slot))
         p["gallery"] = gal
         p["missingViews"] = []
     else:
@@ -750,24 +835,29 @@ def normalize_product(prod, idx=0):
             if v_idx > 0 and clean_url and clean_front and clean_url == clean_front:
                 raw_url = ""
 
+            # Check if generated 5-view file exists on disk for this SKU
+            if not raw_url and os.path.exists(os.path.join(SAREES_IMAGES_DIR, sku, fname)):
+                raw_url = f"/public/images/sarees/{sku}/{fname}"
+
             is_missing = not bool(raw_url)
             if is_missing and v_idx > 0:
                 missing_views.append(fname)
 
-            gal.append({
-                "order": ord_num,
-                "key": key,
-                "label": (slot.get("label") if slot and slot.get("label") else label),
-                "url": raw_url,
-                "missingView": is_missing,
-                "isSampleImage": False,
-                "alt": (slot.get("alt") if slot and slot.get("alt") else f"{p.get('name', 'Saree')} — {label}")
-            })
+            gal.append(enrich_view_entry(sku, ord_num, key, label, fname, raw_url, p.get("name", ""), p.get("fabric", ""), p.get("color", ""), slot))
         p["gallery"] = gal
         p["missingViews"] = missing_views
 
+    # Build unified `views[]` array (full-body yaw frames + detail close-ups)
+    extra_views = p.get("extraYawViews") if isinstance(p.get("extraYawViews"), list) else []
+    views_list = list(p["gallery"])
+    for ev in extra_views:
+        if isinstance(ev, dict) and ev.get("url"):
+            views_list.append(ev)
+    p["views"] = views_list
     p["images"] = [g.get("url") for g in p["gallery"] if g and g.get("url")]
     p["image"] = p["images"][0] if p["images"] else ""
+    p["blurDataUrl"] = (p["gallery"][0].get("blurDataUrl") if p.get("gallery") else "") or ""
+    p["srcset"] = (p["gallery"][0].get("srcset") if p.get("gallery") else "") or ""
     return p
 
 
@@ -1433,7 +1523,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 filtered = list(reversed(filtered))
 
             page = max(1, int(qs.get("page", ["1"])[0] or 1))
-            limit = max(1, min(100, int(qs.get("limit", ["12"])[0] or 12)))
+            limit = max(1, min(100, int(qs.get("limit", ["24"])[0] or 24)))
             total = len(filtered)
             pages = max(1, (total + limit - 1) // limit)
             start = (page - 1) * limit
@@ -1633,6 +1723,20 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 "top_selling_products": top_selling,
                 "recent_orders": orders[:10]
             })
+
+        if path == "/api/admin/products/template.csv":
+            csv_body = (
+                "sku,name,fabric,color,occasion,price,mrp,price_on_request,stock,description,work_details,blouse_piece,care_instructions\n"
+                'jt-bulk-01,"Kanak Gold Tissue Saree","Champagne Tissue","Champagne Gold","Wedding & Reception",6200,6200,false,18,"Luminous gold tissue saree","Scalloped zari floral border","Matching tissue blouse","Dry clean only"\n'
+                'jt-bulk-02,"Meera Heritage Brocade Saree","Woven Brocade","Royal Rose & Gold","Bridal & Muhurtham",0,0,true,12,"Bespoke bridal brocade weave","Zardozi peacock border","Embroidered silk blouse","Dry clean only"\n'
+            ).encode("utf-8")
+            self.send_response(200)
+            self.send_header("Content-Type", "text/csv; charset=utf-8")
+            self.send_header("Content-Disposition", 'attachment; filename="janardhan-textiles-bulk-template.csv"')
+            self.send_header("Content-Length", str(len(csv_body)))
+            self.end_headers()
+            self.wfile.write(csv_body)
+            return
 
         if path == "/api/admin/products":
             admin = self._require_admin()
@@ -2411,25 +2515,30 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                 conn.close()
             return self._send_json(201, {"ok": True, "product": norm_p})
 
-        # Bulk Import Products: POST /api/admin/products/bulk
+        # Bulk Import Products: POST /api/admin/products/bulk (Supports Price on Request, dryRun preview, and chunked upsert)
         if path == "/api/admin/products/bulk":
             admin = self._require_admin()
             if not admin:
                 return
             rows = body.get("products")
+            dry_run = bool(body.get("dryRun"))
             if not isinstance(rows, list):
                 return self._send_json(400, {"ok": False, "error": "Expected { products: [...] } array."})
-            if len(rows) > 1000:
-                return self._send_json(400, {"ok": False, "error": "Maximum 1000 products per bulk request."})
+            if len(rows) > 2000:
+                return self._send_json(400, {"ok": False, "error": "Maximum 2000 products per bulk request."})
 
             created = 0
             updated = 0
+            price_on_request_count = 0
             errors = []
             ts = now_iso()
             with DB_LOCK:
                 conn = get_db_connection()
                 cur = conn.cursor()
                 for idx, row_data in enumerate(rows):
+                    if not isinstance(row_data, dict):
+                        errors.append({"row": idx + 1, "sku": "", "error": "Invalid row object"})
+                        continue
                     sku = str(row_data.get("sku") or row_data.get("id") or "").strip()
                     name = str(row_data.get("name") or "").strip()
                     fabric = str(row_data.get("fabric") or "").strip()
@@ -2437,45 +2546,70 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     if not sku or not name or not fabric or not color:
                         errors.append({"row": idx + 1, "sku": sku, "error": "Missing required sku, name, fabric, or color"})
                         continue
-                    try:
-                        price_val = float(row_data.get("price") or row_data.get("priceINR") or 0)
-                        if price_val <= 0:
-                            errors.append({"row": idx + 1, "sku": sku, "error": "Price must be greater than 0"})
+
+                    raw_price_str = str(row_data.get("price") if row_data.get("price") is not None else row_data.get("priceINR") or "").strip()
+                    por_flag = bool(row_data.get("priceOnRequest") or str(row_data.get("price_on_request") or "").lower() in ("true", "1", "yes"))
+                    if raw_price_str == "" or raw_price_str.lower() in ("price on request", "por", "nan", "none", "0"):
+                        price_val = 0
+                        por_flag = True
+                    else:
+                        try:
+                            price_val = float(raw_price_str)
+                            if price_val < 0:
+                                errors.append({"row": idx + 1, "sku": sku, "error": "Price cannot be negative"})
+                                continue
+                            if price_val == 0:
+                                por_flag = True
+                        except Exception:
+                            errors.append({"row": idx + 1, "sku": sku, "error": f"Invalid numeric price '{raw_price_str}'"})
                             continue
-                    except Exception:
-                        errors.append({"row": idx + 1, "sku": sku, "error": "Invalid numeric price"})
-                        continue
+
+                    if por_flag:
+                        price_on_request_count += 1
 
                     row_data["id"] = sku
                     row_data["sku"] = sku
                     row_data["color"] = color
+                    row_data["price"] = int(round(price_val))
+                    row_data["priceINR"] = int(round(price_val))
+                    row_data["priceOnRequest"] = por_flag
+
                     cur.execute("SELECT data_json FROM products WHERE id = ?", (sku,))
                     existing = cur.fetchone()
                     if existing:
-                        merged = json.loads(existing["data_json"])
-                        merged.update(row_data)
-                        norm_p = normalize_product(merged)
-                        cur.execute(
-                            "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
-                            (json.dumps(norm_p), ts, sku)
-                        )
+                        if not dry_run:
+                            merged = json.loads(existing["data_json"])
+                            merged.update(row_data)
+                            norm_p = normalize_product(merged)
+                            cur.execute(
+                                "UPDATE products SET data_json = ?, updated_at = ? WHERE id = ?",
+                                (json.dumps(norm_p), ts, sku)
+                            )
                         updated += 1
                     else:
-                        cur.execute("SELECT COALESCE(MAX(sort_order), -1) + 1 AS next_ord FROM products")
-                        next_ord = cur.fetchone()["next_ord"]
-                        norm_p = normalize_product(row_data, next_ord)
-                        cur.execute(
-                            "INSERT INTO products (id, sort_order, data_json, updated_at) VALUES (?, ?, ?, ?)",
-                            (sku, next_ord, json.dumps(norm_p), ts)
-                        )
+                        if not dry_run:
+                            cur.execute("SELECT COALESCE(MAX(sort_order), -1) + 1 AS next_ord FROM products")
+                            next_ord = cur.fetchone()["next_ord"]
+                            norm_p = normalize_product(row_data, next_ord)
+                            cur.execute(
+                                "INSERT INTO products (id, sort_order, data_json, updated_at) VALUES (?, ?, ?, ?)",
+                                (sku, next_ord, json.dumps(norm_p), ts)
+                            )
                         created += 1
-                conn.commit()
+                if not dry_run:
+                    conn.commit()
                 conn.close()
 
+            if not dry_run:
+                record_audit_log("bulk_import", admin, "products", f"{created}_created_{updated}_updated", self._get_client_ip(), {
+                    "created": created, "updated": updated, "priceOnRequest": price_on_request_count, "errors": len(errors)
+                })
             return self._send_json(200, {
                 "ok": True,
+                "dryRun": dry_run,
                 "created": created,
                 "updated": updated,
+                "priceOnRequestCount": price_on_request_count,
                 "errors": errors
             })
 
