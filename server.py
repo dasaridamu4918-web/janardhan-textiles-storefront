@@ -687,7 +687,7 @@ def enrich_view_entry(sku, ord_num, key, label, fname, raw_url, p_name="", p_fab
                 updated_at = None
 
     final_url = raw_url
-    if clean_path and updated_at and "?v=" not in raw_url:
+    if clean_path and updated_at:
         final_url = f"{clean_path}?v={updated_at}"
 
     is_real_studio = (sku == "jt-saree-09" and key in ("front", "back_pallu", "pallu_detail", "fabric_macro", "blouse_border"))
@@ -804,8 +804,10 @@ def normalize_product(prod, idx=0):
         for v_idx, (ord_num, key, label, fname) in enumerate(REQUIRED_VIEWS):
             slot = raw_gal[v_idx] if v_idx < len(raw_gal) and isinstance(raw_gal[v_idx], dict) else None
             base_url = f"/public/images/sarees/{mapped_folder}/{fname}"
-            if slot and slot.get("url") and not str(slot.get("url")).startswith(f"/public/images/sarees/{mapped_folder}/"):
-                base_url = str(slot.get("url"))
+            if slot and slot.get("url"):
+                clean_slot_u = str(slot.get("url")).split("?")[0]
+                if slot.get("customOverride") or not clean_slot_u.startswith(f"/public/images/sarees/{mapped_folder}/"):
+                    base_url = clean_slot_u
             gal.append(enrich_view_entry(sku, ord_num, key, label, fname, base_url, p.get("name", ""), p.get("fabric", ""), p.get("color", ""), slot))
         p["gallery"] = gal
         p["missingViews"] = []
@@ -3044,10 +3046,19 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
                     conn.close()
                     return self._send_json(404, {"ok": False, "error": "Product not found"})
                 pdata = normalize_product(json.loads(row["data_json"]))
+                epoch_ms = int(time.time() * 1000)
                 if "gallery" in pdata and 0 <= view_idx < len(pdata["gallery"]):
-                    pdata["gallery"][view_idx]["url"] = stored_url
+                    pdata["gallery"][view_idx]["url"] = stored_url.split("?")[0] if stored_url else ""
+                    pdata["gallery"][view_idx]["updatedAt"] = epoch_ms
+                    pdata["gallery"][view_idx]["customOverride"] = True
                     if "alt" in body:
                         pdata["gallery"][view_idx]["alt"] = body["alt"]
+                    if "role" in body:
+                        pdata["gallery"][view_idx]["role"] = str(body["role"])
+                    if "yaw" in body:
+                        pdata["gallery"][view_idx]["yaw"] = body["yaw"]
+                    if "source" in body:
+                        pdata["gallery"][view_idx]["source"] = str(body["source"])
                     if "isSampleImage" in body:
                         pdata["gallery"][view_idx]["isSampleImage"] = bool(body["isSampleImage"])
                 pdata["updatedAt"] = ts
@@ -3128,7 +3139,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             pdata = json.loads(row["data_json"])
             for field in (
                 "sku", "name", "priceINR", "originalPriceINR", "discountPercent",
-                "price", "mrp", "stock", "stockQty", "stockStatus", "stock_status",
+                "price", "mrp", "priceOnRequest", "stock", "stockQty", "stockStatus", "stock_status",
                 "featured", "bestseller", "active",
                 "isSamplePrice", "isSampleProduct", "wholesalePriceINR", "minWholesaleQty",
                 "description", "fabric", "color", "occasion",
@@ -3162,15 +3173,22 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
 
             if "images" in body and isinstance(body["images"], list) and len(body["images"]) > 0:
                 new_gal = []
+                epoch_ms = int(time.time() * 1000)
                 for idx, url in enumerate(body["images"][:5]):
                     ord_num, key, label, _ = REQUIRED_VIEWS[idx] if idx < len(REQUIRED_VIEWS) else (idx + 1, f"view_{idx+1}", f"View {idx+1}", "")
                     existing_slot = pdata.get("gallery", [])[idx] if isinstance(pdata.get("gallery"), list) and idx < len(pdata["gallery"]) else {}
+                    saved_u = save_data_uri_if_raster(url, prefix=f"{product_id}-v{idx+1}")
+                    clean_new = (saved_u or "").split("?")[0]
+                    clean_old = (existing_slot.get("url") or "").split("?")[0]
+                    slot_updated_at = epoch_ms if clean_new != clean_old else (existing_slot.get("updatedAt") or epoch_ms)
                     new_gal.append({
                         "order": ord_num,
                         "key": key,
                         "label": existing_slot.get("label") or label,
-                        "url": save_data_uri_if_raster(url, prefix=f"{product_id}-v{idx+1}"),
-                        "isSampleImage": existing_slot.get("isSampleImage", False),
+                        "url": clean_new,
+                        "updatedAt": slot_updated_at,
+                        "customOverride": True if clean_new != clean_old else bool(existing_slot.get("customOverride", False)),
+                        "isSampleImage": False,
                         "alt": existing_slot.get("alt") or f"{pdata.get('name', 'Saree')} — {label}"
                     })
                 pdata["gallery"] = new_gal

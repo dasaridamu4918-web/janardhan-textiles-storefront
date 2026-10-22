@@ -4678,7 +4678,73 @@
     if (tabName === "products") this.fetchAdminProducts();
     if (tabName === "orders") this.fetchAdminOrders();
     if (tabName === "customers") this.fetchAdminCustomers();
+    if (tabName === "review_frames") this.fetchAdminReviewFrames();
+    if (tabName === "audit_log") this.fetchAdminAuditLog();
+    if (tabName === "docs") this.fetchAdminDocs();
     this.renderCurrentPage();
+  };
+
+  app.fetchAdminReviewFrames = async function () {
+    this.state.adminState.reviewFramesLoading = true;
+    try {
+      const data = await BACKEND_API.request("/api/admin/review-frames");
+      this.state.adminState.reviewFramesList = data.items || [];
+    } catch (e) {}
+    this.state.adminState.reviewFramesLoading = false;
+    const el = document.getElementById("admin-tab-viewport");
+    if (el && this.state.adminState.tab === "review_frames") {
+      el.innerHTML = this.renderAdminReviewFramesTab();
+    }
+  };
+
+  app.toggleAdminFrameApproval = async function (productId, viewId, approved) {
+    try {
+      const res = await BACKEND_API.request(
+        `/api/admin/products/${encodeURIComponent(productId)}/views/${encodeURIComponent(viewId)}`,
+        {
+          method: "PATCH",
+          body: JSON.stringify({ approved: Boolean(approved) })
+        }
+      );
+      if (res.product) {
+        const idx = this.state.products.findIndex((p) => (p.id || p.sku) === productId);
+        if (idx >= 0) this.state.products[idx] = res.product;
+      }
+      this.showToast(
+        approved
+          ? `Approved frame ${viewId} for ${productId} (Mode: ${res.product?.viewerMode || "updated"}).`
+          : `Rejected frame ${viewId} for ${productId} — viewer automatically adjusted to ${res.product?.viewerMode || "honest fallback"}.`
+      );
+      await this.fetchAdminReviewFrames();
+    } catch (err) {
+      this.showToast(err.message || "Could not update frame approval.", "error");
+    }
+  };
+
+  app.fetchAdminAuditLog = async function () {
+    this.state.adminState.auditLogLoading = true;
+    try {
+      const data = await BACKEND_API.request("/api/admin/audit-log?limit=150");
+      this.state.adminState.auditLogList = data.items || [];
+    } catch (e) {}
+    this.state.adminState.auditLogLoading = false;
+    const el = document.getElementById("admin-tab-viewport");
+    if (el && this.state.adminState.tab === "audit_log") {
+      el.innerHTML = this.renderAdminAuditLogTab();
+    }
+  };
+
+  app.fetchAdminDocs = async function () {
+    this.state.adminState.docsLoading = true;
+    try {
+      const data = await BACKEND_API.request("/api/admin/docs");
+      this.state.adminState.docsData = data;
+    } catch (e) {}
+    this.state.adminState.docsLoading = false;
+    const el = document.getElementById("admin-tab-viewport");
+    if (el && this.state.adminState.tab === "docs") {
+      el.innerHTML = this.renderAdminDocsTab();
+    }
   };
 
   app.fetchAdminStats = async function () {
@@ -4777,7 +4843,10 @@
       { id: "product_form", label: "3. Add / Edit Product" },
       { id: "bulk_import", label: "4. Bulk Import (CSV)" },
       { id: "orders", label: "5. Orders" },
-      { id: "customers", label: "6. Customers" }
+      { id: "customers", label: "6. Customers" },
+      { id: "review_frames", label: "7. Review 360° Frames" },
+      { id: "audit_log", label: "8. Audit Log" },
+      { id: "docs", label: "9. Handover & Docs" }
     ];
 
     return `
@@ -4829,6 +4898,9 @@
           ${tab === "bulk_import" ? this.renderAdminBulkImportTab() : ""}
           ${tab === "orders" ? this.renderAdminOrdersTab() : ""}
           ${tab === "customers" ? this.renderAdminCustomersTab() : ""}
+          ${tab === "review_frames" ? this.renderAdminReviewFramesTab() : ""}
+          ${tab === "audit_log" ? this.renderAdminAuditLogTab() : ""}
+          ${tab === "docs" ? this.renderAdminDocsTab() : ""}
         </div>
       </div>
     `;
@@ -5243,6 +5315,7 @@
       care_instructions: "",
       price: "",
       mrp: "",
+      priceOnRequest: false,
       stock: 20,
       featured: false,
       bestseller: false,
@@ -5250,6 +5323,19 @@
     };
     const isEdit = Boolean(this.state.adminState.editingProduct);
     const imgs = this.state.adminState.formImages || [];
+    const slotDefs = [
+      { idx: 0, label: "1. Front View", role: "front", yaw: "0° Yaw (Full-Body)" },
+      { idx: 1, label: "2. Back & Pallu", role: "back", yaw: "180° Yaw (Full-Body)" },
+      { idx: 2, label: "3. Pallu Embroidery", role: "detail", yaw: "Detail Close-Up" },
+      { idx: 3, label: "4. Fabric & Zari Macro", role: "detail", yaw: "Detail Close-Up" },
+      { idx: 4, label: "5. Blouse & Border", role: "detail", yaw: "Detail Close-Up" }
+    ];
+
+    const hasFrontPhoto = Boolean(imgs[0] && String(imgs[0]).trim());
+    const validFiveViews = slotDefs.filter((s) => Boolean(imgs[s.idx] && String(imgs[s.idx]).trim())).length;
+    const isPriceOnReq = Boolean(p.priceOnRequest || Number(p.price ?? p.priceINR ?? 0) <= 0);
+    const hasValidPrice = isPriceOnReq || Number(p.price ?? p.priceINR ?? 0) > 0;
+    const viewerMode = p.viewerMode || (p.fullBodyYawCount >= 8 ? "360_mode" : "product_views_mode");
 
     return `
       <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 sm:p-7 space-y-6">
@@ -5267,6 +5353,36 @@
             <button type="button" onclick="app.switchAdminTab('products')" class="px-3.5 py-2 rounded-xl bg-[#F5EFE4] text-ink border border-gold/40 text-xs font-semibold">
               ← Back to Products
             </button>
+          </div>
+        </div>
+
+        <!-- Live Product Validation Checklist & Viewer Mode Status -->
+        <div id="admin-product-validation-panel" class="p-4 rounded-2xl bg-ivory border border-gold/45 grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+          <div class="p-3 rounded-xl border ${hasFrontPhoto ? "border-teal/40 bg-teal/5" : "border-red-300 bg-red-50"}">
+            <span class="font-bold uppercase text-[10px] tracking-wider block ${hasFrontPhoto ? "text-teal" : "text-red-800"}">
+              ${hasFrontPhoto ? "✓ Ready" : "✗ Missing"} • Front Photo
+            </span>
+            <p class="font-semibold text-ink mt-0.5">${hasFrontPhoto ? "0° Front Mannequin View present" : "Upload Slot #1 (Front View)"}</p>
+          </div>
+          <div class="p-3 rounded-xl border ${hasValidPrice ? "border-teal/40 bg-teal/5" : "border-amber-300 bg-amber-50"}">
+            <span class="font-bold uppercase text-[10px] tracking-wider block ${hasValidPrice ? "text-teal" : "text-amber-900"}">
+              ✓ Pricing Policy (Ground Rule #2)
+            </span>
+            <p class="font-semibold text-ink mt-0.5">
+              ${isPriceOnReq ? "Displays 'Price on request' + WhatsApp CTA" : `Verified Price: ${this.formatINR(p.price ?? p.priceINR)}`}
+            </p>
+          </div>
+          <div class="p-3 rounded-xl border ${validFiveViews === 5 ? "border-teal/40 bg-teal/5" : "border-amber-300 bg-amber-50"}">
+            <span class="font-bold uppercase text-[10px] tracking-wider block ${validFiveViews === 5 ? "text-teal" : "text-amber-900"}">
+              ${validFiveViews} / 5 Studio Views Mapped
+            </span>
+            <p class="font-semibold text-ink mt-0.5">2 Full-Body Angles + 3 Macro Detail Shots</p>
+          </div>
+          <div class="p-3 rounded-xl border border-gold/50 bg-[#F5EFE4]">
+            <span class="font-bold uppercase text-[10px] tracking-wider text-teal block">Active Viewer Mode</span>
+            <p class="font-semibold text-ink mt-0.5">
+              ${viewerMode === "360_mode" ? "360° Turntable Mode (≥8 Yaws)" : viewerMode === "multi_angle_mode" ? "Multi-Angle Mode (4–7 Yaws)" : "Product Views Mode (5-View Studio)"}
+            </p>
           </div>
         </div>
 
@@ -5303,10 +5419,10 @@
             </div>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 items-end">
             <div>
-              <label class="block text-xs font-semibold text-ink-muted mb-1">Selling Price (INR) *</label>
-              <input name="price" type="number" min="1" required value="${p.price ?? p.priceINR ?? ""}" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+              <label class="block text-xs font-semibold text-ink-muted mb-1">Selling Price (INR — 0 for Price on Request)</label>
+              <input name="price" type="number" min="0" value="${p.priceOnRequest ? 0 : (p.price ?? p.priceINR ?? "")}" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             </div>
             <div>
               <label class="block text-xs font-semibold text-ink-muted mb-1">MRP (INR — Optional)</label>
@@ -5315,6 +5431,12 @@
             <div>
               <label class="block text-xs font-semibold text-ink-muted mb-1">Stock Quantity *</label>
               <input name="stock" type="number" min="0" required value="${p.stock ?? p.stockQty ?? 0}" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink"/>
+            </div>
+            <div class="pb-2">
+              <label class="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" name="priceOnRequest" ${p.priceOnRequest ? "checked" : ""} class="w-4 h-4 accent-teal"/>
+                <span class="font-semibold text-ink text-xs">Price on Request (No Sample Price)</span>
+              </label>
             </div>
           </div>
 
@@ -5353,42 +5475,60 @@
             </label>
           </div>
 
-          <!-- Multi-Image Upload with Drag-Reorder & Preview (POST /api/admin/upload) -->
+          <!-- 5-Slot Role/Yaw Gallery Manager + Multi-Image Drag-Reorder (PUT /api/products/:id/gallery/:idx & POST /api/admin/upload) -->
           <div class="pt-4 border-t border-gold/30 space-y-3">
             <div class="flex flex-wrap items-center justify-between gap-2">
               <div>
-                <h3 class="font-serif text-lg font-bold text-ink">Product Gallery Images (Drag to Reorder)</h3>
-                <p class="text-xs text-ink-muted">Upload multiple images via <code>POST /api/admin/upload</code> (field <code>images</code>) and drag cards to reorder.</p>
+                <h3 class="font-serif text-lg font-bold text-ink">5-View Studio Gallery &amp; Per-Slot Image Swap</h3>
+                <p class="text-xs text-ink-muted">Replace any individual view slot (automatically updates <code>?v=updatedAt</code> cache-busting) or drag cards to reorder.</p>
               </div>
               <label class="px-4 py-2 rounded-xl bg-teal text-ivory font-bold text-xs cursor-pointer hover:bg-teal-light">
-                + Upload Images
+                + Upload Multiple Images
                 <input type="file" name="images" multiple accept="image/*" onchange="app.handleMultiImageUpload(event)" class="hidden"/>
               </label>
             </div>
 
             <div id="admin-form-images-grid" class="grid grid-cols-2 sm:grid-cols-5 gap-3">
-              ${imgs
-                .map(
-                  (url, idx) => `
+              ${slotDefs
+                .map((slot) => {
+                  const idx = slot.idx;
+                  const url = imgs[idx] || "";
+                  return `
                 <div
                   draggable="true"
                   ondragstart="app.state.adminState.dragImageIndex=${idx}"
                   ondragover="event.preventDefault()"
                   ondrop="app.handleDropReorderImage(${idx})"
-                  class="p-2 rounded-xl bg-ivory border border-gold/40 space-y-1.5 cursor-move"
+                  class="p-2.5 rounded-xl bg-ivory border border-gold/40 space-y-1.5 cursor-move flex flex-col justify-between"
                 >
-                  <div class="aspect-[3/4] rounded-lg overflow-hidden bg-[#EFE6D5] relative">
-                    <img src="${this.resolveImageUrl(url, p.name)}" alt="Slide ${idx + 1}" class="w-full h-full object-cover"/>
-                    <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-ink/80 text-gold text-[10px] font-bold">#${idx + 1}</span>
+                  <div>
+                    <div class="flex items-center justify-between gap-1 mb-1">
+                      <span class="text-[10px] font-bold text-ink truncate">${slot.label}</span>
+                      <span class="px-1.5 py-0.5 rounded bg-teal/15 text-teal text-[9px] font-bold uppercase">${slot.role}</span>
+                    </div>
+                    <div class="aspect-[3/4] rounded-lg overflow-hidden bg-[#EFE6D5] relative border border-gold/25">
+                      ${
+                        url
+                          ? `<img src="${this.resolveImageUrl(url, p.name)}" alt="${slot.label}" class="w-full h-full object-cover"/>`
+                          : `<div class="w-full h-full flex items-center justify-center text-[10px] text-ink-muted p-2 text-center">No image in slot #${idx + 1}</div>`
+                      }
+                      <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-ink/80 text-gold text-[9px] font-bold">${slot.yaw}</span>
+                    </div>
                   </div>
-                  <div class="flex items-center justify-between gap-1">
-                    <button type="button" onclick="app.moveFormImage(${idx}, -1)" class="px-1.5 py-0.5 rounded bg-[#F5EFE4] text-[10px] font-bold">←</button>
-                    <button type="button" onclick="app.removeFormImage(${idx})" class="px-1.5 py-0.5 rounded bg-red-100 text-red-800 text-[10px] font-bold">✕</button>
-                    <button type="button" onclick="app.moveFormImage(${idx}, 1)" class="px-1.5 py-0.5 rounded bg-[#F5EFE4] text-[10px] font-bold">→</button>
+                  <div class="space-y-1.5 pt-1">
+                    <label class="block w-full text-center px-2 py-1 rounded-lg bg-teal text-ivory text-[10px] font-bold cursor-pointer hover:bg-teal-light">
+                      Replace Slot #${idx + 1}
+                      <input type="file" accept="image/*" onchange="app.handleReplaceSingleGallerySlot(event, ${idx})" class="hidden"/>
+                    </label>
+                    <div class="flex items-center justify-between gap-1">
+                      <button type="button" onclick="app.moveFormImage(${idx}, -1)" class="px-1.5 py-0.5 rounded bg-[#F5EFE4] text-[10px] font-bold">←</button>
+                      <button type="button" onclick="app.removeFormImage(${idx})" class="px-1.5 py-0.5 rounded bg-red-100 text-red-800 text-[10px] font-bold">✕</button>
+                      <button type="button" onclick="app.moveFormImage(${idx}, 1)" class="px-1.5 py-0.5 rounded bg-[#F5EFE4] text-[10px] font-bold">→</button>
+                    </div>
                   </div>
                 </div>
-              `
-                )
+              `;
+                })
                 .join("")}
             </div>
           </div>
@@ -5401,6 +5541,48 @@
         </form>
       </div>
     `;
+  };
+
+  app.handleReplaceSingleGallerySlot = async function (event, slotIdx) {
+    const file = event.target.files && event.target.files[0];
+    if (!file) return;
+    const formData = new FormData();
+    formData.append("images", file);
+    try {
+      const uploadRes = await BACKEND_API.request("/api/admin/upload", {
+        method: "POST",
+        body: formData
+      });
+      const uploadedUrl = Array.isArray(uploadRes.urls) && uploadRes.urls[0] ? uploadRes.urls[0] : "";
+      if (!uploadedUrl) {
+        this.showToast("Upload returned no URL.", "error");
+        return;
+      }
+      while (this.state.adminState.formImages.length <= slotIdx) {
+        this.state.adminState.formImages.push("");
+      }
+      const cacheBustedUrl = `${uploadedUrl.split("?")[0]}?v=${Date.now()}`;
+      this.state.adminState.formImages[slotIdx] = cacheBustedUrl;
+
+      const editing = this.state.adminState.editingProduct;
+      if (editing && (editing.id || editing.sku)) {
+        const pid = editing.id || editing.sku;
+        const slotRes = await BACKEND_API.request(`/api/products/${encodeURIComponent(pid)}/gallery/${slotIdx}`, {
+          method: "PUT",
+          body: JSON.stringify({ url: uploadedUrl })
+        });
+        if (slotRes.product) {
+          this.state.adminState.editingProduct = slotRes.product;
+          this.state.adminState.formImages = (slotRes.product.gallery || []).map((g) => g.url);
+          const pIdx = this.state.products.findIndex((item) => (item.id || item.sku) === pid);
+          if (pIdx >= 0) this.state.products[pIdx] = slotRes.product;
+        }
+      }
+      this.showToast(`Replaced gallery slot #${slotIdx + 1} with cache-busted image.`);
+      this.renderCurrentPage();
+    } catch (err) {
+      this.showToast(err.message || "Failed to replace gallery slot.", "error");
+    }
   };
 
   app.handleMultiImageUpload = async function (event) {
@@ -5457,13 +5639,16 @@
     const isEdit = Boolean(this.state.adminState.editingProduct);
     const editId = isEdit ? this.state.adminState.editingProduct.id || this.state.adminState.editingProduct.sku : null;
 
+    const priceOnReq = Boolean(f.priceOnRequest && f.priceOnRequest.checked);
+    const numericPrice = priceOnReq ? 0 : Number(f.price.value || 0);
     const payload = {
       sku: f.sku.value.trim(),
       name: f.name.value.trim(),
       fabric: f.fabric.value.trim(),
       color: f.color.value.trim(),
       occasion: f.occasion.value.trim(),
-      price: Number(f.price.value),
+      price: numericPrice,
+      priceOnRequest: priceOnReq || numericPrice <= 0,
       mrp: f.mrp.value.trim() ? Number(f.mrp.value) : null,
       stock: Number(f.stock.value),
       description: f.description.value.trim(),
@@ -5473,7 +5658,7 @@
       featured: f.featured.checked,
       bestseller: f.bestseller.checked,
       active: f.active.checked,
-      images: this.state.adminState.formImages
+      images: (this.state.adminState.formImages || []).filter(Boolean)
     };
 
     try {
@@ -5927,6 +6112,235 @@
                 .join("")}
             </tbody>
           </table>
+        </div>
+      </div>
+    `;
+  };
+
+  // Admin Screen 7: Review 360° & AI Studio Frames (GET /api/admin/review-frames & PATCH /api/admin/products/:id/views/:viewId)
+  app.renderAdminReviewFramesTab = function () {
+    const items = this.state.adminState.reviewFramesList || [];
+    if (items.length === 0 && !this.state.adminState.reviewFramesLoading && !this.state.adminState._reviewFetchedOnce) {
+      this.state.adminState._reviewFetchedOnce = true;
+      this.fetchAdminReviewFrames();
+    }
+
+    const showcaseItem = items.find((i) => i.id === "jt-saree-09") || items[0];
+    const prioritised = showcaseItem ? [showcaseItem, ...items.filter((i) => i.id !== showcaseItem.id).slice(0, 19)] : [];
+
+    return `
+      <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 sm:p-6 space-y-6">
+        <div class="flex flex-wrap items-center justify-between gap-3 border-b border-gold/30 pb-3">
+          <div>
+            <span class="px-2 py-0.5 rounded bg-teal/15 text-teal font-bold text-[10px] uppercase tracking-wider">Phase 4 &amp; 5 Quality Gate</span>
+            <h2 class="font-serif text-2xl font-bold text-ink mt-0.5">360° Turntable &amp; AI Studio Frame Review</h2>
+            <p class="text-xs text-ink-muted">Compare original studio photos (<code>source: "real"</code>) with AI-generated yaw/detail views (<code>source: "ai"</code>). Rejecting an AI yaw view immediately switches the product to honest <code>multi_angle_mode</code> or <code>product_views_mode</code>.</p>
+          </div>
+          <button type="button" onclick="app.fetchAdminReviewFrames()" class="px-3.5 py-2 rounded-xl bg-teal text-ivory text-xs font-bold hover:bg-teal-light">
+            ↻ Refresh Frame Status
+          </button>
+        </div>
+
+        ${
+          prioritised.length === 0
+            ? `<div class="p-8 rounded-xl bg-ivory border border-gold/30 text-center text-xs text-ink-muted">Loading frame review items...</div>`
+            : prioritised
+                .map((item) => {
+                  const modeBadge =
+                    item.viewerMode === "360_mode"
+                      ? `<span class="px-2.5 py-1 rounded-full bg-teal text-ivory text-[10px] font-bold uppercase">360° Mode (${item.fullBodyYawCount} Full-Body Yaws)</span>`
+                      : item.viewerMode === "multi_angle_mode"
+                      ? `<span class="px-2.5 py-1 rounded-full bg-amber-200 text-amber-950 text-[10px] font-bold uppercase">Multi-Angle Mode (${item.fullBodyYawCount} Yaws)</span>`
+                      : `<span class="px-2.5 py-1 rounded-full bg-stone-200 text-stone-800 text-[10px] font-bold uppercase">Product Views Mode (${item.fullBodyYawCount} Full-Body Yaws)</span>`;
+
+                  return `
+                    <div class="p-4 sm:p-5 rounded-2xl bg-ivory border border-gold/40 space-y-4">
+                      <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/25 pb-2.5">
+                        <div>
+                          <div class="flex items-center gap-2">
+                            <span class="font-mono text-xs font-bold text-teal">${item.sku}</span>
+                            ${modeBadge}
+                          </div>
+                          <h3 class="font-serif text-lg font-bold text-ink mt-0.5">${item.name}</h3>
+                          ${
+                            item.aiDisclosure
+                              ? `<p class="text-[11px] font-semibold text-amber-900 mt-0.5">Public Disclosure: "${item.aiDisclosure}"</p>`
+                              : ""
+                          }
+                        </div>
+                        <button type="button" onclick="app.openAdminProductEditor('${item.id}')" class="px-3 py-1.5 rounded-xl bg-[#F5EFE4] text-ink border border-gold/40 text-xs font-semibold">
+                          Open in Product Editor
+                        </button>
+                      </div>
+
+                      ${
+                        item.realViews && item.realViews.length > 0
+                          ? `
+                        <div class="space-y-2">
+                          <h4 class="text-xs font-bold uppercase tracking-wider text-teal">Original Studio Reference Photos (source: "real" — Protected in assets/originals/)</h4>
+                          <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                            ${item.realViews
+                              .map(
+                                (rv) => `
+                              <div class="p-2 rounded-xl bg-[#FAF8F5] border border-teal/35 space-y-1">
+                                <div class="aspect-[3/4] rounded-lg overflow-hidden bg-[#EFE6D5] relative">
+                                  <img src="${rv.url}" alt="${rv.label}" loading="lazy" class="w-full h-full object-cover"/>
+                                  <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-teal text-ivory text-[9px] font-bold uppercase">${rv.role}${rv.yaw !== null && rv.yaw !== undefined ? ` • ${rv.yaw}°` : ""}</span>
+                                </div>
+                                <p class="text-[10px] font-semibold text-ink truncate">${rv.label}</p>
+                              </div>
+                            `
+                              )
+                              .join("")}
+                          </div>
+                        </div>
+                      `
+                          : ""
+                      }
+
+                      <div class="space-y-2">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-ink-muted">AI-Assisted Angle &amp; Detail Views (source: "ai" — Approve or Reject)</h4>
+                        <div class="grid grid-cols-2 sm:grid-cols-6 gap-3">
+                          ${(item.aiViews || [])
+                            .map((av) => {
+                              const isApp = av.approved !== false;
+                              return `
+                              <div class="p-2 rounded-xl bg-[#FAF8F5] border ${isApp ? "border-gold/50" : "border-red-300 opacity-75"} space-y-1.5 flex flex-col justify-between">
+                                <div>
+                                  <div class="aspect-[3/4] rounded-lg overflow-hidden bg-[#EFE6D5] relative">
+                                    <img src="${av.url}" alt="${av.label}" loading="lazy" class="w-full h-full object-cover"/>
+                                    <span class="absolute top-1 left-1 px-1.5 py-0.5 rounded bg-ink/85 text-gold text-[9px] font-bold uppercase">
+                                      ${av.role}${av.yaw !== null && av.yaw !== undefined ? ` • ${av.yaw}°` : ""}
+                                    </span>
+                                    <span class="absolute bottom-1 right-1 px-1.5 py-0.5 rounded text-[9px] font-bold ${isApp ? "bg-teal text-ivory" : "bg-red-800 text-white"}">
+                                      ${isApp ? "Approved" : "Rejected"}
+                                    </span>
+                                  </div>
+                                  <p class="text-[10px] font-semibold text-ink truncate mt-1" title="${av.label}">${av.label}</p>
+                                </div>
+                                <div class="flex items-center gap-1 pt-1">
+                                  <button
+                                    type="button"
+                                    onclick="app.toggleAdminFrameApproval('${item.id}', '${av.id}', true)"
+                                    class="flex-1 py-1 rounded text-[10px] font-bold ${isApp ? "bg-teal text-ivory" : "bg-ivory text-teal border border-teal/40"}"
+                                  >Approve</button>
+                                  <button
+                                    type="button"
+                                    onclick="app.toggleAdminFrameApproval('${item.id}', '${av.id}', false)"
+                                    class="flex-1 py-1 rounded text-[10px] font-bold ${!isApp ? "bg-red-800 text-white" : "bg-ivory text-red-800 border border-red-300"}"
+                                  >Reject</button>
+                                </div>
+                              </div>
+                            `;
+                            })
+                            .join("")}
+                        </div>
+                      </div>
+                    </div>
+                  `;
+                })
+                .join("")
+        }
+      </div>
+    `;
+  };
+
+  // Admin Screen 8: Security & Admin Audit Log (GET /api/admin/audit-log)
+  app.renderAdminAuditLogTab = function () {
+    const logs = this.state.adminState.auditLogList || [];
+    if (logs.length === 0 && !this.state.adminState.auditLogLoading && !this.state.adminState._auditFetchedOnce) {
+      this.state.adminState._auditFetchedOnce = true;
+      this.fetchAdminAuditLog();
+    }
+
+    return `
+      <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 space-y-4">
+        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-gold/30 pb-3">
+          <div>
+            <h2 class="font-serif text-2xl font-bold text-ink">Admin Security Audit Log (${logs.length})</h2>
+            <p class="text-xs text-ink-muted">Immutable audit trail from <code>GET /api/admin/audit-log</code> recording admin logins, product edits, gallery replacements, order status changes, and frame approvals.</p>
+          </div>
+          <button type="button" onclick="app.fetchAdminAuditLog()" class="px-3.5 py-2 rounded-xl bg-teal text-ivory text-xs font-bold hover:bg-teal-light">
+            ↻ Refresh Log
+          </button>
+        </div>
+
+        <div class="overflow-x-auto">
+          <table class="w-full text-left border-collapse text-xs">
+            <thead>
+              <tr class="border-b border-gold/40 text-ink-muted uppercase text-[11px]">
+                <th class="py-2.5 px-3">Timestamp (UTC)</th>
+                <th class="py-2.5 px-3">Admin</th>
+                <th class="py-2.5 px-3">Action</th>
+                <th class="py-2.5 px-3">Target</th>
+                <th class="py-2.5 px-3">IP Address</th>
+                <th class="py-2.5 px-3">Details</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-gold/20">
+              ${logs
+                .map(
+                  (row) => `
+                <tr class="hover:bg-ivory/70">
+                  <td class="py-2 px-3 font-mono text-[11px] text-ink-muted whitespace-nowrap">${(row.timestamp || "").replace("T", " ").slice(0, 19)}</td>
+                  <td class="py-2 px-3 font-semibold text-ink">${row.admin_email || "system"}</td>
+                  <td class="py-2 px-3"><span class="px-2 py-0.5 rounded bg-gold/25 text-ink font-mono text-[11px] font-bold">${row.action}</span></td>
+                  <td class="py-2 px-3 font-mono text-[11px] text-teal">${row.target_type || ""}:${row.target_id || ""}</td>
+                  <td class="py-2 px-3 font-mono text-[11px] text-ink-muted">${row.ip_address || "—"}</td>
+                  <td class="py-2 px-3 font-mono text-[10px] text-ink-muted max-w-xs truncate">${JSON.stringify(row.details || {})}</td>
+                </tr>
+              `
+                )
+                .join("")}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    `;
+  };
+
+  // Admin Screen 9: Protected Owner Handover & Operations Guide (GET /api/admin/docs)
+  app.renderAdminDocsTab = function () {
+    const d = this.state.adminState.docsData;
+    if (!d && !this.state.adminState.docsLoading) {
+      this.fetchAdminDocs();
+      return `<div class="p-8 rounded-2xl bg-[#FAF8F5] border border-gold/40 text-center text-xs text-ink-muted">Loading protected owner documentation...</div>`;
+    }
+    const persistence = (d && d.persistence) || {};
+    const sections = (d && d.sections) || [];
+
+    return `
+      <div class="bg-[#FAF8F5] rounded-2xl border border-gold/45 p-5 sm:p-7 space-y-6">
+        <div class="border-b border-gold/30 pb-3">
+          <span class="px-2.5 py-0.5 rounded bg-teal text-ivory font-bold text-[10px] uppercase tracking-wider">Protected Admin Route • /api/admin/docs</span>
+          <h2 class="font-serif text-2xl font-bold text-ink mt-1">${(d && d.title) || "Owner Handover & Operations Guide"}</h2>
+          <p class="text-xs text-ink-muted">Moved from the public storefront DOM to this authenticated Admin endpoint in Phase 2.</p>
+        </div>
+
+        <!-- Database Persistence Status Banner -->
+        <div class="p-4 rounded-2xl border ${persistence.persistent ? "bg-teal/10 border-teal" : "bg-amber-50 border-amber-400"} space-y-1 text-xs">
+          <p class="font-bold text-ink">
+            Database Engine: <code>${persistence.engine || "sqlite3"}</code> • Path: <code>${persistence.db_path || "janardan_textiles.db"}</code>
+          </p>
+          <p class="text-ink-muted">
+            ${
+              persistence.warning ||
+              "Local SQLite file persists across restarts on dedicated hosts. For serverless deployments (Vercel), configure TURSO_DATABASE_URL or DATABASE_URL and run scripts/backup_db.py before redeploying."
+            }
+          </p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          ${sections
+            .map(
+              (sec) => `
+            <div class="p-4 rounded-2xl bg-ivory border border-gold/40 space-y-1.5">
+              <h3 class="font-serif text-lg font-bold text-ink">${sec.heading}</h3>
+              <p class="text-xs text-ink-muted leading-relaxed">${sec.body}</p>
+            </div>
+          `
+            )
+            .join("")}
         </div>
       </div>
     `;

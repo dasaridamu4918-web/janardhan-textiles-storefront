@@ -1735,18 +1735,14 @@ const GENERATED_CATALOG_SAREES = [
     "blousePiece": "Matching pomegranate ruby tissue blouse with scalloped rose-gold embroidered sleeves",
     "primaryImage": "/public/images/sarees/generated/saree-052.jpg",
     "galleryUrls": [
-      "/public/images/sarees/generated/saree-052.jpg",
+      "/public/images/sarees/saree-052/1-front.jpg",
       "/public/images/sarees/saree-052/2-back-pallu.jpg",
-      "",
-      "",
-      ""
+      "/public/images/sarees/saree-052/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-052/4-macro.jpg",
+      "/public/images/sarees/saree-052/5-blouse.jpg"
     ],
-    "missingViews": [
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
-      "5-blouse.jpg"
-    ],
-    "image": "/public/images/sarees/generated/saree-052.jpg"
+    "missingViews": [],
+    "image": "/public/images/sarees/saree-052/1-front.jpg"
   },
   {
     "id": "saree-053",
@@ -1771,15 +1767,12 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-053.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-053.jpg",
-      "",
-      "",
-      "",
+      "/public/images/sarees/saree-053/2-back-pallu.jpg",
+      "/public/images/sarees/saree-053/3-pallu-detail.jpg",
+      "/public/images/sarees/saree-053/4-macro.jpg",
       ""
     ],
     "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
-      "4-macro.jpg",
       "5-blouse.jpg"
     ],
     "image": "/public/images/sarees/generated/saree-053.jpg"
@@ -1843,14 +1836,12 @@ const GENERATED_CATALOG_SAREES = [
     "primaryImage": "/public/images/sarees/generated/saree-055.jpg",
     "galleryUrls": [
       "/public/images/sarees/generated/saree-055.jpg",
-      "",
-      "",
+      "/public/images/sarees/saree-055/2-back-pallu.jpg",
+      "/public/images/sarees/saree-055/3-pallu-detail.jpg",
       "",
       ""
     ],
     "missingViews": [
-      "2-back-pallu.jpg",
-      "3-pallu-detail.jpg",
       "4-macro.jpg",
       "5-blouse.jpg"
     ],

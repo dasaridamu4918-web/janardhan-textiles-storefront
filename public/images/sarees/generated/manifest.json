@@ -1243,17 +1243,13 @@
       "format": "JPEG",
       "fileSizeBytes": 662983,
       "views": {
-        "1-front.jpg": "/public/images/sarees/generated/saree-052.jpg",
+        "1-front.jpg": "/public/images/sarees/saree-052/1-front.jpg",
         "2-back-pallu.jpg": "/public/images/sarees/saree-052/2-back-pallu.jpg",
-        "3-pallu-detail.jpg": null,
-        "4-macro.jpg": null,
-        "5-blouse.jpg": null
+        "3-pallu-detail.jpg": "/public/images/sarees/saree-052/3-pallu-detail.jpg",
+        "4-macro.jpg": "/public/images/sarees/saree-052/4-macro.jpg",
+        "5-blouse.jpg": "/public/images/sarees/saree-052/5-blouse.jpg"
       },
-      "missingViews": [
-        "3-pallu-detail.jpg",
-        "4-macro.jpg",
-        "5-blouse.jpg"
-      ]
+      "missingViews": []
     },
     {
       "id": "saree-053",
@@ -1272,15 +1268,12 @@
       "fileSizeBytes": 630689,
       "views": {
         "1-front.jpg": "/public/images/sarees/generated/saree-053.jpg",
-        "2-back-pallu.jpg": null,
-        "3-pallu-detail.jpg": null,
-        "4-macro.jpg": null,
+        "2-back-pallu.jpg": "/public/images/sarees/saree-053/2-back-pallu.jpg",
+        "3-pallu-detail.jpg": "/public/images/sarees/saree-053/3-pallu-detail.jpg",
+        "4-macro.jpg": "/public/images/sarees/saree-053/4-macro.jpg",
         "5-blouse.jpg": null
       },
       "missingViews": [
-        "2-back-pallu.jpg",
-        "3-pallu-detail.jpg",
-        "4-macro.jpg",
         "5-blouse.jpg"
       ]
     },
@@ -1330,14 +1323,12 @@
       "fileSizeBytes": 661420,
       "views": {
         "1-front.jpg": "/public/images/sarees/generated/saree-055.jpg",
-        "2-back-pallu.jpg": null,
-        "3-pallu-detail.jpg": null,
+        "2-back-pallu.jpg": "/public/images/sarees/saree-055/2-back-pallu.jpg",
+        "3-pallu-detail.jpg": "/public/images/sarees/saree-055/3-pallu-detail.jpg",
         "4-macro.jpg": null,
         "5-blouse.jpg": null
       },
       "missingViews": [
-        "2-back-pallu.jpg",
-        "3-pallu-detail.jpg",
         "4-macro.jpg",
         "5-blouse.jpg"
       ]
