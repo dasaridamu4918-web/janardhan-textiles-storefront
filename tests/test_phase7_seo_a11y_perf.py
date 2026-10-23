@@ -37,7 +37,7 @@ def run_tests():
         st, hdrs, body = raw_get("/manifest.json")
         assert st == 200
         mdata = json.loads(body)
-        assert mdata.get("name", "").startswith("Janardhan Textiles")
+        assert mdata.get("name", "").startswith("Lepakshi Weaves")
         print("[PASS] 1. GET /manifest.json returns valid PWA manifest (and static file exists on disk)")
 
         # 2. Verify /sw.js (network-first for /api/ and /uploads/ and /public/images/)

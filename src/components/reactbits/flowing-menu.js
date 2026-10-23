@@ -3,7 +3,7 @@
  * Installed from: npx shadcn@latest add @react-bits/FlowingMenu-JS-TW
  * Source component: src/components/FlowingMenu/FlowingMenu.jsx
  *
- * Tuned for Janardan Textiles:
+ * Tuned for Lepakshi Weaves:
  * - Cream background (#FAF8F5), ink text (#1C1613), champagne-gold flowing band (#D4AF37),
  *   and Cormorant Garamond serif display font matching site headings.
  * - Populated strictly from GET /api/filters (fabrics & occasions) and real product images

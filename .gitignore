@@ -4,3 +4,10 @@ __pycache__/
 .env.*
 !.env.example
 backups/
+
+# Operations dashboard: uploaded order spreadsheets stay private
+private_uploads/
+
+# Private database (users, sessions, orders) - never commit
+janardan_textiles.db
+*.db-journal

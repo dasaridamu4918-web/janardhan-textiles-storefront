@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * JANARDHAN TEXTILES — CENTRALIZED PRODUCT DATA FILE (/src/products-data.js)
+ * LEPAKSHI WEAVES — CENTRALIZED PRODUCT DATA FILE (/src/products-data.js)
  * Contains:
  * 1. Base fabric prices (INR)
  * 2. The 5 ordered gallery view definitions (Five-View Saree Gallery)
@@ -74,16 +74,16 @@ const REQUIRED_GALLERY_VIEWS = [
 function createMissingViewPlaceholderSVG(sareeName, viewLabel, fabricName = "") {
   const escXml = (s) => String(s || "").replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
   const safeName = escXml(sareeName || "Saree");
-  const safeFabric = escXml(fabricName || "Janardhan Textiles");
+  const safeFabric = escXml(fabricName || "Lepakshi Weaves");
   const safeLabel = escXml(viewLabel || "Additional View");
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 960" width="800" height="960">
     <rect width="800" height="960" fill="#EFE6D5"/>
     <rect x="28" y="28" width="744" height="904" rx="18" fill="#FAF8F5" stroke="#C4A15A" stroke-width="2.5"/>
     <rect x="46" y="46" width="708" height="868" rx="14" fill="none" stroke="#C4A15A" stroke-width="1" stroke-dasharray="8 6"/>
     <rect x="240" y="104" width="320" height="40" rx="20" fill="#063F46"/>
-    <text x="400" y="129" font-family="sans-serif" font-size="14" font-weight="bold" fill="#C4A15A" text-anchor="middle">JANARDHAN TEXTILES</text>
+    <text x="400" y="129" font-family="sans-serif" font-size="14" font-weight="bold" fill="#C4A15A" text-anchor="middle">LEPAKSHI WEAVES</text>
     <circle cx="400" cy="340" r="64" fill="#F5EFE4" stroke="#C4A15A" stroke-width="2.5"/>
-    <text x="400" y="354" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#063F46" text-anchor="middle">JT</text>
+    <text x="400" y="354" font-family="Georgia, serif" font-size="36" font-weight="bold" fill="#063F46" text-anchor="middle">LW</text>
     <text x="400" y="465" font-family="Georgia, serif" font-size="23" font-weight="bold" fill="#231D16" text-anchor="middle">${safeName}</text>
     <text x="400" y="515" font-family="sans-serif" font-size="19" font-weight="bold" fill="#063F46" text-anchor="middle">${safeLabel}</text>
     <text x="400" y="555" font-family="sans-serif" font-size="15" fill="#5C4E3E" text-anchor="middle">${safeFabric}</text>

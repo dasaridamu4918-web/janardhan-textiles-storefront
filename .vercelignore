@@ -1,0 +1,26 @@
+# Files that must never be published on the static Vercel site.
+# (Vercel otherwise serves every file in the repo because outputDirectory is ".")
+
+# Private data
+janardan_textiles.db
+*.db
+*.db-journal
+*.sqlite
+.env
+.env.*
+!.env.example
+backups/
+private_uploads/
+uploads/originals/
+
+# Server-side code and internals (server.py runs on a Python host, not on Vercel)
+server.py
+ops_dashboard.py
+__pycache__/
+tests/
+scripts/
+assets/originals/
+reference/
+AUDIT.md
+REPORT.md
+IMAGE_PROMPTS.md

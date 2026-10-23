@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#2B2D6E">
+  <title>Operations Dashboard | LEPAKSHI WEAVES</title>
+  <link rel="icon" href="/favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="/public/brand/favicon-32x32.png">
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            indigo: { DEFAULT: "#2B2D6E", dark: "#1E1F52", light: "#3D3F8F" },
+            wine: { DEFAULT: "#6B1D2F", light: "#8A2A40" },
+            gold: { DEFAULT: "#C4A15A", light: "#E2C98E", dark: "#9C7C3C" },
+            ivory: "#FAF6EE",
+            ink: { DEFAULT: "#231619", muted: "#6B5B57" }
+          },
+          fontFamily: {
+            serif: ['"Cormorant Garamond"', "Georgia", "serif"],
+            sans: ['"Plus Jakarta Sans"', "system-ui", "sans-serif"]
+          }
+        }
+      }
+    };
+  </script>
+  <style>
+    body { font-family: "Plus Jakarta Sans", system-ui, sans-serif; background: #F4EFE6; color: #231619; }
+    .card { background: #FFFDF8; border: 1px solid rgba(196,161,90,.35); border-radius: 1rem; box-shadow: 0 1px 3px rgba(35,22,25,.05); }
+    .btn { display:inline-flex; align-items:center; justify-content:center; gap:.35rem; border-radius:999px; font-weight:700; font-size:.78rem; padding:.55rem 1rem; transition: background .15s; }
+    .btn-primary { background:#2B2D6E; color:#FAF6EE; } .btn-primary:hover { background:#3D3F8F; }
+    .btn-wine { background:#6B1D2F; color:#FAF6EE; } .btn-wine:hover { background:#8A2A40; }
+    .btn-gold { background:#C4A15A; color:#231619; } .btn-gold:hover { background:#E2C98E; }
+    .btn-ghost { background:#FAF6EE; color:#231619; border:1px solid rgba(196,161,90,.55); } .btn-ghost:hover { background:#F1E6CF; }
+    .btn:disabled { opacity:.45; cursor:not-allowed; }
+    .field { width:100%; border:1px solid rgba(196,161,90,.55); background:#FAF6EE; border-radius:.75rem; padding:.5rem .7rem; font-size:.8rem; }
+    .field:focus { outline:2px solid #C4A15A; outline-offset:1px; }
+    .pill { display:inline-block; border-radius:999px; padding:.15rem .55rem; font-size:.68rem; font-weight:700; white-space:nowrap; }
+    .st-New { background:#FDECC8; color:#7A4B00; }
+    .st-Allocated { background:#E0E1F7; color:#2B2D6E; }
+    .st-In-production { background:#E8DDF6; color:#4C2A7A; }
+    .st-Dispatched { background:#D7EEF0; color:#0F5560; }
+    .st-Delivered { background:#DCEFD9; color:#245C1D; }
+    .bar-New { background:#D99A1E; } .bar-Allocated { background:#2B2D6E; } .bar-In-production { background:#6A3FA0; }
+    .bar-Dispatched { background:#1C7A86; } .bar-Delivered { background:#3C8A33; }
+    .tab-btn[aria-selected="true"] { background:#2B2D6E; color:#FAF6EE; }
+    .placeholder-tag { background:#FFF3C4; color:#7A4B00; border:1px dashed #C4A15A; }
+    table.data th { font-size:.66rem; text-transform:uppercase; letter-spacing:.06em; color:#6B5B57; text-align:left; padding:.55rem .5rem; border-bottom:1px solid rgba(196,161,90,.4); white-space:nowrap; }
+    table.data td { font-size:.78rem; padding:.55rem .5rem; border-bottom:1px solid rgba(196,161,90,.18); vertical-align:top; }
+    .skeleton { background: linear-gradient(90deg,#efe6d5 25%,#f8f2e6 50%,#efe6d5 75%); background-size:200% 100%; animation: sk 1.2s infinite; border-radius:.75rem; }
+    @keyframes sk { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+    .pb-safe { padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 4.5rem); }
+    @media (min-width: 768px) { .pb-safe { padding-bottom: 2rem; } }
+    @media print { .no-print { display:none !important; } body { background:#fff; } }
+  </style>
+</head>
+<body class="min-h-screen">
+  <!-- Top bar -->
+  <header class="sticky top-0 z-30 bg-indigo text-ivory shadow-md no-print">
+    <div class="max-w-7xl mx-auto px-3 sm:px-6 h-14 flex items-center justify-between gap-3">
+      <a href="/" class="flex items-center gap-2 min-w-0" aria-label="LEPAKSHI WEAVES storefront">
+        <picture>
+          <source media="(min-width: 640px)" srcset="/public/brand/lepakshi-weaves-logo-horizontal-gold.webp" type="image/webp">
+          <source srcset="/public/brand/lepakshi-weaves-rose-gold.webp" type="image/webp">
+          <img src="/public/brand/lepakshi-weaves-rose-gold.png" alt="LEPAKSHI WEAVES" width="36" height="36" class="h-9 w-auto sm:h-10" decoding="async">
+        </picture>
+        <span class="text-[11px] font-semibold uppercase tracking-widest text-gold-light truncate">Operations</span>
+      </a>
+      <div id="user-box" class="hidden items-center gap-2 text-xs">
+        <span id="user-label" class="hidden sm:inline text-gold-light"></span>
+        <button id="logout-btn" class="btn btn-ghost !py-1.5 !px-3 !text-[11px]">Sign out</button>
+      </div>
+    </div>
+    <nav id="tabs" class="hidden max-w-7xl mx-auto px-3 sm:px-6 pb-2 gap-1.5 overflow-x-auto md:flex" role="tablist" aria-label="Dashboard sections"></nav>
+  </header>
+
+  <!-- Backend not reachable (e.g. static Vercel hosting) -->
+  <section id="no-backend" class="hidden max-w-xl mx-auto px-4 py-12">
+    <div class="card p-6 space-y-3 text-sm">
+      <h1 class="font-serif text-2xl font-bold text-wine">Operations server not reachable</h1>
+      <p>This dashboard stores orders in the shop's private database, so shared multi-user data needs the LEPAKSHI WEAVES server (<code>server.py</code>) to be running.</p>
+      <p class="text-ink-muted">The public website on Vercel is static and does not run the Python server. For shared production use, open the dashboard from the computer or host where <code>python server.py</code> runs (for example <code>http://localhost:8080/ops.html</code>).</p>
+      <div class="placeholder-tag rounded-xl p-3 text-xs space-y-2">
+        <p class="font-bold">Want to preview &amp; test the full dashboard on this device right now?</p>
+        <p>You can launch <b>Browser Sandbox Mode</b> (saved in this browser's local storage with clearly marked <code>[PLACEHOLDER]</code> sample data) to test Excel/CSV upload, row validation, order allocation, filters, charts, and Excel/PDF export.</p>
+        <div class="flex flex-wrap gap-2 pt-1">
+          <button type="button" id="enter-sandbox-admin" class="btn btn-primary">Preview as Admin (Browser Sandbox)</button>
+          <button type="button" id="enter-sandbox-staff" class="btn btn-wine">Preview as Staff (Browser Sandbox)</button>
+        </div>
+      </div>
+      <div class="pt-1">
+        <a href="/" class="btn btn-ghost">← Back to storefront</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Login -->
+  <section id="login-view" class="hidden max-w-sm mx-auto px-4 py-10">
+    <div class="card p-6 space-y-4">
+      <div class="text-center space-y-2">
+        <img src="/public/brand/lepakshi-weaves-logo-240.webp" alt="LEPAKSHI WEAVES" width="180" height="120" class="mx-auto h-24 w-auto" decoding="async">
+        <h1 class="font-serif text-2xl font-bold text-indigo">Orders &amp; Allocation</h1>
+        <p class="text-xs text-ink-muted">Admin and staff only. Your activity is logged.</p>
+      </div>
+      <form id="login-form" class="space-y-3" autocomplete="on">
+        <label class="block text-xs font-semibold">Email
+          <input name="email" type="email" required autocomplete="username" class="field mt-1">
+        </label>
+        <label class="block text-xs font-semibold">Password
+          <input name="password" type="password" required autocomplete="current-password" class="field mt-1">
+        </label>
+        <p id="login-error" class="hidden text-xs font-semibold text-wine" role="alert"></p>
+        <button class="btn btn-primary w-full !py-3" type="submit">Sign in</button>
+      </form>
+    </div>
+  </section>
+
+  <main id="app" class="hidden max-w-7xl mx-auto px-3 sm:px-6 pt-4 pb-safe space-y-4"></main>
+
+  <!-- Mobile bottom tabs -->
+  <nav id="bottom-tabs" class="hidden md:hidden fixed bottom-0 inset-x-0 z-30 bg-indigo text-ivory border-t border-gold/40 no-print" style="padding-bottom: env(safe-area-inset-bottom, 0px)" aria-label="Dashboard sections"></nav>
+
+  <!-- Modal -->
+  <div id="modal" class="hidden fixed inset-0 z-50 bg-black/50 flex items-end sm:items-center justify-center p-0 sm:p-4" role="dialog" aria-modal="true">
+    <div id="modal-body" class="card w-full sm:max-w-md p-5 rounded-b-none sm:rounded-2xl max-h-[90vh] overflow-y-auto"></div>
+  </div>
+  <div id="toast" class="hidden fixed top-16 inset-x-3 sm:left-auto sm:right-4 sm:w-96 z-50 card px-4 py-3 text-sm font-semibold" role="status" aria-live="polite"></div>
+
+  <script src="/src/ops-dashboard.js" defer></script>
+</body>
+</html>

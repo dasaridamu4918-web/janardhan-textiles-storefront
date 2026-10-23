@@ -66,7 +66,7 @@ def run_playwright_e2e():
                 # 1. Home page load
                 page.goto(base_url, wait_until="networkidle", timeout=30000)
                 page.wait_for_timeout(400)
-                assert "Janardhan Textiles" in page.title(), f"{label}: Unexpected title {page.title()}"
+                assert "Lepakshi Weaves" in page.title(), f"{label}: Unexpected title {page.title()}"
 
                 # Check skip link exists
                 assert page.locator('a[href="#app-viewport"]').count() >= 1, f"{label}: Missing skip link"

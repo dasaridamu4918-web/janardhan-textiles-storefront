@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Phase 3 Automated Verification Suite — Janardhan Textiles Storefront
+Phase 3 Automated Verification Suite — Lepakshi Weaves Storefront
 Verifies:
 1. Default 24 sarees per page pagination & filter query parameters on GET /api/products
 2. Unified product schema (`slug`, `priceOnRequest`, `views[]` with `role`, `yaw`, `source`, `approved`, `updatedAt`, `srcset`, `blurDataUrl`)

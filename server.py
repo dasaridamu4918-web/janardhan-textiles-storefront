@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Janardhan Textiles — Full-Stack Python + SQLite REST Backend Server (server.py)
+Lepakshi Weaves — Full-Stack Python + SQLite REST Backend Server (server.py)
 Serves both http://127.0.0.1:8080 and http://localhost:4000.
 
 Implements:
@@ -61,6 +61,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 import uuid
+
+import ops_dashboard
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DB_PATH = os.path.join(ROOT_DIR, "janardan_textiles.db")
@@ -1042,7 +1044,7 @@ def init_db():
                 print("[SECURITY NOTICE] ADMIN_INITIAL_PASSWORD not set in .env; generated ephemeral admin password for this session.")
             cur.execute(
                 "INSERT INTO users (id, name, email, phone, password_hash, role, created_at) VALUES (?, ?, ?, ?, ?, ?, ?)",
-                ("usr-admin-01", "Janardhan Mill Admin", admin_email, "9652262173", hash_password(effective_admin_pw), "admin", ts)
+                ("usr-admin-01", "Lepakshi Weaves Admin", admin_email, "9652262173", hash_password(effective_admin_pw), "admin", ts)
             )
         else:
             # Upgrade any legacy unsalted SHA-256 hashes on existing admin account when ADMIN_INITIAL_PASSWORD is set
@@ -1072,7 +1074,7 @@ def init_db():
                     (norm_p["id"], idx, json.dumps(norm_p), ts)
                 )
 
-        # Ensure Janardhan Textiles contact email & clean social URLs (without ?obrf tracking) are stored
+        # Ensure Lepakshi Weaves contact email & clean social URLs (without ?obrf tracking) are stored
         cur.execute("SELECT value_json FROM settings WHERE key = 'site_settings'")
         row_s = cur.fetchone()
         if row_s:
@@ -1089,7 +1091,7 @@ def init_db():
         s_data["contacts"].setdefault("whatsappRawNumber", "919652262173")
         s_data["contacts"].setdefault(
             "whatsappUrl",
-            "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+            "https://wa.me/919652262173?text=Hi%20Lepakshi%20Weaves%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
         )
         s_data["contacts"].setdefault("instagramHandle", "@dasari_damu")
         # Clean tracking parameter ?obrf= from Instagram URL
@@ -1354,7 +1356,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
         parsed_path = urllib.parse.urlparse(path).path
         # Prevent access to sensitive dotfiles, .env, .db, or server scripts via static file handler
         lower_p = parsed_path.lower()
-        if any(lower_p.startswith(p) for p in ("/.env", "/.git", "/janardan_textiles.db", "/server.py", "/backups")):
+        if any(lower_p.startswith(p) for p in ("/.env", "/.git", "/janardan_textiles.db", "/server.py", "/backups", "/private_uploads", "/ops_dashboard.py", "/scripts", "/assets/originals")):
             return os.path.join(ROOT_DIR, "__forbidden_nonexistent__")
         if parsed_path.startswith("/uploads/"):
             fname = os.path.basename(parsed_path[len("/uploads/"):].lstrip("/"))
@@ -1471,18 +1473,38 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             return None
         return user
 
+    def _route_ops(self, method):
+        """Operations dashboard (orders / allocation / Excel uploads) lives in ops_dashboard.py."""
+        parsed = urllib.parse.urlparse(self.path)
+        if not parsed.path.startswith("/api/ops/"):
+            return False
+        if method != "GET" and not check_rate_limit(self._get_client_ip(), "ops_write", max_requests=120, window_seconds=60):
+            self._send_json(429, {"ok": False, "error": "Too many requests. Please wait a minute."})
+            return True
+        try:
+            ops_dashboard.handle(self, method, parsed.path, urllib.parse.parse_qs(parsed.query), {
+                "get_conn": get_db_connection,
+                "db_lock": DB_LOCK,
+                "audit": record_audit_log,
+                "hash_password": hash_password,
+            })
+        except Exception:
+            self._send_json(500, {"ok": False, "error": "Operations dashboard error. Please try again."})
+        return True
+
     # =========================================================================
     # GET ENDPOINTS
     # =========================================================================
     def do_GET(self):
+        if self._route_ops("GET"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
         qs = urllib.parse.parse_qs(parsed.query)
 
+        # /favicon.ico is now a real file (LEPAKSHI WEAVES rose emblem) served by the static handler.
         if path == "/favicon.ico":
-            self.send_response(204)
-            self.end_headers()
-            return
+            self.extensions_map[".ico"] = "image/x-icon"
 
         if path == "/robots.txt":
             robots_body = (
@@ -2050,7 +2072,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             persistence = get_db_persistence_info()
             return self._send_json(200, {
                 "ok": True,
-                "title": "Janardhan Textiles — Owner Handover & Operations Guide",
+                "title": "Lepakshi Weaves — Owner Handover & Operations Guide",
                 "persistence": persistence,
                 "sections": [
                     {
@@ -2125,6 +2147,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
     # POST ENDPOINTS
     # =========================================================================
     def do_POST(self):
+        if self._route_ops("POST"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
@@ -3070,6 +3094,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
     # PUT ENDPOINTS
     # =========================================================================
     def do_PUT(self):
+        if self._route_ops("PUT"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
@@ -3290,6 +3316,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
     # PATCH ENDPOINTS
     # =========================================================================
     def do_PATCH(self):
+        if self._route_ops("PATCH"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
@@ -3494,6 +3522,8 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
     # DELETE ENDPOINTS
     # =========================================================================
     def do_DELETE(self):
+        if self._route_ops("DELETE"):
+            return
         parsed = urllib.parse.urlparse(self.path)
         path = parsed.path
 
@@ -3532,12 +3562,12 @@ def run_server(host="0.0.0.0", port=8080, extra_port=4000):
             api_srv = http.server.ThreadingHTTPServer((host, extra_port), JanardanBackendHandler)
             t = threading.Thread(target=api_srv.serve_forever, daemon=True)
             t.start()
-            print(f"Janardhan Textiles API Server also listening at http://localhost:{extra_port}")
+            print(f"Lepakshi Weaves API Server also listening at http://localhost:{extra_port}")
         except Exception as e:
             print(f"Note: Could not bind extra port {extra_port}: {e}")
 
     server = http.server.ThreadingHTTPServer((host, port), JanardanBackendHandler)
-    print(f"Janardhan Textiles Full-Stack Server running at http://127.0.0.1:{port}")
+    print(f"Lepakshi Weaves Full-Stack Server running at http://127.0.0.1:{port}")
     print(f"SQLite Database: {DB_PATH}")
     server.serve_forever()
 

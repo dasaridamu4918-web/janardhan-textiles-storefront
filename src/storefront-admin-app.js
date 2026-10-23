@@ -1,6 +1,6 @@
 /**
  * ============================================================================
- * JANARDHAN TEXTILES — PROMPT 1 (STOREFRONT) & PROMPT 2 (ADMIN PANEL)
+ * LEPAKSHI WEAVES — PROMPT 1 (STOREFRONT) & PROMPT 2 (ADMIN PANEL)
  * Full E-Commerce Storefront + Protected Admin Dashboard wired to `server.py`
  * ============================================================================
  */
@@ -1795,7 +1795,7 @@
             ${
               pricing.priceOnRequest
                 ? `<a
-                    href="https://wa.me/919652262173?text=${encodeURIComponent(`Hi Janardhan Textiles, please share the price and availability for ${saree.name} (SKU: ${pid}).`)}"
+                    href="https://wa.me/919652262173?text=${encodeURIComponent(`Hi Lepakshi Weaves, please share the price and availability for ${saree.name} (SKU: ${pid}).`)}"
                     target="_blank"
                     rel="noopener noreferrer"
                     class="w-full py-2 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all bg-[#F5EFE4] text-ink border border-gold/60 hover:bg-gold/25"
@@ -1833,6 +1833,11 @@
 
     if (this.isProductOutOfStock(saree)) {
       this.showToast(`"${saree.name}" is currently out of stock.`, "error");
+      return;
+    }
+    if (this.getPricing(saree).priceOnRequest) {
+      this.showToast(`"${saree.name}" is price on request. Please send an enquiry instead.`, "error");
+      this.openWhatsAppProductEnquiry(saree.id || saree.sku);
       return;
     }
 
@@ -1893,7 +1898,9 @@
   };
 
   app.buyNow = function (productId, qty = 1) {
+    const before = this.state.cart.length;
     this.addToCart(productId, qty);
+    if (!this.state.cart.some((i) => i.productId === productId) && this.state.cart.length === before) return;
     this.closeCartDrawer();
     this.navigate("checkout");
   };
@@ -1947,7 +1954,7 @@
     return `
       <div class="p-4 sm:p-5 border-b border-gold/40 bg-[#F5EFE4] flex items-center justify-between">
         <div>
-          <span class="text-[10px] font-bold uppercase tracking-widest text-teal block">Janardhan Textiles</span>
+          <span class="text-[10px] font-bold uppercase tracking-widest text-teal block">Lepakshi Weaves</span>
           <h2 class="font-serif text-xl sm:text-2xl font-bold text-ink">Shopping Cart (${items.reduce((s, i) => s + i.qty, 0)})</h2>
         </div>
         <button type="button" onclick="app.closeCartDrawer()" class="p-2 rounded-full bg-ivory text-ink border border-gold/40 hover:bg-gold/20" aria-label="Close Cart Drawer">✕</button>
@@ -2070,6 +2077,8 @@
         const live = liveMap.get(item.productId);
         if (!live || live.active === false) {
           stockErrors.push(`"${item.name}" is no longer available.`);
+        } else if (this.getPricing(live).priceOnRequest) {
+          stockErrors.push(`"${item.name}" is now price on request. Please remove it and send an enquiry.`);
         } else if (live.stock <= 0 || live.stock_status === "out_of_stock") {
           stockErrors.push(`"${item.name}" is currently out of stock.`);
         } else if (item.qty > live.stock) {
@@ -2110,6 +2119,9 @@
     if (type === "bestseller") this.state.catalogueQuery.bestseller = "1";
     if (type === "newest") this.state.catalogueQuery.sort = "newest";
     this.navigate("shop");
+    // Bug fix: the filter was set but the catalogue was never re-fetched, so all sarees kept showing
+    this.syncCatalogueQueryToUrl(false);
+    this.fetchCatalogueProducts();
   };
 
   app.renderHomeCollectionsAndSections = function () {
@@ -3114,7 +3126,7 @@
         <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12 border-t border-gold/30" aria-label="Saree Catalogue">
           <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-              <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles • ~600 Power Looms</span>
+              <span class="text-xs font-bold uppercase tracking-widest text-teal">Lepakshi Weaves • ~600 Power Looms</span>
               <h2 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-0.5">Saree Catalogue</h2>
             </div>
 
@@ -3569,13 +3581,34 @@
               <div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 sm:col-span-2">
                 <dt class="text-xs text-ink-muted uppercase tracking-wider">Weave &amp; Loom Provenance</dt>
                 <dd class="text-ink mt-0.5 leading-relaxed text-xs sm:text-sm">
-                  Direct power-loom weave from Janardhan Textiles (~600 power looms), inspected for weave density, border finish, and blouse-piece coordination.
+                  Direct power-loom weave from Lepakshi Weaves (~600 power looms), inspected for weave density, border finish, and blouse-piece coordination.
                 </dd>
               </div>
             </dl>
 
-            <!-- Quantity Selector, Add to Cart & Buy Now -->
-            <div class="space-y-4 pt-2 border-t border-gold/25">
+            <!-- Buying flow: priced sarees -> quantity + Add to Cart + Buy Now; "Price on request" -> Enquire only -->
+            ${
+              pricing.priceOnRequest
+                ? `<div class="space-y-3 pt-2 border-t border-gold/25" id="product-enquiry-flow">
+              <p class="text-xs text-ink-muted">This saree's price is shared on request (it depends on quantity and finish). Send us an enquiry and we'll reply on WhatsApp.</p>
+              <button
+                type="button"
+                id="product-enquire-btn"
+                onclick="app.openWhatsAppProductEnquiry('${saree.id || saree.sku}')"
+                class="w-full py-3.5 px-5 rounded-full font-bold text-sm flex items-center justify-center gap-2 shadow-md bg-teal text-ivory hover:bg-teal-light active:scale-95 transition-all"
+              >
+                Enquire about this saree on WhatsApp
+              </button>
+              <button
+                type="button"
+                onclick="app.navigate('wholesale', { sareeName: ${JSON.stringify(saree.name || "").replace(/"/g, "&quot;")} })"
+                class="w-full py-3 px-5 rounded-full border border-gold/60 bg-[#F5EFE4] text-ink font-semibold text-xs sm:text-sm hover:bg-gold/25 transition-all"
+              >
+                Bulk / wholesale enquiry form
+              </button>
+            </div>`
+                : `
+            <div class="space-y-4 pt-2 border-t border-gold/25" id="product-cart-flow">
               <div class="flex items-center justify-between">
                 <label for="detail-qty-input" class="text-sm font-semibold text-ink">Quantity:</label>
                 <div class="inline-flex items-center rounded-xl border border-gold/50 bg-[#F5EFE4]">
@@ -3617,18 +3650,19 @@
 
               <a
                 id="product-detail-whatsapp-btn"
-                href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
+                href="https://wa.me/919652262173?text=Hi%20Lepakshi%20Weaves%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees."
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Chat with Janardhan Textiles on WhatsApp at +91 96522 62173"
+                aria-label="Chat with Lepakshi Weaves on WhatsApp at +91 96522 62173"
                 class="w-full py-3 px-5 rounded-full border border-gold/60 bg-[#F5EFE4] text-ink font-semibold text-xs sm:text-sm hover:bg-gold/25 active:scale-95 transition-all flex items-center justify-center gap-2"
               >
                 <svg class="w-4 h-4 text-[#1E3F35] shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
                   <path d="M12.031 2c-5.516 0-9.999 4.486-10 10.003-.001 1.766.46 3.489 1.337 5.008L2 22l5.122-1.343a9.958 9.958 0 0 0 4.904 1.298h.004c5.515 0 9.998-4.486 10-10.002A9.963 9.963 0 0 0 19.104 4.93 9.937 9.937 0 0 0 12.031 2zm0 18.299h-.004a8.29 8.29 0 0 1-4.231-1.158l-.303-.18-3.039.797.811-2.963-.197-.314a8.293 8.293 0 0 1-1.275-4.426c.002-4.581 3.73-8.309 8.313-8.309 2.22 0 4.306.865 5.875 2.435a8.257 8.257 0 0 1 2.432 5.879c-.002 4.581-3.73 8.309-8.382 8.239zm4.56-6.219c-.25-.125-1.478-.729-1.707-.813-.229-.083-.396-.125-.562.125-.167.25-.646.813-.792.979-.146.167-.292.188-.542.063-.25-.125-1.055-.389-2.01-1.24-.743-.662-1.244-1.481-1.39-1.731-.146-.25-.015-.385.11-.51.112-.112.25-.292.375-.438.125-.146.167-.25.25-.417.083-.167.042-.313-.021-.438-.062-.125-.562-1.355-.771-1.855-.203-.486-.409-.42-.562-.428l-.479-.008c-.167 0-.438.063-.667.313-.229.25-.875.855-.875 2.084s.896 2.418 1.021 2.584c.125.167 1.763 2.692 4.271 3.775.597.258 1.063.412 1.426.527.599.19 1.144.163 1.575.099.48-.072 1.478-.604 1.687-1.188.208-.583.208-1.084.146-1.188-.063-.104-.229-.167-.479-.292z"/>
                 </svg>
-                <span>Enquire on WhatsApp (+91 96522 62173)</span>
+                <span>Questions? Chat on WhatsApp (+91 96522 62173)</span>
               </a>
-            </div>
+            </div>`
+            }
 
             <!-- Real Delivery Info from /api/filters -->
             <div class="p-3.5 rounded-xl bg-[#F5EFE4] border border-gold/30 text-xs text-ink-muted space-y-1">
@@ -3903,7 +3937,7 @@
       const ordNum = ord.order_number || ord.orderId;
       const ordTotal = this.formatINR(ord.total || ord.totalINR);
       const waOrderText = encodeURIComponent(
-        `Hi Janardhan Textiles, I have placed order ${ordNum} (${ordTotal}, ${(ord.payment_method || "cod").toUpperCase()}) on your website. Please confirm dispatch details.`
+        `Hi Lepakshi Weaves, I have placed order ${ordNum} (${ordTotal}, ${(ord.payment_method || "cod").toUpperCase()}) on your website. Please confirm dispatch details.`
       );
       return `
         <div class="page-transition max-w-3xl mx-auto px-3 sm:px-6 py-10">
@@ -3922,7 +3956,7 @@
                 href="https://wa.me/919652262173?text=${waOrderText}"
                 target="_blank"
                 rel="noopener noreferrer"
-                aria-label="Send order confirmation to Janardhan Textiles on WhatsApp"
+                aria-label="Send order confirmation to Lepakshi Weaves on WhatsApp"
                 class="px-6 py-3 rounded-full bg-[#1E3F35] text-[#FAF8F5] border border-gold font-semibold text-xs sm:text-sm hover:bg-[#2A5447] inline-flex items-center gap-2"
               >
                 <svg class="w-4 h-4 text-gold shrink-0" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
@@ -3954,7 +3988,7 @@
       <div class="page-transition max-w-6xl mx-auto px-3 sm:px-6 lg:px-8 py-6 sm:py-10 space-y-6">
         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <div>
-            <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles Checkout</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-teal">Lepakshi Weaves Checkout</span>
             <h1 class="font-serif text-2xl sm:text-4xl font-bold text-ink">Complete Your Order</h1>
           </div>
           <button type="button" onclick="app.navigate('cart')" class="self-start px-3.5 py-1.5 rounded-full bg-[#FAF8F5] text-ink border border-gold/45 text-xs font-semibold">
@@ -4468,7 +4502,7 @@
       <div class="page-transition max-w-md mx-auto px-3 sm:px-6 py-8 sm:py-12">
         <div class="bg-[#FAF8F5] rounded-3xl border-2 border-gold/50 p-6 sm:p-8 shadow-xl space-y-5">
           <div class="text-center space-y-1">
-            <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles Account</span>
+            <span class="text-xs font-bold uppercase tracking-widest text-teal">Lepakshi Weaves Account</span>
             <h1 class="font-serif text-3xl font-bold text-ink">${mode === "register" ? "Create Account" : "Sign In"}</h1>
           </div>
 
@@ -4535,7 +4569,10 @@
           <div class="flex flex-wrap gap-2">
             ${
               u.role === "admin"
-                ? `<button type="button" onclick="app.navigate('admin')" class="px-4 py-2.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light">Open Admin Panel →</button>`
+                ? `<button type="button" onclick="app.navigate('admin')" class="px-4 py-2.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light">Open Admin Panel →</button>
+                   <a href="/ops.html" class="px-4 py-2.5 rounded-full bg-wine text-ivory text-xs font-bold hover:opacity-90">Orders &amp; Allocation Dashboard →</a>`
+                : u.role === "staff"
+                ? `<a href="/ops.html" class="px-4 py-2.5 rounded-full bg-wine text-ivory text-xs font-bold hover:opacity-90">Orders &amp; Allocation Dashboard →</a>`
                 : ""
             }
             <button type="button" onclick="app.logoutUser()" class="px-4 py-2.5 rounded-full bg-[#F5EFE4] text-red-800 border border-gold/45 text-xs font-bold hover:bg-red-50">
@@ -4722,7 +4759,7 @@
         <div class="page-transition max-w-3xl mx-auto px-3 sm:px-6 py-10">
           <div class="bg-[#FAF8F5] rounded-3xl border border-gold/45 p-8 text-center space-y-4">
             <h1 class="font-serif text-3xl font-bold text-ink">Sign In to View Your Wishlist</h1>
-            <p class="text-xs sm:text-sm text-ink-muted max-w-md mx-auto">Your wishlist is saved securely to your Janardhan Textiles account.</p>
+            <p class="text-xs sm:text-sm text-ink-muted max-w-md mx-auto">Your wishlist is saved securely to your Lepakshi Weaves account.</p>
             <button type="button" onclick="app.state.authRedirectAfterLogin='wishlist'; app.navigate('login')" class="px-6 py-3 rounded-full bg-teal text-ivory font-semibold text-xs sm:text-sm">
               Sign In / Register
             </button>
@@ -4909,7 +4946,7 @@
             <div class="space-y-1 text-center">
               <span class="px-2.5 py-0.5 rounded-full bg-teal text-gold font-bold text-[10px] uppercase tracking-widest">Protected Route • /admin</span>
               <h1 class="font-serif text-3xl font-bold text-ink mt-1">Admin Sign In</h1>
-              <p class="text-xs text-ink-muted">Only users with <code>role === "admin"</code> may access the Janardhan Textiles Admin Dashboard.</p>
+              <p class="text-xs text-ink-muted">Only users with <code>role === "admin"</code> may access the Lepakshi Weaves Admin Dashboard.</p>
             </div>
 
             <form onsubmit="app.submitAdminLogin(event)" class="space-y-3.5 text-sm">
@@ -4949,9 +4986,12 @@
               <span class="px-2.5 py-0.5 rounded bg-gold text-ink font-bold text-xs uppercase">Admin Panel</span>
               <span class="text-xs text-gold-light">Signed in as ${u.name} (${u.email})</span>
             </div>
-            <h1 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">Janardhan Textiles — Store Administration</h1>
+            <h1 class="font-serif text-2xl sm:text-3xl font-bold text-white mt-1">Lepakshi Weaves — Store Administration</h1>
           </div>
           <div class="flex flex-wrap items-center gap-2 shrink-0">
+            <a href="/ops.html" class="px-3.5 py-2 rounded-xl bg-wine text-ivory font-bold text-xs hover:opacity-90 border border-gold/50">
+              Orders &amp; Allocation (Excel) →
+            </a>
             <button type="button" onclick="app.openAdminProductEditor(null)" class="px-3.5 py-2 rounded-xl bg-gold text-ink font-bold text-xs hover:bg-gold-light">
               + Add New Saree
             </button>
@@ -6257,7 +6297,7 @@
         (this.state.products || [])[0];
       if (saree) {
         const pricing = this.getPricing(saree);
-        const title = `${saree.name} (${saree.fabric}) | Janardhan Textiles`;
+        const title = `${saree.name} (${saree.fabric}) | Lepakshi Weaves`;
         document.title = title;
         if (ogTitle) ogTitle.setAttribute("content", title);
         if (descMeta && saree.description) descMeta.setAttribute("content", saree.description);
@@ -6268,11 +6308,11 @@
             "@type": "Product",
             name: saree.name,
             sku: saree.sku || saree.id,
-            description: saree.description || `${saree.color} ${saree.fabric} saree by Janardhan Textiles.`,
+            description: saree.description || `${saree.color} ${saree.fabric} saree by Lepakshi Weaves.`,
             image: (saree.images || []).map((u) => new URL(u, window.location.origin).href),
             brand: {
               "@type": "Brand",
-              name: "Janardhan Textiles"
+              name: "Lepakshi Weaves"
             },
             material: saree.fabric,
             color: saree.color
@@ -6295,13 +6335,13 @@
     }
 
     const titles = {
-      home: "Janardhan Textiles | Saree Showcase & Collection",
-      shop: "Saree Catalogue (24 Per Page) | Janardhan Textiles",
-      wholesale: "Wholesale & Bulk Loom Enquiries | Janardhan Textiles",
-      about: "About Our Power-Loom Weaving | Janardhan Textiles",
-      contact: "Contact & WhatsApp Mill Desk | Janardhan Textiles",
-      policies: "Shipping, Returns & Store Policies | Janardhan Textiles",
-      admin: "Admin Panel | Janardhan Textiles"
+      home: "Lepakshi Weaves | Fine Sarees from ~600 Power Looms",
+      shop: "Saree Catalogue (24 Per Page) | Lepakshi Weaves",
+      wholesale: "Wholesale & Bulk Loom Enquiries | Lepakshi Weaves",
+      about: "About Our Power-Loom Weaving | Lepakshi Weaves",
+      contact: "Contact & WhatsApp Mill Desk | Lepakshi Weaves",
+      policies: "Shipping, Returns & Store Policies | Lepakshi Weaves",
+      admin: "Admin Panel | Lepakshi Weaves"
     };
     const nextTitle = titles[page] || titles.home;
     document.title = nextTitle;
@@ -6622,9 +6662,9 @@
               ? fm.occasions
               : [...new Set((this.state.products || []).map((p) => p.occasion).filter(Boolean))];
 
-          // Strictly true brand messages from /api/filters: "Janardhan Textiles" + real fabrics & occasions
-          const heroLoopText = ["Janardhan Textiles", ...fabrics].join(" ✦ ");
-          const footerLoopText = ["Janardhan Textiles", ...occasions, ...fabrics.slice(0, 4)].join(" ✦ ");
+          // Strictly true brand messages from /api/filters: "Lepakshi Weaves" + real fabrics & occasions
+          const heroLoopText = ["Lepakshi Weaves", ...fabrics].join(" ✦ ");
+          const footerLoopText = ["Lepakshi Weaves", ...occasions, ...fabrics.slice(0, 4)].join(" ✦ ");
 
           const curvedMod = await this.importReactBitsModule("curved-loop.js");
           if (this.state.currentPage !== "home" || this.areEffectsDisabled()) return;
@@ -6774,11 +6814,12 @@
     }
     this.syncAuthHeaderUI();
     await origInit();
+    if (typeof window.__hideBrandLoader === "function") window.__hideBrandLoader();
     if (this.state.settings && this.state.settings.contacts) {
       this.state.settings.contacts.whatsappLabel = "+91 96522 62173";
       this.state.settings.contacts.whatsappRawNumber = "919652262173";
       this.state.settings.contacts.whatsappUrl =
-        "https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.";
+        "https://wa.me/919652262173?text=Hi%20Lepakshi%20Weaves%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees.";
       this.state.settings.contacts.instagramHandle = "@dasari_damu";
       this.state.settings.contacts.instagramUrl = "https://www.instagram.com/dasari_damu";
       this.state.settings.contacts.facebookUrl = "https://www.facebook.com/share/1AvqDY71mi/";
@@ -6823,7 +6864,7 @@
       <div class="page-transition max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-8">
         <div>
           <span class="text-xs font-bold uppercase tracking-widest text-teal">Direct Mill &amp; Customer Desk</span>
-          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-ink mt-1">Contact Janardhan Textiles</h1>
+          <h1 class="font-serif text-3xl sm:text-5xl font-bold text-ink mt-1">Contact Lepakshi Weaves</h1>
           <p class="text-sm text-ink-muted mt-1">Connect with our team for saree enquiries, order assistance, or wholesale loom schedules.</p>
         </div>
 
@@ -6896,7 +6937,7 @@
     return `
       <div class="page-transition max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 space-y-6">
         <div>
-          <span class="text-xs font-bold uppercase tracking-widest text-teal">Janardhan Textiles • Customer Care</span>
+          <span class="text-xs font-bold uppercase tracking-widest text-teal">Lepakshi Weaves • Customer Care</span>
           <h1 class="font-serif text-3xl sm:text-5xl font-bold text-ink mt-1">Store Policies</h1>
           <p class="text-sm text-ink-muted mt-1">Clear, transparent shipping, returns, privacy, and service terms for every saree order.</p>
         </div>

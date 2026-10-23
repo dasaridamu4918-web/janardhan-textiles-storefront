@@ -3,9 +3,9 @@
  * Installed from: npx shadcn@latest add @react-bits/CurvedLoop-JS-TW
  * Source component: src/components/CurvedLoop/CurvedLoop.jsx
  *
- * Tuned for Janardan Textiles:
+ * Tuned for Lepakshi Weaves:
  * - Used as decorative dividers on the Home page (between Hero & Featured, and above Footer).
- * - Displays ONLY true brand messages ("Janardan Textiles" + real fabric & occasion names from GET /api/filters).
+ * - Displays ONLY true brand messages ("Lepakshi Weaves" + real fabric & occasion names from GET /api/filters).
  * - Slow, smooth speed, gentle curve, cream/gold palette, readable at 375px without horizontal scroll.
  * - Uses aria-hidden="true" and pauses when prefers-reduced-motion is set or when off-screen.
  */
@@ -31,7 +31,7 @@ export function mountCurvedLoop(container, options = {}) {
   curvedLoopInstanceSeq += 1;
   const pathId = `jt-curved-loop-path-${curvedLoopInstanceSeq}`;
 
-  const rawText = String(options.marqueeText || "Janardan Textiles").trim();
+  const rawText = String(options.marqueeText || "Lepakshi Weaves").trim();
   const separator = String(options.separator ?? "✦").trim();
   const speed = options.speed ?? 0.65;
   const curveAmount = options.curveAmount ?? 48;

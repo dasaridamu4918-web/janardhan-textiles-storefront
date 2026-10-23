@@ -1,7 +1,7 @@
 /**
  * Three.js 3D Saree Stage (src/three-stage.js)
  *
- * Implements the pinned 3D stage for Janardhan Textiles:
+ * Implements the pinned 3D stage for Lepakshi Weaves:
  * - Scene 1 (The woven layers): 4 Z-stacked planes per saree (left: Magenta Kanchipuram,
  *   right: Champagne-Gold Tissue) that converge in order along Z into the unified textile.
  * - Scene 2 (The finished sarees): Side-by-side finished sarees on a warm studio backdrop.

@@ -3,7 +3,7 @@
  * Uses ivory (#F6F1E9), deep peacock teal (#063F46), and antique gold (#C4A15A).
  * Loads portrait from config.cofounder.portrait (or scene.portraitPath).
  * When /assets/cofounder.jpg is absent, renders an architectural antique-gold
- * placeholder frame with the exact caption "Co-Founder, Janardhan Textiles."
+ * placeholder frame with the exact caption "Co-Founder, Lepakshi Weaves."
  * Never invents a co-founder name when config.cofounder.name is empty.
  */
 

@@ -3,7 +3,7 @@
  * Installed from: npx shadcn@latest add @react-bits/SplashCursor-JS-TW
  * Source component: src/components/SplashCursor/SplashCursor.jsx
  *
- * Tuned for Janardan Textiles:
+ * Tuned for Lepakshi Weaves:
  * - Used ONLY on the Home page behind content (pointer-events: none, low z-index).
  * - Champagne-gold (#D4AF37), soft beige (#E6D5B8), and warm cream (#F3E8D2) palette (rainbow: false).
  * - Automatically disabled (renders nothing, no error) on touch devices, prefers-reduced-motion,

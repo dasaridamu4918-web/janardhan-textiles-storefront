@@ -1,4 +1,4 @@
-const BRAND_NAME = "Janardhan Textiles";
+const BRAND_NAME = "Lepakshi Weaves";
 
 export default {
   BRAND_NAME,
@@ -139,7 +139,7 @@ export default {
   cofounder: {
     name: '', // name intentionally empty — do not invent a co-founder name
     portrait: '/assets/cofounder.jpg',
-    placeholderCaption: 'Co-Founder, Janardhan Textiles.',
+    placeholderCaption: 'Co-Founder, Lepakshi Weaves.',
     ctaLabel: 'Explore the Collection',
     ctaHref: '#collection'
   },

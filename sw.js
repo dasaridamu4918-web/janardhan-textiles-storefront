@@ -1,5 +1,5 @@
-// Janardhan Textiles Service Worker — Network-First for API & Images (never serves stale swapped images)
-const CACHE_NAME = "jt-storefront-v5";
+// Lepakshi Weaves Service Worker - network-first for API, images and JS (never serves stale swapped images)
+const CACHE_NAME = "lw-storefront-v6";
 const STATIC_PRECACHE = ["/", "/index.html", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
@@ -32,7 +32,9 @@ self.addEventListener("fetch", (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          if (res && res.ok && !url.pathname.startsWith("/api/admin")) {
+          // Never store private data (admin, operations dashboard, orders, accounts) in the browser cache
+          const isPrivate = /^\/api\/(admin|ops|orders|me|wishlist|auth)/.test(url.pathname);
+          if (res && res.ok && !isPrivate) {
             const clone = res.clone();
             caches.open(CACHE_NAME).then((c) => c.put(req, clone)).catch(() => {});
           }
