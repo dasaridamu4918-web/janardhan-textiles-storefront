@@ -39,6 +39,40 @@
     return trimmed;
   };
 
+  const FABRIC_STANDARDIZATION_MAP = {
+    "Pure Kanchipuram Silk": "Kanchipuram Pure Silk",
+    "Kanchipuram Tissue-Silk": "Kanchipuram Silk-Tissue",
+    "Pure Kanchipuram Tissue": "Kanchipuram Silk-Tissue",
+    "Chanderi Tissue Silk": "Chanderi Silk-Tissue",
+    "Pure Organza Silk": "Organza Silk",
+    "Sheer Organza Silk": "Organza Silk",
+    "Organza Tissue Silk": "Tissue Organza",
+    "Sheer Organza Tissue": "Tissue Organza",
+    "Sheer Tissue Organza": "Tissue Organza",
+    "Silk-Tissue Organza": "Tissue Organza",
+    "Paithani Pure Silk": "Paithani Silk",
+    "Gadwal Pure Silk": "Gadwal Silk",
+    "Pure Mysore Crepe Silk": "Mysore Crepe Silk",
+    "Banarasi Georgette Silk": "Banarasi Georgette",
+    "Banarasi Organza Silk": "Banarasi Kora Organza",
+    "Tussar Gicha Silk": "Tussar Ghicha Silk",
+    "Shimmering Tissue-Silk": "Shimmer Tissue Silk",
+    "Pure Shimmer Tissue": "Shimmer Tissue Silk",
+    "Luminous Silk-Tissue": "Pure Silk-Tissue",
+    "Bridal Silk-Tissue": "Pure Silk-Tissue",
+    "Pure Metallic Tissue": "Pure Silk-Tissue",
+    "Crushed Organza Tissue": "Crushed Tissue Silk",
+    "Crushed Shimmer Tissue": "Crushed Tissue Silk",
+    "Soft Linen-Silk": "Linen-Silk Blend",
+    "Soft Mulberry Silk": "Pure Mulberry Silk",
+    "Soft Mysore Silk": "Mysore Silk"
+  };
+
+  function normalizeFabricLabel(fabricStr) {
+    const clean = String(fabricStr || "").trim();
+    return FABRIC_STANDARDIZATION_MAP[clean] || clean;
+  }
+
   // LocalStorage-backed API Engine Fallback for Static Hosts (Vercel / GitHub Pages / Mobile Offline)
   const LOCAL_FALLBACK_API = {
     getProducts() {
@@ -47,7 +81,8 @@
         localStorage.removeItem("jt_local_products_v2");
         localStorage.removeItem("jt_local_products_v3");
         localStorage.removeItem("jt_local_products_v4");
-        const raw = localStorage.getItem("jt_local_products_v5");
+        localStorage.removeItem("jt_local_products_v5");
+        const raw = localStorage.getItem("jt_local_products_v6");
         if (raw) {
           const parsed = JSON.parse(raw);
           if (Array.isArray(parsed) && parsed.length > 0) {
@@ -65,7 +100,7 @@
 
     saveProducts(list) {
       try {
-        localStorage.setItem("jt_local_products_v5", JSON.stringify(list));
+        localStorage.setItem("jt_local_products_v6", JSON.stringify(list));
       } catch (e) {}
       app.state.products = list;
     },
@@ -79,6 +114,7 @@
       p.isSampleImage = false;
       if (typeof p.description === 'string') p.description = p.description.replace(/^Sample design description \(editable\):\s*/i, '');
       p.sku = sku;
+      p.fabric = normalizeFabricLabel(p.fabric);
       const price = Math.round(Number(p.price ?? p.priceINR ?? 0));
       const mrp = Math.round(Number(p.mrp ?? p.originalPriceINR ?? price));
       p.price = price;
@@ -103,12 +139,13 @@
         p.stock_status = "in_stock";
       }
       if (p.active === undefined) p.active = true;
-      if (p.featured === undefined) p.featured = idx < 5;
-      if (p.bestseller === undefined) p.bestseller = [0, 1, 3, 5, 6].includes(idx);
+      if (p.featured === undefined) p.featured = ["jt-saree-09", "jt-saree-01", "jt-saree-02", "jt-saree-06"].includes(sku);
+      if (p.bestseller === undefined) p.bestseller = ["jt-saree-03", "jt-saree-04", "jt-saree-05", "jt-saree-07"].includes(sku);
       p.work_details = p.work_details ?? p.borderAndZari ?? "";
       p.borderAndZari = p.borderAndZari || p.work_details;
       p.blouse_piece = p.blouse_piece ?? p.blousePiece ?? "";
       p.blousePiece = p.blousePiece || p.blouse_piece;
+      p.saree_length = p.saree_length || p.sareeLength || "";
 
       if (Array.isArray(p.gallery) && p.gallery.length > 0) {
         const frontBaseUrl = p.gallery[0]?.url ? String(p.gallery[0].url).split("?")[0].trim() : "";
@@ -292,6 +329,7 @@
         if (sort === "price_asc") items.sort((a, b) => (a.price || 0) - (b.price || 0));
         else if (sort === "price_desc") items.sort((a, b) => (b.price || 0) - (a.price || 0));
         else if (sort === "name") items.sort((a, b) => String(a.name || "").localeCompare(String(b.name || "")));
+        else if (sort === "newest") items.sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")));
 
         const total = items.length;
         const page = Math.max(1, parseInt(qs.get("page") || "1", 10) || 1);
@@ -1264,7 +1302,7 @@
 
   // 6. Authentication & Wishlist API Wiring
   app.syncAuthHeaderUI = function () {
-    const labelEl = (() => { const admBtn = document.getElementById("header-admin-nav-btn"); if (admBtn) admBtn.classList.toggle("hidden", !(app.state.currentUser && app.state.currentUser.role === "admin")); return document.getElementById("header-auth-label"); })();
+    const labelEl = document.getElementById("header-auth-label");
     const btnEl = document.getElementById("header-auth-btn");
     const u = this.state.currentUser;
     if (labelEl) {
@@ -1463,13 +1501,14 @@
     try {
       const data = await BACKEND_API.request("/api/filters");
       if (data && Array.isArray(data.fabrics)) {
+        data.fabrics = [...new Set(data.fabrics.map((f) => normalizeFabricLabel(f)).filter(Boolean))].sort();
         this.state.filtersMeta = data;
       }
     } catch (e) {
       // Fallback derived from INITIAL_PRODUCTS
       const prods = this.state.products || [];
       this.state.filtersMeta = {
-        fabrics: [...new Set(prods.map((p) => p.fabric).filter(Boolean))].sort(),
+        fabrics: [...new Set(prods.map((p) => normalizeFabricLabel(p.fabric)).filter(Boolean))].sort(),
         colors: [...new Set(prods.map((p) => p.color).filter(Boolean))].sort(),
         occasions: [...new Set(prods.map((p) => p.occasion).filter(Boolean))].sort(),
         price: { min: this.getMinProductPrice(), max: this.getMaxProductPrice() },
@@ -1480,26 +1519,52 @@
 
   app.fetchHomeSections = async function () {
     this.state.homeSections.loading = true;
+    const buildDisjointSections = (featPool, bestPool, newPool, allProds) => {
+      const usedIds = new Set();
+      const pickUnique = (candidates, count = 4) => {
+        const out = [];
+        for (const item of candidates) {
+          if (!item) continue;
+          const pid = item.id || item.sku;
+          if (!pid || usedIds.has(pid)) continue;
+          usedIds.add(pid);
+          out.push(item);
+          if (out.length >= count) break;
+        }
+        return out;
+      };
+      const featured = pickUnique([...featPool, ...allProds.filter((p) => p.featured)], 4);
+      const bestsellers = pickUnique([...bestPool, ...allProds.filter((p) => p.bestseller)], 4);
+      const newest = pickUnique(
+        [
+          ...newPool,
+          ...[...allProds].sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || "")))
+        ],
+        4
+      );
+      return { featured, newest, bestsellers, loading: false };
+    };
+
     try {
       const [featRes, newRes, bestRes] = await Promise.all([
-        BACKEND_API.request("/api/products?featured=1&limit=4"),
-        BACKEND_API.request("/api/products?sort=newest&limit=4"),
-        BACKEND_API.request("/api/products?bestseller=1&limit=4")
+        BACKEND_API.request("/api/products?featured=1&limit=12"),
+        BACKEND_API.request("/api/products?sort=newest&limit=16"),
+        BACKEND_API.request("/api/products?bestseller=1&limit=12")
       ]);
-      this.state.homeSections = {
-        featured: featRes.items || [],
-        newest: newRes.items || [],
-        bestsellers: bestRes.items || [],
-        loading: false
-      };
+      this.state.homeSections = buildDisjointSections(
+        featRes.items || [],
+        bestRes.items || [],
+        newRes.items || [],
+        this.state.products || []
+      );
     } catch (e) {
       const prods = this.state.products || [];
-      this.state.homeSections = {
-        featured: prods.filter((p) => p.featured).slice(0, 4),
-        newest: [...prods].slice(0, 4),
-        bestsellers: prods.filter((p) => p.bestseller).slice(0, 4),
-        loading: false
-      };
+      this.state.homeSections = buildDisjointSections(
+        prods.filter((p) => p.featured),
+        prods.filter((p) => p.bestseller),
+        [...prods].sort((a, b) => String(b.created_at || "").localeCompare(String(a.created_at || ""))),
+        prods
+      );
     }
     const homeDynamicEl = document.getElementById("home-api-collections-container");
     if (homeDynamicEl) {
@@ -2980,6 +3045,63 @@
               <span class="scroll-cue-label">Scroll</span>
               <span class="scroll-cue-line"></span>
             </div>
+            ${(() => {
+              const heroSaree =
+                (this.state.products || []).find((p) => (p.id || p.sku) === "jt-saree-09") ||
+                (this.state.products || [])[0] || {
+                  id: "jt-saree-09",
+                  sku: "jt-saree-09",
+                  name: "Champagne Tissue Saree with Floral and Peacock Embroidery",
+                  fabric: "Champagne Tissue",
+                  color: "Champagne Gold",
+                  occasion: "Celebrations & Festive",
+                  price: 7500,
+                  priceINR: 7500
+                };
+              const heroId = heroSaree.id || heroSaree.sku || "jt-saree-09";
+              const heroPricing = this.getPricing(heroSaree);
+              const heroPriceLabel = heroPricing.priceOnRequest
+                ? "Price on request"
+                : this.formatINR(heroPricing.finalINR || 7500);
+              return `
+                <aside id="hero-featured-product-card" class="hero-featured-product-card" aria-label="Featured Hero Saree">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Featured Saree • 5 Studio Views</span>
+                    <span class="px-2 py-0.5 rounded-full bg-gold/25 border border-gold/50 text-[10px] font-bold text-ink">In Stock</span>
+                  </div>
+                  <h2 id="hero-featured-product-name" class="font-serif text-base sm:text-xl font-bold text-ink leading-snug">
+                    ${heroSaree.name}
+                  </h2>
+                  <p class="text-[11px] sm:text-xs text-ink-muted mt-0.5">
+                    ${[heroSaree.fabric, heroSaree.color, heroSaree.occasion].filter(Boolean).join(" • ")}
+                  </p>
+                  <div class="mt-2.5 pt-2 border-t border-gold/35 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <span class="text-[10px] uppercase tracking-wider text-ink-muted block">Direct Mill Price</span>
+                      <span id="hero-featured-product-price" class="font-serif text-xl sm:text-2xl font-bold text-ink">${heroPriceLabel}</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        id="hero-view-saree-btn"
+                        type="button"
+                        onclick="app.openProductDetail('${heroId}')"
+                        class="px-3.5 py-2 rounded-full bg-teal text-ivory font-bold text-xs hover:bg-teal-light shadow-sm transition-all active:scale-95"
+                      >
+                        View Saree →
+                      </button>
+                      <button
+                        id="hero-shop-catalogue-btn"
+                        type="button"
+                        onclick="app.navigate('shop')"
+                        class="px-3 py-2 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 font-semibold text-xs hover:bg-gold/25 transition-all"
+                      >
+                        Shop All
+                      </button>
+                    </div>
+                  </div>
+                </aside>
+              `;
+            })()}
           </div>
         </section>
 
@@ -3209,6 +3331,7 @@
     const workDetails = saree.work_details || [saree.borderAndZari, saree.motifs].filter(Boolean).join(". ");
     const blousePiece = saree.blouse_piece || saree.blousePiece || "";
     const careInstructions = saree.care_instructions || "";
+    const sareeLength = String(saree.saree_length || saree.sareeLength || "").trim();
     const shipCfg = this.state.filtersMeta?.shipping || { flat: 99, free_above: 2999 };
 
     return `
@@ -3402,16 +3525,24 @@
               }
               ${
                 saree.occasion
-                  ? `<div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 sm:col-span-2">
+                  ? `<div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 ${sareeLength ? "" : "sm:col-span-2"}">
                       <dt class="text-xs text-ink-muted uppercase tracking-wider">Occasion</dt>
                       <dd class="font-semibold text-ink mt-0.5">${saree.occasion}</dd>
                     </div>`
                   : ""
               }
               ${
+                sareeLength
+                  ? `<div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25">
+                      <dt class="text-xs text-ink-muted uppercase tracking-wider">Saree Length</dt>
+                      <dd class="font-semibold text-ink mt-0.5">${sareeLength}</dd>
+                    </div>`
+                  : ""
+              }
+              ${
                 workDetails
                   ? `<div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 sm:col-span-2">
-                      <dt class="text-xs text-ink-muted uppercase tracking-wider">Work &amp; Border Details</dt>
+                      <dt class="text-xs text-ink-muted uppercase tracking-wider">Work, Pallu &amp; Border Details</dt>
                       <dd class="text-ink mt-0.5 leading-relaxed">${workDetails}</dd>
                     </div>`
                   : ""
@@ -3419,10 +3550,13 @@
               ${
                 blousePiece
                   ? `<div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 sm:col-span-2">
-                      <dt class="text-xs text-ink-muted uppercase tracking-wider">Blouse Piece</dt>
-                      <dd class="text-ink mt-0.5 leading-relaxed">${blousePiece}</dd>
+                      <dt class="text-xs text-ink-muted uppercase tracking-wider">Blouse Piece Details</dt>
+                      <dd class="text-ink mt-0.5 leading-relaxed">${blousePiece} <span class="block text-xs text-ink-muted mt-1">• Coordinated unstitched blouse piece included with saree</span></dd>
                     </div>`
-                  : ""
+                  : `<div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 sm:col-span-2">
+                      <dt class="text-xs text-ink-muted uppercase tracking-wider">Blouse Piece Details</dt>
+                      <dd class="text-ink mt-0.5 leading-relaxed">Coordinated unstitched blouse piece included with saree</dd>
+                    </div>`
               }
               ${
                 careInstructions
@@ -3432,6 +3566,12 @@
                     </div>`
                   : ""
               }
+              <div class="p-3 rounded-xl bg-[#F5EFE4] border border-gold/25 sm:col-span-2">
+                <dt class="text-xs text-ink-muted uppercase tracking-wider">Weave &amp; Loom Provenance</dt>
+                <dd class="text-ink mt-0.5 leading-relaxed text-xs sm:text-sm">
+                  Direct power-loom weave from Janardhan Textiles (~600 power looms), inspected for weave density, border finish, and blouse-piece coordination.
+                </dd>
+              </div>
             </dl>
 
             <!-- Quantity Selector, Add to Cart & Buy Now -->
@@ -5365,7 +5505,7 @@
             <textarea name="description" rows="2" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink">${p.description || ""}</textarea>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             <div>
               <label class="block text-xs font-semibold text-ink-muted mb-1">Work &amp; Border Details</label>
               <textarea name="work_details" rows="2" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink">${p.work_details || p.borderAndZari || ""}</textarea>
@@ -5373,6 +5513,10 @@
             <div>
               <label class="block text-xs font-semibold text-ink-muted mb-1">Blouse Piece Info</label>
               <textarea name="blouse_piece" rows="2" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink">${p.blouse_piece || p.blousePiece || ""}</textarea>
+            </div>
+            <div>
+              <label class="block text-xs font-semibold text-ink-muted mb-1">Saree Length (Verified Only)</label>
+              <input name="saree_length" value="${p.saree_length || p.sareeLength || ""}" placeholder="Leave empty if unverified" class="w-full px-3 py-2 rounded-xl border border-gold/45 bg-ivory text-ink"/>
             </div>
             <div>
               <label class="block text-xs font-semibold text-ink-muted mb-1">Care Instructions</label>
@@ -5574,6 +5718,7 @@
       description: f.description.value.trim(),
       work_details: f.work_details.value.trim(),
       blouse_piece: f.blouse_piece.value.trim(),
+      saree_length: f.saree_length ? f.saree_length.value.trim() : "",
       care_instructions: f.care_instructions.value.trim(),
       featured: f.featured.checked,
       bestseller: f.bestseller.checked,
@@ -6639,6 +6784,15 @@
       this.state.settings.contacts.facebookUrl = "https://www.facebook.com/share/1AvqDY71mi/";
       this.state.settings.contacts.pinterestUrl = "https://pin.it/2mS5N2kh4";
       this.state.settings.contacts.emailAddress = "dasaridamu9418@gmail.com";
+      const rawMillAddr = String(this.state.settings.contacts.millAddress || "");
+      if (
+        rawMillAddr.includes("Full street address") ||
+        rawMillAddr.includes("GSTIN") ||
+        rawMillAddr.includes("PLACEHOLDER") ||
+        rawMillAddr.includes("Industrial Weaving Estate")
+      ) {
+        this.state.settings.contacts.millAddress = "";
+      }
       this.renderFooterContacts();
     }
     this.syncReactBitsForRoute();

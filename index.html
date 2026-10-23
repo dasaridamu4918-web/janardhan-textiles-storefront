@@ -798,6 +798,39 @@
         height: 2.25rem;
       }
 
+      .hero-featured-product-card {
+        position: absolute;
+        z-index: 26;
+        right: clamp(1rem, 3vw, 2.75rem);
+        top: 50%;
+        transform: translateY(-50%);
+        width: min(21rem, 34vw);
+        background: rgba(250, 246, 238, 0.95);
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+        border: 1.5px solid rgba(196, 161, 90, 0.65);
+        border-radius: 1.25rem;
+        padding: 1.15rem 1.25rem;
+        box-shadow: 0 18px 42px rgba(35, 22, 25, 0.28);
+        color: var(--text-primary);
+        pointer-events: auto;
+      }
+
+      @media (max-width: 1023px) {
+        .hero-featured-product-card {
+          top: auto;
+          bottom: 4.5rem;
+          left: 0.75rem;
+          right: 0.75rem;
+          transform: none;
+          width: auto;
+          max-width: 26rem;
+          margin: 0 auto;
+          padding: 0.75rem 0.95rem;
+          border-radius: 1rem;
+        }
+      }
+
       .caption-step {
         position: absolute;
         left: 0;
@@ -1073,7 +1106,6 @@
         <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">My Orders</button>
         <button onclick="app.navigate('wholesale')" data-nav="wholesale" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Wholesale</button>
         <button onclick="app.navigate('contact')" data-nav="contact" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Contact</button>
-        <button id="header-admin-nav-btn" onclick="app.navigate('admin')" data-nav="admin" class="hidden nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink-muted hover:text-ink hover:bg-gold/20 transition-colors">Admin</button>
       </nav>
 
       <!-- Right Action Controls: Shop Collections (Tablet) + Saree Progress Indicator + Wishlist + Account/Login + Cart -->
@@ -1427,7 +1459,7 @@
         facebookUrl: "https://www.facebook.com/share/1AvqDY71mi/",
         pinterestUrl: "https://pin.it/2mS5N2kh4",
         emailAddress: "dasaridamu9418@gmail.com",
-        millAddress: "Janardhan Textiles Weaving Division — Full street address & GSTIN",
+        millAddress: "",
         businessHours: "Monday to Saturday, 10:00 AM – 7:00 PM IST"
       },
       story: {
@@ -2541,11 +2573,18 @@
         const waLabel = (!c.whatsappLabel || c.whatsappLabel.includes("PLACEHOLDER")) ? "+91 96522 62173" : c.whatsappLabel;
         const igHandle = (!c.instagramHandle || c.instagramHandle.includes("PLACEHOLDER")) ? "@dasari_damu" : c.instagramHandle;
         const emailAddr = (!c.emailAddress || c.emailAddress.includes("PLACEHOLDER")) ? "dasaridamu9418@gmail.com" : c.emailAddress;
+        const rawAddr = String(c.millAddress || "").trim();
+        const hasVerifiedAddress =
+          Boolean(rawAddr) &&
+          !rawAddr.includes("Full street address") &&
+          !rawAddr.includes("GSTIN") &&
+          !rawAddr.includes("PLACEHOLDER") &&
+          !rawAddr.includes("Industrial Weaving Estate");
         el.innerHTML = `
           <p><strong class="text-ink">WhatsApp:</strong> <a href="https://wa.me/919652262173?text=Hi%20Janardhan%20Textiles%2C%20I%E2%80%99d%20like%20to%20know%20more%20about%20your%20sarees." target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${waLabel}</a></p>
           <p><strong class="text-ink">Instagram:</strong> <a href="https://www.instagram.com/dasari_damu" target="_blank" rel="noopener noreferrer" class="underline hover:text-ink">${igHandle}</a></p>
           <p><strong class="text-ink">Email:</strong> <a id="footer-contact-email" href="mailto:${emailAddr}" class="underline hover:text-ink">${emailAddr}</a></p>
-          <p><strong class="text-ink">Address:</strong> ${c.millAddress}</p>
+          ${hasVerifiedAddress ? `<p><strong class="text-ink">Address:</strong> ${rawAddr}</p>` : ""}
         `;
       },
 
@@ -2901,6 +2940,44 @@
                   <span class="scroll-cue-label">Scroll</span>
                   <span class="scroll-cue-line"></span>
                 </div>
+
+                <!-- First-Screen Featured Saree Shopping Path Card -->
+                <aside id="hero-featured-product-card" class="hero-featured-product-card" aria-label="Featured Hero Saree">
+                  <div class="flex items-center justify-between gap-2 mb-1">
+                    <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Featured Saree • 5 Studio Views</span>
+                    <span class="px-2 py-0.5 rounded-full bg-gold/25 border border-gold/50 text-[10px] font-bold text-ink">In Stock</span>
+                  </div>
+                  <h2 id="hero-featured-product-name" class="font-serif text-base sm:text-xl font-bold text-ink leading-snug">
+                    Champagne Tissue Saree with Floral and Peacock Embroidery
+                  </h2>
+                  <p class="text-[11px] sm:text-xs text-ink-muted mt-0.5">
+                    Champagne Tissue • Champagne Gold • Celebrations &amp; Festive
+                  </p>
+                  <div class="mt-2.5 pt-2 border-t border-gold/35 flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <span class="text-[10px] uppercase tracking-wider text-ink-muted block">Direct Mill Price</span>
+                      <span id="hero-featured-product-price" class="font-serif text-xl sm:text-2xl font-bold text-ink">₹7,500</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                      <button
+                        id="hero-view-saree-btn"
+                        type="button"
+                        onclick="app.openProductDetail('jt-saree-09')"
+                        class="px-3.5 py-2 rounded-full bg-teal text-ivory font-bold text-xs hover:bg-teal-light shadow-sm transition-all active:scale-95"
+                      >
+                        View Saree →
+                      </button>
+                      <button
+                        id="hero-shop-catalogue-btn"
+                        type="button"
+                        onclick="app.navigate('shop')"
+                        class="px-3 py-2 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 font-semibold text-xs hover:bg-gold/25 transition-all"
+                      >
+                        Shop All
+                      </button>
+                    </div>
+                  </div>
+                </aside>
               </div>
             </section>
 
@@ -4296,10 +4373,14 @@
                     <span class="text-xs font-bold uppercase text-ink-muted block">Email Address</span>
                     <a id="contact-page-email-link" href="mailto:${(!c.emailAddress || c.emailAddress.includes('PLACEHOLDER')) ? 'dasaridamu9418@gmail.com' : c.emailAddress}" class="font-semibold text-ink underline hover:text-teal mt-0.5 inline-block break-all">${(!c.emailAddress || c.emailAddress.includes('PLACEHOLDER')) ? 'dasaridamu9418@gmail.com' : c.emailAddress}</a>
                   </div>
-                  <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
-                    <span class="text-xs font-bold uppercase text-ink-muted block">Direct Mill &amp; Showroom Desk</span>
-                    <p class="font-medium text-ink mt-0.5 break-words">${c.millAddress}</p>
-                  </div>
+                  ${
+                    c.millAddress && !c.millAddress.includes('Full street address') && !c.millAddress.includes('GSTIN') && !c.millAddress.includes('PLACEHOLDER')
+                      ? `<div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
+                          <span class="text-xs font-bold uppercase text-ink-muted block">Direct Mill &amp; Showroom Desk</span>
+                          <p class="font-medium text-ink mt-0.5 break-words">${c.millAddress}</p>
+                        </div>`
+                      : ''
+                  }
                   <div class="p-3 sm:p-3.5 rounded-xl bg-ivory border border-gold/30 break-words">
                     <span class="text-xs font-bold uppercase text-ink-muted block">Business Hours</span>
                     <p class="font-medium text-ink mt-0.5 break-words">${c.businessHours}</p>

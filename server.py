@@ -715,11 +715,47 @@ def enrich_view_entry(sku, ord_num, key, label, fname, raw_url, p_name="", p_fab
     }
 
 
+FABRIC_STANDARDIZATION_MAP = {
+    "Pure Kanchipuram Silk": "Kanchipuram Pure Silk",
+    "Kanchipuram Tissue-Silk": "Kanchipuram Silk-Tissue",
+    "Pure Kanchipuram Tissue": "Kanchipuram Silk-Tissue",
+    "Chanderi Tissue Silk": "Chanderi Silk-Tissue",
+    "Pure Organza Silk": "Organza Silk",
+    "Sheer Organza Silk": "Organza Silk",
+    "Organza Tissue Silk": "Tissue Organza",
+    "Sheer Organza Tissue": "Tissue Organza",
+    "Sheer Tissue Organza": "Tissue Organza",
+    "Silk-Tissue Organza": "Tissue Organza",
+    "Paithani Pure Silk": "Paithani Silk",
+    "Gadwal Pure Silk": "Gadwal Silk",
+    "Pure Mysore Crepe Silk": "Mysore Crepe Silk",
+    "Banarasi Georgette Silk": "Banarasi Georgette",
+    "Banarasi Organza Silk": "Banarasi Kora Organza",
+    "Tussar Gicha Silk": "Tussar Ghicha Silk",
+    "Shimmering Tissue-Silk": "Shimmer Tissue Silk",
+    "Pure Shimmer Tissue": "Shimmer Tissue Silk",
+    "Luminous Silk-Tissue": "Pure Silk-Tissue",
+    "Bridal Silk-Tissue": "Pure Silk-Tissue",
+    "Pure Metallic Tissue": "Pure Silk-Tissue",
+    "Crushed Organza Tissue": "Crushed Tissue Silk",
+    "Crushed Shimmer Tissue": "Crushed Tissue Silk",
+    "Soft Linen-Silk": "Linen-Silk Blend",
+    "Soft Mulberry Silk": "Pure Mulberry Silk",
+    "Soft Mysore Silk": "Mysore Silk",
+}
+
+
+def normalize_fabric_label(fabric_str):
+    clean = str(fabric_str or "").strip()
+    return FABRIC_STANDARDIZATION_MAP.get(clean, clean)
+
+
 def normalize_product(prod, idx=0):
     p = dict(prod)
     sku = (p.get("sku") or p.get("id") or f"jt-saree-{idx + 1:02d}").strip()
     p["id"] = p.get("id") or sku
     p["sku"] = sku
+    p["fabric"] = normalize_fabric_label(p.get("fabric", ""))
 
     # Slug & Price normalization (Ground Rule #2: support Price on Request when price <= 0 or flagged)
     p["slug"] = p.get("slug") or re.sub(r"[^a-z0-9]+", "-", f"{sku}-{p.get('name', 'saree')}".lower()).strip("-")
@@ -765,9 +801,11 @@ def normalize_product(prod, idx=0):
         p["stock_status"] = "in_stock"
 
     # Booleans
+    featured_default = sku in ("jt-saree-09", "jt-saree-01", "jt-saree-02", "jt-saree-06")
+    bestseller_default = sku in ("jt-saree-03", "jt-saree-04", "jt-saree-05", "jt-saree-07")
     p["active"] = bool(p.get("active", True))
-    p["featured"] = bool(p.get("featured", idx < 5))
-    p["bestseller"] = bool(p.get("bestseller", idx in (0, 1, 3, 5, 6)))
+    p["featured"] = bool(p.get("featured", featured_default))
+    p["bestseller"] = bool(p.get("bestseller", bestseller_default))
     p["isSamplePrice"] = False
     p["isSampleProduct"] = False
 
@@ -777,6 +815,7 @@ def normalize_product(prod, idx=0):
     p["blouse_piece"] = p.get("blouse_piece") if p.get("blouse_piece") is not None else (p.get("blousePiece") or "")
     p["blousePiece"] = p.get("blousePiece") or p["blouse_piece"]
     p["care_instructions"] = p.get("care_instructions") or ""
+    p["saree_length"] = p.get("saree_length") or p.get("sareeLength") or ""
     p["motifs"] = p.get("motifs") or ""
 
     # 5 Gallery views & images array (never duplicate front view into views 2-5)
@@ -1060,6 +1099,9 @@ def init_db():
         s_data["contacts"]["instagramUrl"] = ig_url
         s_data["contacts"].setdefault("facebookUrl", "https://www.facebook.com/share/1AvqDY71mi/")
         s_data["contacts"].setdefault("pinterestUrl", "https://pin.it/2mS5N2kh4")
+        raw_addr = str(s_data["contacts"].get("millAddress") or "")
+        if any(tok in raw_addr for tok in ("Full street address", "GSTIN", "PLACEHOLDER", "Industrial Weaving Estate")):
+            s_data["contacts"]["millAddress"] = ""
         cur.execute(
             "INSERT OR REPLACE INTO settings (key, value_json, updated_at) VALUES (?, ?, ?)",
             ("site_settings", json.dumps(s_data), ts)
@@ -1235,6 +1277,9 @@ def fetch_bootstrap_payload(include_private=False):
         settings["contacts"]["emailAddress"] = "dasaridamu9418@gmail.com"
         if "?obrf=" in str(settings["contacts"].get("instagramUrl", "")):
             settings["contacts"]["instagramUrl"] = settings["contacts"]["instagramUrl"].split("?obrf=")[0]
+        raw_addr = str(settings["contacts"].get("millAddress") or "")
+        if any(tok in raw_addr for tok in ("Full street address", "GSTIN", "PLACEHOLDER", "Industrial Weaving Estate")):
+            settings["contacts"]["millAddress"] = ""
 
         cur.execute("SELECT sort_order, data_json FROM products ORDER BY sort_order ASC, id ASC")
         all_prods = [normalize_product(json.loads(r["data_json"]), idx) for idx, r in enumerate(cur.fetchall())]
@@ -1605,7 +1650,7 @@ class JanardanBackendHandler(http.server.SimpleHTTPRequestHandler):
             elif sort_by in ("name", "name-asc"):
                 filtered.sort(key=lambda x: str(x.get("name", "")).lower())
             elif sort_by == "newest":
-                filtered = list(reversed(filtered))
+                filtered.sort(key=lambda x: str(x.get("created_at") or ""), reverse=True)
 
             page = max(1, int(qs.get("page", ["1"])[0] or 1))
             limit = max(1, min(100, int(qs.get("limit", ["24"])[0] or 24)))
