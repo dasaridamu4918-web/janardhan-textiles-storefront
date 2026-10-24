@@ -3057,63 +3057,6 @@
               <span class="scroll-cue-label">Scroll</span>
               <span class="scroll-cue-line"></span>
             </div>
-            ${(() => {
-              const heroSaree =
-                (this.state.products || []).find((p) => (p.id || p.sku) === "jt-saree-09") ||
-                (this.state.products || [])[0] || {
-                  id: "jt-saree-09",
-                  sku: "jt-saree-09",
-                  name: "Champagne Tissue Saree with Floral and Peacock Embroidery",
-                  fabric: "Champagne Tissue",
-                  color: "Champagne Gold",
-                  occasion: "Celebrations & Festive",
-                  price: 7500,
-                  priceINR: 7500
-                };
-              const heroId = heroSaree.id || heroSaree.sku || "jt-saree-09";
-              const heroPricing = this.getPricing(heroSaree);
-              const heroPriceLabel = heroPricing.priceOnRequest
-                ? "Price on request"
-                : this.formatINR(heroPricing.finalINR || 7500);
-              return `
-                <aside id="hero-featured-product-card" class="hero-featured-product-card" aria-label="Featured Hero Saree">
-                  <div class="flex items-center justify-between gap-2 mb-1">
-                    <span class="text-[10px] font-bold uppercase tracking-widest text-teal">Featured Saree • 5 Studio Views</span>
-                    <span class="px-2 py-0.5 rounded-full bg-gold/25 border border-gold/50 text-[10px] font-bold text-ink">In Stock</span>
-                  </div>
-                  <h2 id="hero-featured-product-name" class="font-serif text-base sm:text-xl font-bold text-ink leading-snug">
-                    ${heroSaree.name}
-                  </h2>
-                  <p class="text-[11px] sm:text-xs text-ink-muted mt-0.5">
-                    ${[heroSaree.fabric, heroSaree.color, heroSaree.occasion].filter(Boolean).join(" • ")}
-                  </p>
-                  <div class="mt-2.5 pt-2 border-t border-gold/35 flex flex-wrap items-center justify-between gap-2">
-                    <div>
-                      <span class="text-[10px] uppercase tracking-wider text-ink-muted block">Direct Mill Price</span>
-                      <span id="hero-featured-product-price" class="font-serif text-xl sm:text-2xl font-bold text-ink">${heroPriceLabel}</span>
-                    </div>
-                    <div class="flex items-center gap-2">
-                      <button
-                        id="hero-view-saree-btn"
-                        type="button"
-                        onclick="app.openProductDetail('${heroId}')"
-                        class="px-3.5 py-2 rounded-full bg-teal text-ivory font-bold text-xs hover:bg-teal-light shadow-sm transition-all active:scale-95"
-                      >
-                        View Saree →
-                      </button>
-                      <button
-                        id="hero-shop-catalogue-btn"
-                        type="button"
-                        onclick="app.navigate('shop')"
-                        class="px-3 py-2 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 font-semibold text-xs hover:bg-gold/25 transition-all"
-                      >
-                        Shop All
-                      </button>
-                    </div>
-                  </div>
-                </aside>
-              `;
-            })()}
           </div>
         </section>
 
