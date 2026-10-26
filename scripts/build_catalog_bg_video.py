@@ -20,15 +20,12 @@ def main():
     ffmpeg = imageio_ffmpeg.get_ffmpeg_exe()
     input_pattern = os.path.join(SRC_DIR, "ezgif-frame-%03d.jpg")
 
-    # 1. Ensure poster.webp exists (1280x720 WebP)
     poster_src = os.path.join(SRC_DIR, "ezgif-frame-001.jpg")
     poster_out = os.path.join(OUT_DIR, "poster.webp")
     with Image.open(poster_src) as im:
         im = im.convert("RGB").resize((TARGET_W, TARGET_H), Image.Resampling.LANCZOS)
         im.save(poster_out, "WEBP", quality=76, method=4)
 
-    # 2. Build seamless ping-pong MP4 (H.264, 1280x720, 24fps, muted, < 3 MB)
-    # Using every 2nd frame forward + reverse (300 frames total @ 24fps = 12.5s seamless loop)
     mp4_out = os.path.join(OUT_DIR, "saree-catalog-bg.mp4")
     vf_filter = (
         "select='not(mod(n\\,2))',setpts=N/24/TB,"
@@ -57,7 +54,6 @@ def main():
     ]
     subprocess.run(cmd_mp4, check=True)
 
-    # 3. Build seamless ping-pong WebM (VP9, 1280x720, 24fps, muted, < 3 MB)
     webm_out = os.path.join(OUT_DIR, "saree-catalog-bg.webm")
     cmd_webm = [
         ffmpeg,
@@ -78,19 +74,12 @@ def main():
     ]
     subprocess.run(cmd_webm, check=True)
 
-    # 4. Remove the 300 individual frame-*.webp files so production only ships poster + mp4 + webm
     removed = 0
     for f in glob.glob(os.path.join(OUT_DIR, "frame-*.webp")):
         os.remove(f)
         removed += 1
 
-    mp4_mb = os.path.getsize(mp4_out) / (1024 * 1024)
-    webm_mb = os.path.getsize(webm_out) / (1024 * 1024)
-    poster_kb = os.path.getsize(poster_out) / 1024
-    print(f"MP4 size:    {mp4_mb:.2f} MB ({os.path.getsize(mp4_out):,} bytes)")
-    print(f"WebM size:   {webm_mb:.2f} MB ({os.path.getsize(webm_out):,} bytes)")
-    print(f"Poster size: {poster_kb:.1f} KB ({os.path.getsize(poster_out):,} bytes)")
-    print(f"Removed {removed} individual frame-*.webp files.")
+    print(f"MP4: {os.path.getsize(mp4_out)/1024/1024:.2f} MB, WebM: {os.path.getsize(webm_out)/1024/1024:.2f} MB, Removed {removed} webp frames")
 
 
 if __name__ == "__main__":
