@@ -2979,141 +2979,165 @@
 
   app.renderShowcaseAndShopPage = function () {
     const cq = this.state.catalogueQuery;
+    const isPaused = window.CatalogBgAnimation ? Boolean(window.CatalogBgAnimation.userPaused) : false;
     return `
       <div class="page-transition">
-        <!-- 1. SCROLL-DRIVEN 5-IMAGE SAREE SHOWCASE -->
-        <section id="showcase-section" class="showcase-section" aria-label="Saree visual showcase">
+        <!-- 1. FEATURED SAREE 5-VIEW STUDIO GALLERY (No 360° turntable, no scroll-trapping) -->
+        <section id="showcase-section" class="showcase-section" aria-label="Featured Saree Studio Views">
           <div id="showcase-stage" class="showcase-stage">
-            <div class="stage-ambient" aria-hidden="true"></div>
-            <div id="frames-viewport" class="frames-viewport">
-              ${ShowcaseScrollEngine.framesConfig
-                .map(
-                  (frame, idx) => `
-                <figure
-                  class="showcase-item saree-frame ${idx === 0 ? "is-active" : ""}"
-                  data-index="${idx}"
-                  data-step="${idx}"
-                  data-view-type="${frame.viewType || "full"}"
-                  style="z-index: ${idx + 1}; --focal-desktop: ${frame.focalDesktop || "50% 50%"}; --focal-mobile: ${frame.focalMobile || "50% 50%"};"
-                >
-                  <picture class="showcase-picture">
+            <div class="rounded-3xl bg-[#FAF8F5] border border-gold/45 p-4 sm:p-6 shadow-sm">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                <div class="lg:col-span-7">
+                  <div class="relative aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-[#EFE6D5] border border-gold/35 overflow-hidden flex items-center justify-center">
                     <img
-                      src="${frame.jpg}"
-                      alt="${frame.alt}"
+                      id="hero-showcase-main-img"
+                      src="${ShowcaseScrollEngine.framesConfig[0].jpg}"
+                      alt="${ShowcaseScrollEngine.framesConfig[0].alt}"
                       width="1792"
                       height="2400"
-                      loading="${idx < 2 ? "eager" : "lazy"}"
-                      ${idx === 0 ? 'fetchpriority="high"' : ""}
+                      fetchpriority="high"
                       decoding="async"
-                      class="showcase-img saree-img"
+                      class="w-full h-full object-contain"
                     />
-                  </picture>
-                  <figcaption class="showcase-item-caption">0${idx + 1} / 05 — ${frame.caption}</figcaption>
-                </figure>
-              `
-                )
-                .join("")}
-            </div>
-            <!-- 360° Portrait 3:4 Full-Body Saree Turntable Scroll-Scrub & Drag Stage -->
-            <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
-              <div class="saree-360-frame-box" title="Scroll or drag horizontally to rotate 360°">
-                <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
-                  <span class="saree-360-loading-dot" aria-hidden="true"></span>
-                  <span id="saree-360-loading-text">Loading 360° views…</span>
+                    <p id="hero-showcase-caption" class="absolute bottom-2.5 left-2.5 right-2.5 sm:right-auto px-3 py-1 rounded-full bg-[#FAF8F5]/95 border border-gold/50 text-[11px] sm:text-xs font-serif italic text-ink shadow-xs truncate">
+                      ${ShowcaseScrollEngine.framesConfig[0].caption}
+                    </p>
+                  </div>
                 </div>
-                <div id="saree-360-error-banner" class="saree-360-error-banner is-hidden" role="alert">
-                  <span id="saree-360-error-text">Some 360° frames could not be loaded.</span>
-                  <button type="button" class="saree-360-retry-btn" onclick="ShowcaseScrollEngine.retryFailedFrames()">Retry</button>
+                <div class="lg:col-span-5 space-y-3">
+                  <span class="text-[11px] font-bold uppercase tracking-widest text-teal block">Lepakshi Weaves • Studio Views</span>
+                  <h1 class="font-serif text-2xl sm:text-3xl font-bold text-ink leading-snug">Champagne Tissue Saree with Floral &amp; Peacock Embroidery</h1>
+                  <p class="text-xs sm:text-sm text-ink-muted leading-relaxed">Select any thumbnail below or use the Left and Right arrow keys to inspect the front drape, back pallu, embroidery close-up, weave macro, and blouse border.</p>
+                  <div id="hero-showcase-thumbs" class="grid grid-cols-5 gap-2 pt-1" role="tablist" aria-label="Featured Saree Studio Views">
+                    ${ShowcaseScrollEngine.framesConfig
+                      .map(
+                        (frame, idx) => `
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected="${idx === 0 ? "true" : "false"}"
+                        aria-label="${frame.caption}"
+                        onclick="ShowcaseScrollEngine.setActiveStep(${idx})"
+                        onkeydown="ShowcaseScrollEngine.handleThumbKeydown(event, ${idx})"
+                        class="text-left rounded-xl overflow-hidden border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                          idx === 0 ? "is-active-thumb border-ink ring-2 ring-gold" : "border-gold/35 opacity-80 hover:opacity-100"
+                        }"
+                      >
+                        <div class="aspect-[4/5] bg-[#EFE6D5] overflow-hidden flex items-center justify-center p-0.5">
+                          <img src="${frame.jpg}" alt="${frame.alt}" width="320" height="420" loading="${idx < 2 ? "eager" : "lazy"}" decoding="async" class="w-full h-full object-contain" />
+                        </div>
+                        <div class="hero-thumb-caption px-2 py-1 text-[10px] font-semibold ${idx === 0 ? "bg-ink text-ivory" : "bg-[#FAF8F5] text-ink"} truncate">
+                          0${idx + 1}
+                        </div>
+                      </button>
+                    `
+                      )
+                      .join("")}
+                  </div>
+                  <div class="pt-2 flex flex-wrap items-center gap-2.5">
+                    <button type="button" onclick="app.openProductDetail('jt-saree-09')" class="px-4 py-2.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light transition-colors shadow-xs">
+                      Inspect Full Saree Details →
+                    </button>
+                    <button type="button" onclick="app.navigate('shop')" class="px-4 py-2.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 text-xs font-semibold hover:bg-gold/25 transition-colors">
+                      Browse Saree Catalogue ↓
+                    </button>
+                  </div>
                 </div>
-                <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
-                <img
-                  id="saree-360-poster-fallback"
-                  src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v6"
-                  alt="Champagne Tissue Saree 360-degree turntable view"
-                  class="saree-360-poster-fallback"
-                  fetchpriority="high"
-                  decoding="async"
-                />
-                <canvas
-                  id="saree-360-canvas"
-                  class="saree-360-canvas"
-                  width="720"
-                  height="960"
-                  aria-label="Champagne Tissue Saree 360-degree turntable view"
-                ></canvas>
               </div>
-            </div>
-            <div class="stage-vignette" aria-hidden="true"></div>
-            <div id="captions-hud" class="captions-hud caption-layer" aria-hidden="true">
-              ${ShowcaseScrollEngine.framesConfig
-                .map(
-                  (frame, idx) => `
-                <p class="caption-step ${idx === 0 ? "is-active" : ""}" data-index="${idx}" data-caption="${idx}">${frame.caption}</p>
-              `
-                )
-                .join("")}
-            </div>
-            <div id="scroll-cue" class="scroll-cue" aria-hidden="true">
-              <span class="scroll-cue-label">Scroll</span>
-              <span class="scroll-cue-line"></span>
             </div>
           </div>
         </section>
 
-        <!-- 3. HOME COLLECTIONS, FEATURED, NEW ARRIVALS, BESTSELLERS & TRUST STRIP -->
+        <!-- 2. HOME COLLECTIONS, FEATURED, NEW ARRIVALS, BESTSELLERS & TRUST STRIP -->
         <div id="home-api-collections-container">
           ${this.renderHomeCollectionsAndSections()}
         </div>
 
-        <!-- 4. FULL CATALOGUE SECTION (Sidebar FilterPanel + Active Chips + 2/3/4-Col ProductGrid + Pagination) -->
-        <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12 border-t border-gold/30" aria-label="Saree Catalogue">
-          <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
-            <div>
-              <span class="text-xs font-bold uppercase tracking-widest text-teal">Lepakshi Weaves • ~600 Power Looms</span>
-              <h2 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-0.5">Saree Catalogue</h2>
-            </div>
+        <!-- 3. FULL CATALOGUE SECTION WITH LOOPING SAREE BACKGROUND ANIMATION -->
+        <section id="catalogue-section" class="catalog-animated-section border-t border-gold/30 py-8 sm:py-12" aria-label="Saree Catalogue">
+          <!-- Decorative Background Animation Layer (z-index below foreground, pointer-events: none) -->
+          <div id="catalog-bg-layer" class="catalog-bg-layer" aria-hidden="true">
+            <img
+              id="catalog-bg-poster"
+              src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/catalog-bg/poster.webp"
+              alt=""
+              width="1280"
+              height="720"
+              loading="lazy"
+              decoding="async"
+              class="catalog-bg-poster"
+            />
+            <canvas
+              id="catalog-bg-canvas"
+              class="catalog-bg-canvas"
+              width="1280"
+              height="720"
+              aria-hidden="true"
+            ></canvas>
+            <div class="catalog-bg-overlay" aria-hidden="true"></div>
+          </div>
 
-            <!-- Mobile Filter Trigger + Sort Dropdown -->
-            <div class="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                onclick="app.openMobileFilterSheet()"
-                class="lg:hidden px-3.5 py-2 rounded-xl bg-[#FAF8F5] text-ink border border-gold/50 text-xs font-semibold flex items-center gap-1.5 shadow-2xs"
-              >
-                <svg class="w-4 h-4 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
-                <span>Filters</span>
-              </button>
+          <!-- Foreground Catalog Content -->
+          <div class="catalog-fg-content max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+            <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+              <div>
+                <span class="text-xs font-bold uppercase tracking-widest text-[#E8CFA0]">Lepakshi Weaves • ~600 Power Looms</span>
+                <h2 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-[#FAF6EE] mt-0.5">Saree Catalogue</h2>
+              </div>
 
-              <div class="flex items-center gap-1.5">
-                <label for="catalogue-sort-select" class="text-xs font-semibold text-ink-muted">Sort:</label>
-                <select
-                  id="catalogue-sort-select"
-                  onchange="app.setSingleCatalogueFilter('sort', this.value)"
-                  class="px-3 py-2 rounded-xl bg-[#FAF8F5] text-ink border border-gold/50 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold"
+              <!-- Mobile Filter Trigger + Desktop Pause Animation Toggle + Sort Dropdown -->
+              <div class="flex flex-wrap items-center gap-2">
+                <button
+                  id="catalog-bg-toggle-btn"
+                  type="button"
+                  onclick="CatalogBgAnimation.toggleUserPause()"
+                  aria-pressed="${isPaused ? "true" : "false"}"
+                  class="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#FAF8F5]/95 text-ink border border-gold/60 text-xs font-semibold shadow-2xs hover:bg-ivory focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#191113] transition-colors"
                 >
-                  <option value="newest" ${cq.sort === "newest" ? "selected" : ""}>Newest Arrivals</option>
-                  <option value="price_asc" ${cq.sort === "price_asc" ? "selected" : ""}>Price: Low to High</option>
-                  <option value="price_desc" ${cq.sort === "price_desc" ? "selected" : ""}>Price: High to Low</option>
-                  <option value="name" ${cq.sort === "name" ? "selected" : ""}>Name: A to Z</option>
-                </select>
+                  <span id="catalog-bg-toggle-icon" aria-hidden="true">${isPaused ? "▶" : "⏸"}</span>
+                  <span id="catalog-bg-toggle-label">${isPaused ? "Play animation" : "Pause animation"}</span>
+                </button>
+
+                <button
+                  type="button"
+                  onclick="app.openMobileFilterSheet()"
+                  class="lg:hidden px-3.5 py-2 rounded-xl bg-[#FAF8F5] text-ink border border-gold/50 text-xs font-semibold flex items-center gap-1.5 shadow-2xs"
+                >
+                  <svg class="w-4 h-4 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
+                  <span>Filters</span>
+                </button>
+
+                <div class="flex items-center gap-1.5 bg-[#FAF8F5]/95 px-3 py-1.5 rounded-xl border border-gold/50 shadow-2xs">
+                  <label for="catalogue-sort-select" class="text-xs font-semibold text-ink">Sort:</label>
+                  <select
+                    id="catalogue-sort-select"
+                    onchange="app.setSingleCatalogueFilter('sort', this.value)"
+                    class="bg-transparent text-ink text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold rounded"
+                  >
+                    <option value="newest" ${cq.sort === "newest" ? "selected" : ""}>Newest Arrivals</option>
+                    <option value="price_asc" ${cq.sort === "price_asc" ? "selected" : ""}>Price: Low to High</option>
+                    <option value="price_desc" ${cq.sort === "price_desc" ? "selected" : ""}>Price: High to Low</option>
+                    <option value="name" ${cq.sort === "name" ? "selected" : ""}>Name: A to Z</option>
+                  </select>
+                </div>
               </div>
             </div>
-          </div>
 
-          <!-- Active Filter Chips -->
-          <div id="catalogue-active-chips">
-            ${this.renderFilterChips()}
-          </div>
+            <!-- Active Filter Chips -->
+            <div id="catalogue-active-chips">
+              ${this.renderFilterChips()}
+            </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-            <!-- Desktop Left Sidebar FilterPanel -->
-            <aside id="catalogue-desktop-sidebar" class="hidden lg:block lg:col-span-3 bg-[#FAF8F5] rounded-2xl border border-gold/40 p-5 shadow-xs sticky top-20">
-              ${this.renderFilterPanelContent("desktop")}
-            </aside>
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              <!-- Desktop Left Sidebar FilterPanel -->
+              <aside id="catalogue-desktop-sidebar" class="hidden lg:block lg:col-span-3 bg-[#FAF8F5] rounded-2xl border border-gold/40 p-5 shadow-xs sticky top-20">
+                ${this.renderFilterPanelContent("desktop")}
+              </aside>
 
-            <!-- Catalogue ProductGrid (2 cols phone, 3 tablet, 4 desktop) -->
-            <div class="lg:col-span-9 min-w-0" id="shop-results-container">
-              ${this.renderShopResultsContent()}
+              <!-- Catalogue ProductGrid (2 cols phone, 3 tablet, 4 desktop) -->
+              <div class="lg:col-span-9 min-w-0" id="shop-results-container">
+                ${this.renderShopResultsContent()}
+              </div>
             </div>
           </div>
         </section>
@@ -3133,7 +3157,7 @@
     const pages = res.pages || 1;
 
     return `
-      <div class="flex items-center justify-between text-xs text-ink-muted mb-3">
+      <div class="flex items-center justify-between text-xs text-ink bg-[#FAF8F5]/95 border border-gold/45 px-3.5 py-2 rounded-xl shadow-2xs mb-3">
         <span>Showing <strong>${items.length}</strong> of <strong>${total}</strong> sarees (Page ${page} of ${pages})</span>
         ${
           total !== this.state.products.length
@@ -3392,7 +3416,8 @@
                       data-missing-view="${item.missingView ? "true" : "false"}"
                       aria-selected="${isSelected ? "true" : "false"}"
                       onclick="app.selectGalleryView(${idx})"
-                      class="gallery-thumb-btn shrink-0 w-24 sm:w-auto text-left rounded-xl overflow-hidden border-2 bg-[#FAF8F5] ${
+                      onkeydown="app.handleGalleryThumbKeydown(event, ${idx})"
+                      class="gallery-thumb-btn focus:outline-none focus-visible:ring-2 focus-visible:ring-gold shrink-0 w-24 sm:w-auto text-left rounded-xl overflow-hidden border-2 bg-[#FAF8F5] ${
                         isSelected ? "is-active-thumb border-ink ring-2 ring-gold" : "border-gold/30 opacity-80 hover:opacity-100"
                       }"
                     >
@@ -3649,6 +3674,29 @@
     if (activePill) activePill.textContent = label;
     if (mainLabel) mainLabel.textContent = label;
     if (yawReadout) yawReadout.textContent = label;
+  };
+
+  app.handleGalleryThumbKeydown = function (event, index) {
+    const total = REQUIRED_GALLERY_VIEWS.length;
+    let nextIdx = null;
+    if (event.key === "ArrowRight") {
+      nextIdx = (index + 1) % total;
+    } else if (event.key === "ArrowLeft") {
+      nextIdx = (index - 1 + total) % total;
+    } else if (event.key === "Home") {
+      nextIdx = 0;
+    } else if (event.key === "End") {
+      nextIdx = total - 1;
+    } else if (event.key === "Enter" || event.key === " ") {
+      nextIdx = index;
+    }
+    if (nextIdx !== null) {
+      event.preventDefault();
+      event.stopPropagation();
+      this.selectGalleryView(nextIdx);
+      const btn = document.querySelector(`#gallery-thumbnails-strip .gallery-thumb-btn[data-index="${nextIdx}"]`);
+      if (btn) btn.focus();
+    }
   };
 
   app.selectGalleryView = function (index) {

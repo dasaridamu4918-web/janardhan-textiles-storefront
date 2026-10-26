@@ -51,8 +51,8 @@
   </script>
   <script id="jt-product-jsonld" type="application/ld+json"></script>
 
-  <!-- Preload initial 0° 360 turntable frame & featured saree views -->
-  <link rel="preload" as="image" href="/public/assets/saree-360/frames/frame-000.webp" fetchpriority="high" />
+  <!-- Preload featured saree front view & catalog background poster -->
+  <link rel="preload" as="image" href="/public/assets/catalog-bg/poster.webp" />
   <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/1-front.jpg" fetchpriority="high" />
   <link rel="preload" as="image" href="/public/images/sarees/jt-saree-09/2-back-pallu.jpg" />
 
@@ -419,497 +419,98 @@
       }
     }
 
-    /* Normal vertical gallery layout (fallback & reduced-motion default) */
+    /* Hero Studio Showcase (5-view saree gallery, normal document flow, zero scroll-trapping) */
+    .showcase-section {
+      padding: 1rem 0 0.5rem;
+    }
+
     .showcase-stage {
-      max-width: 1120px;
+      max-width: 1200px;
       margin: 0 auto;
-      padding: 2.5rem 1.25rem 3.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 3.5rem;
+      padding: 0.75rem 0.75rem 1.25rem;
     }
 
-    .showcase-item {
+    /* Catalog Background Animation Layer (behind #catalogue-section, pointer-events: none) */
+    #catalogue-section.catalog-animated-section {
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      gap: 1rem;
+      isolation: isolate;
+      clip-path: inset(0);
+      background-color: #191113;
     }
 
-    .showcase-picture {
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .catalog-bg-layer {
+      position: fixed;
+      inset: 0;
       width: 100%;
-      max-width: 680px;
-      margin: 0 auto;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+      user-select: none;
+      background-color: #191113;
     }
 
-    .showcase-img {
+    .catalog-bg-poster,
+    .catalog-bg-canvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 38%;
       display: block;
-      width: 100%;
-      height: auto;
-      max-height: 82svh;
-      object-fit: contain;
-      object-position: 50% 50%;
+      pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
-      -webkit-mask-image:
-        linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%),
-        linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
-      -webkit-mask-composite: source-in;
-      mask-image:
-        linear-gradient(to right, transparent 0%, #000 6%, #000 94%, transparent 100%),
-        linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
-      mask-composite: intersect;
     }
 
-    .showcase-item-caption {
-      font-family: var(--font-serif);
-      font-size: clamp(1.02rem, 1.35vw, 1.2rem);
-      font-style: italic;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-      color: var(--text-primary);
-      text-align: center;
-      padding: 0.25rem 0.85rem;
-      border-radius: 999px;
-      background: var(--surface-pill);
-      border: 1px solid rgba(196, 161, 90, 0.38);
+    .catalog-bg-poster {
+      z-index: 1;
+      opacity: 1;
     }
 
-    .captions-hud,
-    .scroll-cue {
-      display: none;
+    .catalog-bg-canvas {
+      z-index: 2;
+      opacity: 0;
+      transition: opacity 0.35s ease;
     }
 
-    @media (prefers-reduced-motion: no-preference) {
-      html.is-scroll-driven .showcase-section {
-        min-height: 100svh;
-        margin-top: -3.75rem;
-        touch-action: pan-y;
-      }
+    .catalog-bg-canvas.is-ready {
+      opacity: 1;
+    }
 
-      @media (min-width: 640px) {
-        html.is-scroll-driven .showcase-section {
-          margin-top: -4rem;
-        }
+    /* Mobile, reduced-motion, or static fallback: show still poster only */
+    @media (max-width: 767px), (prefers-reduced-motion: reduce) {
+      .catalog-bg-canvas {
+        display: none !important;
       }
+    }
 
-      html.is-scroll-driven .showcase-stage {
-        position: relative;
-        width: 100%;
-        height: 100svh;
-        max-width: none;
-        margin: 0;
-        padding: 0;
-        display: block;
-        overflow: hidden;
-        touch-action: pan-y;
-      }
+    .catalog-bg-layer.is-static-fallback .catalog-bg-canvas {
+      display: none !important;
+    }
 
-      html.is-scroll-driven .showcase-item {
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100svh;
-        padding: 4.25rem 0.75rem 4.75rem;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        opacity: 0;
-        will-change: transform, opacity;
-      }
+    /* Soft dark overlay for WCAG AA contrast while preserving true champagne-gold saree colours */
+    .catalog-bg-overlay {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      pointer-events: none;
+      background:
+        linear-gradient(
+          180deg,
+          rgba(22, 14, 16, 0.80) 0%,
+          rgba(22, 14, 16, 0.66) 40%,
+          rgba(22, 14, 16, 0.72) 75%,
+          rgba(22, 14, 16, 0.84) 100%
+        );
+      backdrop-filter: blur(1.5px);
+      -webkit-backdrop-filter: blur(1.5px);
+    }
 
-      @media (min-width: 768px) {
-        html.is-scroll-driven .showcase-item {
-          padding: 4.5rem clamp(1rem, 2.5vw, 2rem) 2.75rem;
-        }
-      }
-
-      html.is-scroll-driven .showcase-item[data-index="0"] {
-        opacity: 1;
-      }
-
-      html.is-scroll-driven .showcase-item-caption {
-        display: none;
-      }
-
-      html.is-scroll-driven .showcase-picture {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        width: 100%;
-        height: 100%;
-        max-width: none;
-      }
-
-      html.is-scroll-driven .showcase-img {
-        will-change: transform, opacity;
-        transform-origin: 50% 50%;
-        backface-visibility: hidden;
-        -webkit-backface-visibility: hidden;
-      }
-
-      html.is-scroll-driven .showcase-item[data-view-type="full"] .showcase-img,
-      html.is-scroll-driven .showcase-item[data-view-type="detail"] .showcase-img {
-        width: auto !important;
-        height: auto !important;
-        max-width: min(92vw, 100%);
-        max-height: calc(100svh - 9.5rem);
-        aspect-ratio: auto;
-        object-fit: contain !important;
-        object-position: var(--focal-mobile, 50% 50%);
-        -webkit-mask-image:
-          linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%),
-          linear-gradient(to bottom, transparent 0%, #000 2.5%, #000 97.5%, transparent 100%);
-        -webkit-mask-composite: source-in;
-        mask-image:
-          linear-gradient(to right, transparent 0%, #000 5%, #000 95%, transparent 100%),
-          linear-gradient(to bottom, transparent 0%, #000 2.5%, #000 97.5%, transparent 100%);
-        mask-composite: intersect;
-      }
-
-      @media (min-width: 768px) {
-        html.is-scroll-driven .showcase-item[data-view-type="full"] .showcase-img,
-        html.is-scroll-driven .showcase-item[data-view-type="detail"] .showcase-img {
-          width: auto !important;
-          height: auto !important;
-          max-width: min(88vw, 1180px);
-          max-height: calc(100svh - 7.75rem);
-          aspect-ratio: auto;
-          object-fit: contain !important;
-          object-position: var(--focal-desktop, 50% 50%);
-          -webkit-mask-image:
-            linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
-            linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
-          -webkit-mask-composite: source-in;
-          mask-image:
-            linear-gradient(to right, transparent 0%, #000 7%, #000 93%, transparent 100%),
-            linear-gradient(to bottom, transparent 0%, #000 3%, #000 97%, transparent 100%);
-          mask-composite: intersect;
-        }
-      }
-
-      .saree-360-turntable-stage {
-        display: none;
-      }
-
-      html.is-scroll-driven .saree-360-turntable-stage {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        position: absolute;
-        inset: 0;
-        width: 100%;
-        height: 100svh;
-        padding: 4.25rem 0.75rem 4.75rem;
-        z-index: 15;
-        pointer-events: none;
-      }
-
-      @media (min-width: 768px) {
-        html.is-scroll-driven .saree-360-turntable-stage {
-          padding: 4.5rem clamp(1rem, 2.5vw, 2rem) 2.75rem;
-        }
-      }
-
-      html.is-scroll-driven #frames-viewport:has(~ #saree-360-turntable-stage) {
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .stage-brand-watermark {
-        position: absolute;
-        inset: 0;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        pointer-events: none;
-        z-index: 4;
-        opacity: 0.065;
-        transition: transform 0.12s ease-out;
-      }
-
-      .stage-brand-watermark img {
-        width: min(68vw, 520px);
-        height: auto;
-        filter: sepia(1) saturate(2.2) hue-rotate(8deg) brightness(1.15);
-        user-select: none;
-      }
-
-      .saree-360-frame-box {
-        position: relative;
-        height: 100%;
-        max-height: calc(100svh - 8.25rem);
-        max-width: calc(100vw - 1.5rem);
-        aspect-ratio: 3 / 4;
-        border-radius: 1.25rem;
-        overflow: hidden;
-        box-shadow: 0 24px 64px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(196, 161, 90, 0.55);
-        background: radial-gradient(ellipse at 50% 40%, #C5B29B 0%, #9E8A74 100%);
-        contain: layout paint;
-        pointer-events: auto;
-        cursor: grab;
-        touch-action: pan-y;
-      }
-
-      .saree-360-frame-box:active {
-        cursor: grabbing;
-      }
-
-      .saree-360-poster-fallback,
-      .saree-360-canvas,
-      .saree-360-video {
-        display: block;
-        width: 100%;
-        height: 100%;
-        object-fit: cover;
-        user-select: none;
-        -webkit-user-drag: none;
-      }
-
-      .saree-360-poster-fallback {
-        position: absolute;
-        inset: 0;
-        z-index: 1;
-        opacity: 1;
-      }
-
-      .saree-360-canvas {
-        position: relative;
-        z-index: 2;
-        opacity: 0;
-        transition: opacity 0.12s ease-out;
-      }
-
-      .saree-360-canvas.is-ready {
-        opacity: 1;
-      }
-
-      .saree-360-video {
-        position: absolute;
-        inset: 0;
-        opacity: 0;
-        pointer-events: none;
-      }
-
-      .saree-360-angle-badge {
-        position: absolute;
-        top: 0.65rem;
-        right: 0.65rem;
-        bottom: auto;
-        left: auto;
-        transform: none;
-        z-index: 6;
-        padding: 0.2rem 0.56rem;
-        border-radius: 999px;
-        background: rgba(250, 246, 238, 0.94);
-        border: 1px solid rgba(196, 161, 90, 0.6);
-        font-family: var(--font-sans);
-        font-size: 0.6rem;
-        font-weight: 700;
-        letter-spacing: 0.06em;
-        font-variant-numeric: tabular-nums;
-        white-space: nowrap;
-        max-width: 44%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        color: var(--text-primary);
-        box-shadow: 0 2px 10px rgba(35, 22, 25, 0.12);
-      }
-
-      .saree-360-loading-pill {
-        position: absolute;
-        top: 0.65rem;
-        left: 0.65rem;
-        transform: none;
-        z-index: 6;
-        display: inline-flex;
-        align-items: center;
-        gap: 0.35rem;
-        padding: 0.2rem 0.56rem;
-        border-radius: 999px;
-        background: rgba(35, 22, 25, 0.78);
-        border: 1px solid rgba(196, 161, 90, 0.5);
-        color: #FAF6EE;
-        font-family: var(--font-sans);
-        font-size: 0.58rem;
-        font-weight: 600;
-        letter-spacing: 0.04em;
-        white-space: nowrap;
-        max-width: 44%;
-        pointer-events: none;
-        transition: opacity 0.25s ease, transform 0.25s ease;
-      }
-
-      .saree-360-loading-pill.is-hidden {
-        opacity: 0;
-        transform: translateY(-4px);
-        pointer-events: none;
-      }
-
-      .saree-360-loading-dot {
-        width: 0.42rem;
-        height: 0.42rem;
-        border-radius: 999px;
-        background: #C4A15A;
-        animation: saree360Pulse 1s ease-in-out infinite;
-      }
-
-      @keyframes saree360Pulse {
-        0%, 100% { opacity: 0.35; transform: scale(0.88); }
-        50% { opacity: 1; transform: scale(1.15); }
-      }
-
-      .saree-360-error-banner {
-        position: absolute;
-        bottom: 2.65rem;
-        left: 0.65rem;
-        right: 0.65rem;
-        z-index: 7;
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 0.5rem;
-        padding: 0.38rem 0.65rem;
-        border-radius: 0.65rem;
-        background: rgba(107, 29, 47, 0.94);
-        border: 1px solid rgba(196, 161, 90, 0.65);
-        color: #FAF6EE;
-        font-family: var(--font-sans);
-        font-size: 0.64rem;
-        line-height: 1.25;
-        pointer-events: auto;
-      }
-
-      .saree-360-error-banner.is-hidden {
-        display: none;
-      }
-
-      .saree-360-retry-btn {
-        padding: 0.18rem 0.5rem;
-        border-radius: 999px;
-        background: #C4A15A;
-        color: #231619;
-        font-weight: 700;
-        font-size: 0.6rem;
-        letter-spacing: 0.05em;
-        text-transform: uppercase;
-        cursor: pointer;
-        flex-shrink: 0;
-      }
-
-      html.is-scroll-driven .captions-hud {
-        display: block;
-        position: absolute;
-        left: clamp(1.25rem, 3.2vw, 2.75rem);
-        bottom: 2.25rem;
-        z-index: 25;
-        pointer-events: none;
-        min-width: 9rem;
-        height: 2.25rem;
-      }
-
-      .caption-step {
-        position: absolute;
-        left: 0;
-        bottom: 0;
-        white-space: nowrap;
-        font-family: var(--font-serif);
-        font-size: clamp(0.95rem, 1.3vw, 1.18rem);
-        font-style: italic;
-        font-weight: 500;
-        letter-spacing: 0.04em;
-        color: var(--text-primary);
-        background: var(--surface-pill);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-        padding: 0.3rem 0.9rem;
-        border-radius: 999px;
-        border: 1px solid rgba(196, 161, 90, 0.45);
-        opacity: 0;
-        transition: opacity 0.35s ease, transform 0.35s ease;
-        will-change: transform, opacity;
-      }
-
-      .caption-step.is-active {
-        opacity: 1;
-      }
-
-      @media (max-width: 767px) {
-        html.is-scroll-driven .captions-hud {
-          left: 0.75rem;
-          bottom: 4.65rem;
-        }
-
-        .caption-step {
-          font-size: 0.82rem;
-          padding: 0.22rem 0.62rem;
-        }
-      }
-
-      html.is-scroll-driven .scroll-cue {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.35rem;
-        position: absolute;
-        left: 50%;
-        bottom: 1.85rem;
-        transform: translateX(-50%);
-        z-index: 25;
-        pointer-events: none;
-        transition: opacity 0.45s ease;
-        will-change: opacity;
-      }
-
-      @media (max-width: 767px) {
-        html.is-scroll-driven .scroll-cue {
-          bottom: 4.4rem;
-        }
-      }
-
-      html.is-scroll-driven .scroll-cue.is-hidden {
-        opacity: 0;
-      }
-
-      .scroll-cue-label {
-        font-family: var(--font-sans);
-        font-size: 0.65rem;
-        font-weight: 600;
-        letter-spacing: 0.22em;
-        text-transform: uppercase;
-        color: var(--text-secondary);
-      }
-
-      .scroll-cue-line {
-        position: relative;
-        width: 1px;
-        height: 1.5rem;
-        background: rgba(196, 161, 90, 0.35);
-        overflow: hidden;
-      }
-
-      .scroll-cue-line::after {
-        content: "";
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 55%;
-        background: var(--accent-gold);
-        animation: scrollCuePulse 1.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
-      }
-
-      @keyframes scrollCuePulse {
-        0% { transform: translateY(-100%); opacity: 0; }
-        40% { opacity: 1; }
-        100% { transform: translateY(200%); opacity: 0; }
-      }
+    .catalog-fg-content {
+      position: relative;
+      z-index: 10;
     }
 
     /* Fixed-frame Saree Product Gallery with 350-450ms Crossfade & 1.02 to 1.00 Subtle Zoom Settle */
@@ -1590,741 +1191,515 @@
 
     /**
      * ============================================================================
-     * 5. SCROLL-DRIVEN 5-IMAGE SAREE SHOWCASE ENGINE (GSAP + ScrollTrigger)
-     * Uses the 5 real reference photos of the Champagne Tissue Saree (`jt-saree-09`)
-     * in strict order (01 / 05 <-> 05 / 05).
+     * 5. HERO STUDIO SHOWCASE & CATALOG BACKGROUND ANIMATION ENGINE
+     * - ShowcaseScrollEngine: Manages the 5 supplied studio photos (front, back,
+     *   pallu detail, fabric macro, blouse) with click + keyboard support and
+     *   normal page scrolling (no 360° turntable, no scroll-jacking).
+     * - CatalogBgAnimation: Plays the 300-frame looping saree animation on a
+     *   decorative <canvas> behind #catalogue-section when 20-30% in view.
      * ============================================================================
      */
     const ShowcaseScrollEngine = {
-      scrollTriggerInstance: null,
-      timeline: null,
-      reducedObserver: null,
-      activeStepIndex: -1,
-      preloadTriggered: false,
-      pinScrollVh: 500,
-      scrubSmoothingSeconds: 1.2,
-      crossfadeOverlapRatio: 0.2,
-      transitionShiftXPercent: 1.1,
+      activeStepIndex: 0,
       framesConfig: [
         {
           index: 1,
           jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/1-front.jpg`,
           viewType: "full",
-          focalDesktop: "50% 50%",
-          focalMobile: "50% 50%",
           caption: "1. Front view (three-quarter angle on the mannequin)",
-          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 1. Front view (three-quarter angle on the mannequin)",
-          motion: { scaleFrom: 1.0, scaleTo: 1.05, xFromPercent: 0, xToPercent: -1.0, yFromPercent: 0, yToPercent: -1.2 }
+          shortLabel: "1. Front View",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 1. Front view (three-quarter angle on the mannequin)"
         },
         {
           index: 2,
           jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/2-back-pallu.jpg`,
           viewType: "full",
-          focalDesktop: "50% 50%",
-          focalMobile: "50% 50%",
           caption: "2. Back and pallu view",
-          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 2. Back and pallu view",
-          motion: { scaleFrom: 1.02, scaleTo: 1.06, xFromPercent: 1.0, xToPercent: -0.8, yFromPercent: 0.8, yToPercent: -1.0 }
+          shortLabel: "2. Back & Pallu",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 2. Back and pallu view"
         },
         {
           index: 3,
           jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/3-pallu-detail.jpg`,
           viewType: "detail",
-          focalDesktop: "54% 50%",
-          focalMobile: "50% 50%",
           caption: "3. Pallu embroidery detail",
-          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 3. Pallu embroidery detail",
-          motion: { scaleFrom: 1.03, scaleTo: 1.08, xFromPercent: -1.2, xToPercent: 1.2, yFromPercent: 1.0, yToPercent: -1.2 }
+          shortLabel: "3. Pallu Detail",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 3. Pallu embroidery detail"
         },
         {
           index: 4,
           jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/4-macro.jpg`,
           viewType: "detail",
-          focalDesktop: "55% 48%",
-          focalMobile: "50% 50%",
           caption: "4. Fabric and embroidery macro",
-          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 4. Fabric and embroidery macro",
-          motion: { scaleFrom: 1.04, scaleTo: 1.08, xFromPercent: 1.2, xToPercent: -1.2, yFromPercent: -1.0, yToPercent: 1.0 }
+          shortLabel: "4. Weave Macro",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 4. Fabric and embroidery macro"
         },
         {
           index: 5,
           jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/5-blouse.jpg`,
           viewType: "detail",
-          focalDesktop: "48% 42%",
-          focalMobile: "50% 50%",
           caption: "5. Blouse and border detail",
-          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 5. Blouse and border detail",
-          motion: { scaleFrom: 1.02, scaleTo: 1.06, xFromPercent: -0.8, xToPercent: 0.8, yFromPercent: 0.8, yToPercent: -0.8 }
+          shortLabel: "5. Blouse & Border",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 5. Blouse and border detail"
         }
       ],
-
-      scrubTotalFrames: 360,
-      scrubImages: new Array(360).fill(null),
-      frameStates: new Array(360).fill("idle"), // "idle" | "loading" | "ready" | "error"
-      frameTouchOrder: [],
-      failedDegrees: new Set(),
-      loadQueue: [],
-      queuedSet: new Set(),
-      activeLoads: 0,
-      maxConcurrentLoads: 12,
-      maxCachedFrames: 48,
-      preloadWindowRadius: 12,
-      anchorStepDegrees: 15,
-      anchorReadyCount: 0,
-      anchorSettledCount: 0,
-      totalAnchorCount: 24,
-      totalSettledCount: 0,
-      lastDrawnScrubIndex: -1,
-      lastDisplayedExact: false,
-      lastBadgeDegree: -1,
-      targetProgress: 0,
-      currentProgress: 0,
-      scrollDirection: 1,
-      rafId: null,
-      lastRafTimestamp: 0,
-      frameCacheBustVersion: "360-v6",
 
       formatIndex(num) {
         return String(num).padStart(2, "0");
       },
 
-      normalizeDegree(deg) {
-        const num = Number(deg);
-        if (!Number.isFinite(num)) return 0;
-        const rounded = Math.round(num);
-        if (rounded === 360) return 0;
-        return ((rounded % 360) + 360) % 360;
-      },
+      setActiveStep(stepIndex, focusThumb = false) {
+        const total = this.framesConfig.length;
+        const idx = ((Number(stepIndex) || 0) % total + total) % total;
+        this.activeStepIndex = idx;
+        const frame = this.framesConfig[idx];
 
-      progressToDegree(progress) {
-        const clamped = Math.max(0, Math.min(1, Number(progress) || 0));
-        if (clamped >= 1) return 359;
-        return Math.min(359, Math.max(0, Math.floor(clamped * 360)));
-      },
-
-      getFrameUrl(deg, ext = "webp") {
-        const normalized = this.normalizeDegree(deg);
-        const basePath = window.__ASSET_BASE_PATH__ || "";
-        const padded = String(normalized).padStart(3, "0");
-        return `${basePath}/public/assets/saree-360/frames/frame-${padded}.${ext}?v=${this.frameCacheBustVersion}`;
-      },
-
-      isAnchorDegree(deg) {
-        const normalized = this.normalizeDegree(deg);
-        return normalized % this.anchorStepDegrees === 0;
-      },
-
-      recomputeFrameCounts() {
-        let anchorReady = 0;
-        let anchorSettled = 0;
-        for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
-          const st = this.frameStates[d];
-          if (st === "ready") {
-            anchorReady++;
-            anchorSettled++;
-          } else if (st === "error") {
-            anchorSettled++;
-          }
+        const mainImg = document.getElementById("hero-showcase-main-img");
+        if (mainImg && frame) {
+          mainImg.src = frame.jpg;
+          mainImg.alt = frame.alt;
         }
-        let totalSettled = 0;
-        for (let d = 0; d < this.scrubTotalFrames; d++) {
-          const st = this.frameStates[d];
-          if (st === "ready" || st === "error") totalSettled++;
-        }
-        this.anchorReadyCount = anchorReady;
-        this.anchorSettledCount = anchorSettled;
-        this.totalSettledCount = totalSettled;
-      },
-
-      updateLoadingAndErrorUI() {
-        this.recomputeFrameCounts();
-        const loadingPill = document.getElementById("saree-360-loading-pill");
-        const loadingText = document.getElementById("saree-360-loading-text");
-        if (loadingPill) {
-          const frame0Settled = this.frameStates[0] === "ready" || this.frameStates[0] === "error";
-          const anchorsDone = this.anchorSettledCount >= this.totalAnchorCount;
-          if (frame0Settled && (anchorsDone || this.totalSettledCount >= 24)) {
-            loadingPill.classList.add("is-hidden");
-          } else {
-            loadingPill.classList.remove("is-hidden");
-            if (loadingText) {
-              const pct = Math.min(
-                100,
-                Math.max(4, Math.round((this.anchorSettledCount / this.totalAnchorCount) * 100))
-              );
-              loadingText.textContent = `Loading 360° views… ${pct}%`;
-            }
-          }
+        const captionEl = document.getElementById("hero-showcase-caption");
+        if (captionEl && frame) {
+          captionEl.textContent = frame.caption;
         }
 
-        const errorBanner = document.getElementById("saree-360-error-banner");
-        const errorText = document.getElementById("saree-360-error-text");
-        if (errorBanner) {
-          const currentDeg = this.progressToDegree(this.currentProgress);
-          const showBanner = this.failedDegrees.size > 0;
-          if (showBanner) {
-            errorBanner.classList.remove("is-hidden");
-            if (errorText) {
-              const sampleDeg = this.failedDegrees.has(currentDeg) ? currentDeg : Array.from(this.failedDegrees)[0];
-              errorText.textContent =
-                this.failedDegrees.size === 1
-                  ? `Frame ${sampleDeg}° unavailable — holding nearest valid view.`
-                  : `${this.failedDegrees.size} frames unavailable — holding nearest valid views.`;
-            }
-          } else {
-            errorBanner.classList.add("is-hidden");
-          }
+        const progressReadout = document.getElementById("progress-readout");
+        if (progressReadout) {
+          progressReadout.textContent = `${this.formatIndex(idx + 1)} / ${this.formatIndex(total)}`;
         }
-      },
-
-      retryFailedFrames() {
-        const toRetry = Array.from(this.failedDegrees);
-        this.failedDegrees.clear();
-        toRetry.forEach((deg) => {
-          this.frameStates[deg] = "idle";
-          this.scrubImages[deg] = null;
-          this.enqueueFrameLoad(deg, true);
+        const srStatus = document.getElementById("progress-sr-status");
+        if (srStatus && frame) {
+          srStatus.textContent = `Showing image ${idx + 1} of ${total}: ${frame.caption}`;
+        }
+        document.querySelectorAll(".progress-tick").forEach((tick, i) => {
+          tick.classList.toggle("is-active", i === idx);
+          tick.classList.toggle("is-complete", i < idx);
         });
-        this.updateLoadingAndErrorUI();
-        this.reprioritizeLoadQueue(this.progressToDegree(this.currentProgress), this.scrollDirection);
-        this.processLoadQueue();
+
+        const thumbs = document.querySelectorAll("#hero-showcase-thumbs [role='tab']");
+        thumbs.forEach((btn, i) => {
+          const active = i === idx;
+          btn.setAttribute("aria-selected", active ? "true" : "false");
+          btn.classList.toggle("is-active-thumb", active);
+          btn.classList.toggle("border-ink", active);
+          btn.classList.toggle("ring-2", active);
+          btn.classList.toggle("ring-gold", active);
+          btn.classList.toggle("border-gold/35", !active);
+          btn.classList.toggle("opacity-80", !active);
+          const cap = btn.querySelector(".hero-thumb-caption");
+          if (cap) {
+            cap.className = active
+              ? "hero-thumb-caption px-2 py-1 text-[10px] font-semibold bg-ink text-ivory truncate"
+              : "hero-thumb-caption px-2 py-1 text-[10px] font-semibold bg-[#FAF8F5] text-ink truncate";
+          }
+          if (active && focusThumb) {
+            btn.focus();
+          }
+        });
       },
 
-      touchCachedFrame(deg) {
-        const idx = this.frameTouchOrder.indexOf(deg);
-        if (idx !== -1) this.frameTouchOrder.splice(idx, 1);
-        this.frameTouchOrder.push(deg);
-
-        if (this.frameTouchOrder.length <= this.maxCachedFrames) return;
-        const currentDeg = this.progressToDegree(this.targetProgress);
-
-        for (let i = 0; i < this.frameTouchOrder.length; i++) {
-          if (this.frameTouchOrder.length <= this.maxCachedFrames) break;
-          const cand = this.frameTouchOrder[i];
-          const dist = Math.min(Math.abs(cand - currentDeg), 360 - Math.abs(cand - currentDeg));
-          if (this.isAnchorDegree(cand) || dist <= this.preloadWindowRadius + 6 || cand === this.lastDrawnScrubIndex) {
-            continue;
-          }
-          this.frameTouchOrder.splice(i, 1);
-          i--;
-          this.scrubImages[cand] = null;
-          if (this.frameStates[cand] === "ready") {
-            this.frameStates[cand] = "idle";
-          }
+      handleThumbKeydown(event, idx) {
+        const total = this.framesConfig.length;
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          this.setActiveStep((idx + 1) % total, true);
+        } else if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          this.setActiveStep((idx - 1 + total) % total, true);
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          this.setActiveStep(0, true);
+        } else if (event.key === "End") {
+          event.preventDefault();
+          this.setActiveStep(total - 1, true);
+        } else if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          this.setActiveStep(idx, true);
         }
       },
 
-      enqueueFrameLoad(deg, highPriority = false) {
-        const normalized = this.normalizeDegree(deg);
-        if (normalized < 0 || normalized >= this.scrubTotalFrames) return;
-        const state = this.frameStates[normalized];
-        if (state === "ready" || state === "loading" || this.queuedSet.has(normalized)) return;
-        this.queuedSet.add(normalized);
-        if (highPriority) {
-          this.loadQueue.unshift(normalized);
-        } else {
-          this.loadQueue.push(normalized);
+      mount() {
+        document.documentElement.classList.remove("is-scroll-driven");
+        this.setActiveStep(this.activeStepIndex || 0, false);
+        CatalogBgAnimation.mount();
+      },
+
+      unmount() {
+        CatalogBgAnimation.unmount();
+      }
+    };
+    window.ShowcaseScrollEngine = ShowcaseScrollEngine;
+
+    /**
+     * ============================================================================
+     * CATALOG BACKGROUND ANIMATION CONTROLLER (300 Frames, 1280x720 WebP)
+     * - Starts when #catalogue-section is ~20-30% visible via IntersectionObserver
+     * - Pauses when off-screen, when tab is hidden, or when paused by visitor
+     * - Seamless loop via ping-pong playback + crossfade blend
+     * - Progressive non-blocking loading: poster -> first 30 frames -> rest
+     * - Automatic static still fallback on mobile (<768px), reduced motion,
+     *   Save-Data / slow connection, or frame load failure
+     * ============================================================================
+     */
+    const CatalogBgAnimation = {
+      totalFrames: 300,
+      fps: 24,
+      frames: new Array(301).fill(null),
+      frameStatus: new Array(301).fill("idle"), // "idle" | "loading" | "ready" | "error"
+      loadQueue: [],
+      activeLoads: 0,
+      maxConcurrentLoads: 4,
+      readyCount: 0,
+      failedCount: 0,
+      firstBatchTarget: 30,
+      firstBatchStarted: false,
+      restBatchStarted: false,
+      currentFrame: 1,
+      prevDrawnFrame: 1,
+      direction: 1, // 1: forward (1 -> 300), -1: reverse ping-pong (300 -> 1)
+      isInView: false,
+      userPaused: false,
+      isPlaying: false,
+      staticFallback: false,
+      rafId: null,
+      lastFrameTime: 0,
+      observer: null,
+      idleTimer: null,
+      visibilityBound: false,
+      mediaBound: false,
+
+      getFrameUrl(index) {
+        const basePath = window.__ASSET_BASE_PATH__ || "";
+        const padded = String(index).padStart(3, "0");
+        return `${basePath}/public/assets/catalog-bg/frame-${padded}.webp`;
+      },
+
+      shouldUseStaticFallback() {
+        if (window.matchMedia && window.matchMedia("(max-width: 767px)").matches) {
+          return true;
+        }
+        if (window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          return true;
+        }
+        const conn = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+        if (conn) {
+          if (conn.saveData === true) return true;
+          if (typeof conn.effectiveType === "string" && /^(slow-2g|2g|3g)$/i.test(conn.effectiveType.trim())) {
+            return true;
+          }
+        }
+        if (this.failedCount >= 10 && this.readyCount === 0) {
+          return true;
+        }
+        return false;
+      },
+
+      syncUI() {
+        const layer = document.getElementById("catalog-bg-layer");
+        const canvas = document.getElementById("catalog-bg-canvas");
+        const toggleBtn = document.getElementById("catalog-bg-toggle-btn");
+        const toggleIcon = document.getElementById("catalog-bg-toggle-icon");
+        const toggleLabel = document.getElementById("catalog-bg-toggle-label");
+
+        this.staticFallback = this.shouldUseStaticFallback();
+        if (layer) {
+          layer.classList.toggle("is-static-fallback", this.staticFallback);
+        }
+        if (canvas && this.staticFallback) {
+          canvas.classList.remove("is-ready");
+        }
+        if (toggleBtn) {
+          toggleBtn.setAttribute("aria-pressed", this.userPaused ? "true" : "false");
+          if (toggleIcon) toggleIcon.textContent = this.userPaused ? "▶" : "⏸";
+          if (toggleLabel) toggleLabel.textContent = this.userPaused ? "Play animation" : "Pause animation";
         }
       },
 
-      reprioritizeLoadQueue(centerDeg, direction = 1) {
-        if (this.loadQueue.length <= 1) return;
-        const normCenter = this.normalizeDegree(centerDeg);
-        const dirSign = direction >= 0 ? 1 : -1;
-
-        const scoreDegree = (d) => {
-          if (d === 0 && this.frameStates[0] !== "ready") return -1000;
-          if (d === normCenter) return -900;
-          const forwardDist = ((d - normCenter) * dirSign + 360) % 360;
-          const backwardDist = ((normCenter - d) * dirSign + 360) % 360;
-          const minDist = Math.min(forwardDist, backwardDist);
-          // Immediate neighborhood around current scroll degree
-          if (forwardDist <= 6) return -800 + forwardDist;
-          if (backwardDist <= 3) return -700 + backwardDist;
-          // All 24 anchor frames get loaded before wide window sweeps so loader never stalls at 46%
-          if (this.isAnchorDegree(d)) return -500 + minDist;
-          if (forwardDist <= this.preloadWindowRadius) return -300 + forwardDist;
-          if (backwardDist <= this.preloadWindowRadius) return -150 + backwardDist;
-          return minDist;
-        };
-
-        this.loadQueue.sort((a, b) => scoreDegree(a) - scoreDegree(b));
+      enqueueRange(indices) {
+        for (let i = 0; i < indices.length; i++) {
+          const idx = indices[i];
+          if (idx >= 1 && idx <= this.totalFrames && this.frameStatus[idx] === "idle") {
+            this.frameStatus[idx] = "queued";
+            this.loadQueue.push(idx);
+          }
+        }
+        this.pumpQueue();
       },
 
-      processLoadQueue() {
+      startProgressiveLoad() {
+        if (this.staticFallback) return;
+        if (!this.firstBatchStarted) {
+          this.firstBatchStarted = true;
+          const first30 = [];
+          for (let i = 1; i <= this.firstBatchTarget; i++) first30.push(i);
+          this.enqueueRange(first30);
+        }
+      },
+
+      enqueueRemainingFrames() {
+        if (this.restBatchStarted || this.staticFallback) return;
+        this.restBatchStarted = true;
+        // Load every second frame (31, 33, ..., 299, 300) so total network payload stays ~8 MB
+        const rest = [];
+        for (let i = 31; i <= this.totalFrames; i += 2) {
+          rest.push(i);
+        }
+        if (rest[rest.length - 1] !== this.totalFrames) {
+          rest.push(this.totalFrames);
+        }
+        this.enqueueRange(rest);
+      },
+
+      pumpQueue() {
+        if (this.staticFallback) return;
         while (this.activeLoads < this.maxConcurrentLoads && this.loadQueue.length > 0) {
-          const deg = this.loadQueue.shift();
-          this.queuedSet.delete(deg);
-          if (this.frameStates[deg] === "ready" || this.frameStates[deg] === "loading") continue;
-          this.loadSingleDegreeFrame(deg);
+          const idx = this.loadQueue.shift();
+          this.loadSingleFrame(idx);
         }
       },
 
-      loadSingleDegreeFrame(deg, attempt = 0) {
-        const normalized = this.normalizeDegree(deg);
-        const attemptExts = ["webp", "webp", "jpg", "png"];
-        this.frameStates[normalized] = "loading";
+      loadSingleFrame(idx) {
+        this.frameStatus[idx] = "loading";
         this.activeLoads++;
-
         const img = new Image();
         img.decoding = "async";
-        if (normalized === 0 || normalized === this.progressToDegree(this.currentProgress)) {
-          img.fetchPriority = "high";
-        }
-        const src = this.getFrameUrl(normalized, attemptExts[attempt]);
 
-        const finalizeSuccess = () => {
+        const finishOk = () => {
           this.activeLoads = Math.max(0, this.activeLoads - 1);
-          this.scrubImages[normalized] = img;
-          this.frameStates[normalized] = "ready";
-          this.failedDegrees.delete(normalized);
-          this.touchCachedFrame(normalized);
-          this.updateLoadingAndErrorUI();
+          this.frames[idx] = img;
+          this.frameStatus[idx] = "ready";
+          this.readyCount++;
 
-          const targetDeg = this.progressToDegree(this.currentProgress);
-          if (normalized === targetDeg || !this.lastDisplayedExact || this.lastDrawnScrubIndex === -1) {
-            this.drawDegreeToCanvas(targetDeg);
+          if (this.readyCount === 1) {
+            this.drawFrame(this.currentFrame);
           }
-          this.processLoadQueue();
+          if (this.readyCount >= 12 && this.isInView && !this.userPaused && !document.hidden && !this.isPlaying) {
+            this.startLoop();
+          }
+          if (this.readyCount >= this.firstBatchTarget && !this.restBatchStarted) {
+            this.enqueueRemainingFrames();
+          }
+          this.pumpQueue();
         };
 
         img.onload = () => {
           if (typeof img.decode === "function") {
-            img.decode().then(finalizeSuccess).catch(finalizeSuccess);
+            img.decode().then(finishOk).catch(finishOk);
           } else {
-            finalizeSuccess();
+            finishOk();
           }
         };
 
         img.onerror = () => {
           this.activeLoads = Math.max(0, this.activeLoads - 1);
-          if (attempt + 1 < attemptExts.length) {
-            setTimeout(() => this.loadSingleDegreeFrame(normalized, attempt + 1), attempt === 0 ? 80 : 0);
-            return;
+          this.frameStatus[idx] = "error";
+          this.failedCount++;
+          if (this.failedCount >= 10 && this.readyCount === 0) {
+            this.pauseLoop();
+            this.syncUI();
+          } else {
+            this.pumpQueue();
           }
-          this.frameStates[normalized] = "error";
-          this.failedDegrees.add(normalized);
-          this.updateLoadingAndErrorUI();
-          const targetDeg = this.progressToDegree(this.currentProgress);
-          if (normalized === targetDeg) {
-            this.drawDegreeToCanvas(targetDeg);
-          }
-          this.processLoadQueue();
         };
 
-        img.src = src;
+        img.src = this.getFrameUrl(idx);
       },
 
-      initScrubFrames() {
-        if (this.frameStates[0] === "idle" && !this.queuedSet.has(0)) {
-          this.enqueueFrameLoad(0, true);
-          for (let d = 0; d < this.scrubTotalFrames; d += this.anchorStepDegrees) {
-            this.enqueueFrameLoad(d, true);
-          }
-          for (let step = 1; step <= 12; step++) {
-            this.enqueueFrameLoad(step, false);
-            this.enqueueFrameLoad(360 - step, false);
-          }
-          for (let d = 0; d < this.scrubTotalFrames; d++) {
-            this.enqueueFrameLoad(d, false);
-          }
-          this.reprioritizeLoadQueue(0, 1);
-          this.processLoadQueue();
+      findNearestReadyImage(targetIdx) {
+        const direct = this.frames[targetIdx];
+        if (direct && this.frameStatus[targetIdx] === "ready" && direct.complete && direct.naturalWidth > 0) {
+          return direct;
         }
-      },
-
-      ensureWindowPreloaded(centerDeg, direction = 1) {
-        const normCenter = this.normalizeDegree(centerDeg);
-        this.enqueueFrameLoad(normCenter, true);
-        const radius = this.preloadWindowRadius;
-        const dirSign = direction >= 0 ? 1 : -1;
-        for (let offset = 1; offset <= radius; offset++) {
-          const ahead = (normCenter + offset * dirSign + 360) % 360;
-          const behind = (normCenter - offset * dirSign + 360) % 360;
-          this.enqueueFrameLoad(ahead, offset <= 8);
-          this.enqueueFrameLoad(behind, offset <= 4);
-        }
-        this.reprioritizeLoadQueue(normCenter, dirSign);
-        this.processLoadQueue();
-      },
-
-      preloadRemainingFrames() {
-        this.initScrubFrames();
-        const centerDeg = this.progressToDegree(this.targetProgress);
-        this.ensureWindowPreloaded(centerDeg, this.scrollDirection);
-      },
-
-      findBestReadyFrame(targetDeg) {
-        const normTarget = this.normalizeDegree(targetDeg);
-        const direct = this.scrubImages[normTarget];
-        if (direct && this.frameStates[normTarget] === "ready" && direct.complete && direct.naturalWidth > 0) {
-          return { img: direct, actualDeg: normTarget, isExact: true };
-        }
-        for (let offset = 1; offset <= 180; offset++) {
-          const prevDeg = (normTarget - offset + 360) % 360;
-          const prevImg = this.scrubImages[prevDeg];
-          if (prevImg && this.frameStates[prevDeg] === "ready" && prevImg.complete && prevImg.naturalWidth > 0) {
-            return { img: prevImg, actualDeg: prevDeg, isExact: false };
+        for (let offset = 1; offset <= this.totalFrames; offset++) {
+          const prev = targetIdx - offset;
+          if (prev >= 1 && this.frameStatus[prev] === "ready" && this.frames[prev]?.complete) {
+            return this.frames[prev];
           }
-          const nextDeg = (normTarget + offset) % 360;
-          const nextImg = this.scrubImages[nextDeg];
-          if (nextImg && this.frameStates[nextDeg] === "ready" && nextImg.complete && nextImg.naturalWidth > 0) {
-            return { img: nextImg, actualDeg: nextDeg, isExact: false };
+          const next = targetIdx + offset;
+          if (next <= this.totalFrames && this.frameStatus[next] === "ready" && this.frames[next]?.complete) {
+            return this.frames[next];
           }
-        }
-        const posterFallback = document.getElementById("saree-360-poster-fallback");
-        if (posterFallback && posterFallback.complete && posterFallback.naturalWidth > 0) {
-          return { img: posterFallback, actualDeg: 0, isExact: normTarget === 0 };
         }
         return null;
       },
 
-      drawDegreeToCanvas(deg) {
-        const normDeg = this.normalizeDegree(deg);
-        const angleBadge = document.getElementById("saree-360-angle-badge");
-        if (angleBadge && this.lastBadgeDegree !== normDeg) {
-          angleBadge.textContent = `360° Turntable • ${normDeg}°`;
-          this.lastBadgeDegree = normDeg;
-        }
-
-        const canvas = document.getElementById("saree-360-canvas");
+      drawFrame(frameIdx) {
+        if (this.staticFallback) return;
+        const canvas = document.getElementById("catalog-bg-canvas");
         if (!canvas) return;
+        const img = this.findNearestReadyImage(frameIdx);
+        if (!img) return;
+
         const ctx = canvas.getContext("2d", { alpha: false });
         if (!ctx) return;
 
-        const best = this.findBestReadyFrame(normDeg);
-        if (!best || !best.img) return;
-
-        if (this.lastDrawnScrubIndex === best.actualDeg && best.isExact && this.lastDisplayedExact) {
-          return;
+        if (canvas.width !== 1280 || canvas.height !== 720) {
+          canvas.width = 1280;
+          canvas.height = 720;
         }
 
-        const img = best.img;
-        if (canvas.width !== img.naturalWidth || canvas.height !== img.naturalHeight) {
-          canvas.width = img.naturalWidth;
-          canvas.height = img.naturalHeight;
-        }
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-        canvas.classList.add("is-ready");
-        canvas.dataset.displayedDegree = String(best.actualDeg);
-        canvas.dataset.targetDegree = String(normDeg);
-        canvas.dataset.isExact = String(best.isExact);
-
-        this.lastDrawnScrubIndex = best.actualDeg;
-        this.lastDisplayedExact = best.isExact;
-
-        const wm = document.getElementById("stage-brand-watermark");
-        if (wm) {
-          const shiftX = Math.sin((normDeg * Math.PI) / 180) * -18;
-          wm.style.transform = `translate3d(${shiftX.toFixed(1)}px, 0, 0)`;
-        }
-      },
-
-      drawScrubFrame(progress, scrubIdxOverride = null) {
-        this.initScrubFrames();
-        const deg =
-          scrubIdxOverride !== null
-            ? this.normalizeDegree(scrubIdxOverride)
-            : this.progressToDegree(progress);
-        this.ensureWindowPreloaded(deg, this.scrollDirection);
-        this.drawDegreeToCanvas(deg);
-      },
-
-      setDegree(deg) {
-        const normDeg = this.normalizeDegree(deg);
-        const prevDeg = this.progressToDegree(this.currentProgress);
-        this.scrollDirection = normDeg >= prevDeg ? 1 : -1;
-        this.targetProgress = normDeg / 360;
-        this.currentProgress = this.targetProgress;
-        this.ensureWindowPreloaded(normDeg, this.scrollDirection);
-        this.drawDegreeToCanvas(normDeg);
-        this.updateLoadingAndErrorUI();
-      },
-
-      scheduleRender() {
-        if (this.rafId !== null) return;
-        this.rafId = window.requestAnimationFrame((ts) => this.tickRender(ts));
-      },
-
-      tickRender(timestamp) {
-        this.rafId = null;
-        const dt = this.lastRafTimestamp ? Math.min(0.05, Math.max(0.001, (timestamp - this.lastRafTimestamp) / 1000)) : 1 / 60;
-        this.lastRafTimestamp = timestamp;
-
-        const diff = this.targetProgress - this.currentProgress;
-        if (Math.abs(diff) <= 0.00035) {
-          this.currentProgress = this.targetProgress;
+        // Subtle crossfade near turnaround ends (frames 1..8 and 293..300) for a seamless loop
+        const prevImg = this.frames[this.prevDrawnFrame];
+        const nearTurnaround = frameIdx <= 8 || frameIdx >= this.totalFrames - 7;
+        if (nearTurnaround && prevImg && prevImg !== img && prevImg.complete && prevImg.naturalWidth > 0) {
+          ctx.globalAlpha = 1;
+          ctx.drawImage(prevImg, 0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 0.65;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 1;
         } else {
-          // Frame-rate-independent smoothing that scales naturally from 60 Hz up to 144 Hz+
-          const alpha = 1 - Math.exp(-dt * 28);
-          this.currentProgress += diff * alpha;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }
 
-        const deg = this.progressToDegree(this.currentProgress);
-        this.ensureWindowPreloaded(deg, this.scrollDirection);
-        this.drawDegreeToCanvas(deg);
-        this.updateLoadingAndErrorUI();
-
-        const totalSteps = this.framesConfig.length;
-        const clamped = Math.max(0, Math.min(0.999999, this.currentProgress));
-        const stepIndex = Math.min(totalSteps - 1, Math.floor(clamped * totalSteps));
-        this.setActiveStep(stepIndex);
-
-        const scrollCue = document.getElementById("scroll-cue");
-        if (scrollCue) {
-          if (this.currentProgress > 0.02) {
-            scrollCue.classList.add("is-hidden");
-          } else {
-            scrollCue.classList.remove("is-hidden");
-          }
-        }
-
-        if (Math.abs(this.targetProgress - this.currentProgress) > 0.00035) {
-          this.scheduleRender();
-        }
+        this.prevDrawnFrame = frameIdx;
+        canvas.classList.add("is-ready");
+        canvas.dataset.currentFrame = String(frameIdx);
       },
 
-      setActiveStep(stepIndex) {
-        if (stepIndex === this.activeStepIndex) return;
-        this.activeStepIndex = stepIndex;
-
-        const total = this.framesConfig.length;
-        const currentFormatted = this.formatIndex(stepIndex + 1);
-        const totalFormatted = this.formatIndex(total);
-
-        const progressReadout = document.getElementById("progress-readout");
-        if (progressReadout) {
-          progressReadout.textContent = `${currentFormatted} / ${totalFormatted}`;
+      stepFrame() {
+        let next = this.currentFrame + this.direction;
+        if (next > this.totalFrames) {
+          this.direction = -1;
+          next = this.totalFrames - 1;
+        } else if (next < 1) {
+          this.direction = 1;
+          next = 2;
         }
-
-        const srStatus = document.getElementById("progress-sr-status");
-        if (srStatus && this.framesConfig[stepIndex]) {
-          srStatus.textContent = `View ${stepIndex + 1} of ${total}: ${this.framesConfig[stepIndex].caption}`;
-        }
-
-        const ticks = document.querySelectorAll(".progress-tick");
-        ticks.forEach((tick, idx) => {
-          tick.classList.toggle("is-active", idx === stepIndex);
-          tick.classList.toggle("is-complete", idx < stepIndex);
-        });
-
-        const captions = document.querySelectorAll(".caption-step");
-        captions.forEach((caption, idx) => {
-          caption.classList.toggle("is-active", idx === stepIndex);
-        });
+        this.currentFrame = Math.max(1, Math.min(this.totalFrames, next));
+        this.drawFrame(this.currentFrame);
       },
 
-      mount() {
-        this.unmount();
-        const showcaseSection = document.getElementById("showcase-section");
-        const stageEl = document.getElementById("showcase-stage");
-        const frames = Array.from(document.querySelectorAll(".saree-frame"));
-        const scrollCue = document.getElementById("scroll-cue");
-
-        if (!showcaseSection || !stageEl || frames.length === 0) return;
-
-        if (!document.getElementById("saree-360-turntable-stage")) {
-          const basePath = window.__ASSET_BASE_PATH__ || "";
-          const stage360 = document.createElement("div");
-          stage360.id = "saree-360-turntable-stage";
-          stage360.className = "saree-360-turntable-stage";
-          stage360.setAttribute("aria-label", "360-degree Saree Turntable");
-          stage360.innerHTML = `
-            <div class="saree-360-frame-box">
-              <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
-                <span class="saree-360-loading-dot" aria-hidden="true"></span>
-                <span id="saree-360-loading-text">Loading 360° views…</span>
-              </div>
-              <div id="saree-360-error-banner" class="saree-360-error-banner is-hidden" role="alert">
-                <span id="saree-360-error-text">Some 360° frames could not be loaded.</span>
-                <button type="button" class="saree-360-retry-btn" onclick="ShowcaseScrollEngine.retryFailedFrames()">Retry</button>
-              </div>
-              <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
-              <img
-                id="saree-360-poster-fallback"
-                src="${basePath}/public/assets/saree-360/frames/frame-000.webp?v=${this.frameCacheBustVersion}"
-                alt="Champagne Tissue Saree 360-degree turntable view"
-                class="saree-360-poster-fallback"
-                fetchpriority="high"
-                decoding="async"
-              />
-              <canvas
-                id="saree-360-canvas"
-                class="saree-360-canvas"
-                width="720"
-                height="1280"
-                aria-label="Champagne Tissue Saree 360-degree turntable view"
-              ></canvas>
-            </div>
-          `;
-          const framesVp = document.getElementById("frames-viewport");
-          if (framesVp && framesVp.parentNode === stageEl) {
-            framesVp.insertAdjacentElement("afterend", stage360);
-          } else {
-            stageEl.appendChild(stage360);
-          }
+      tick(timestamp) {
+        if (!this.isPlaying) return;
+        const interval = 1000 / this.fps;
+        if (!this.lastFrameTime) {
+          this.lastFrameTime = timestamp;
         }
-
-        const posterFallback = document.getElementById("saree-360-poster-fallback");
-        if (posterFallback) {
-          posterFallback.onload = () => {
-            if (this.lastDrawnScrubIndex === -1) {
-              this.drawDegreeToCanvas(0);
-            }
-          };
+        const elapsed = timestamp - this.lastFrameTime;
+        if (elapsed >= interval) {
+          this.lastFrameTime = timestamp - (elapsed % interval);
+          this.stepFrame();
         }
+        this.rafId = window.requestAnimationFrame((ts) => this.tick(ts));
+      },
 
-        this.activeStepIndex = -1;
-        this.lastDrawnScrubIndex = -1;
-        this.lastDisplayedExact = false;
-        this.lastBadgeDegree = -1;
-        this.targetProgress = 0;
-        this.currentProgress = 0;
-        this.lastRafTimestamp = 0;
-        this.setActiveStep(0);
-        this.initScrubFrames();
-        this.drawScrubFrame(0, 0);
-        this.updateLoadingAndErrorUI();
-        const box360 = document.querySelector(".saree-360-frame-box");
-        if (box360) this.bindDragSpin(box360);
-
-        const reducedMotionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-        if (reducedMotionQuery.matches || typeof gsap === "undefined" || typeof ScrollTrigger === "undefined") {
-          document.documentElement.classList.remove("is-scroll-driven");
-          document.body.classList.add("is-reduced-motion");
-          if (scrollCue) scrollCue.classList.add("is-hidden");
-
-          if ("IntersectionObserver" in window) {
-            this.reducedObserver = new IntersectionObserver(
-              (entries) => {
-                entries.forEach((entry) => {
-                  if (entry.isIntersecting) {
-                    const idx = Number(entry.target.dataset.step);
-                    if (!Number.isNaN(idx)) this.setActiveStep(idx);
-                  }
-                });
-              },
-              { root: null, threshold: 0.55 }
-            );
-            frames.forEach((frame) => this.reducedObserver.observe(frame));
-          }
+      startLoop() {
+        this.syncUI();
+        if (this.staticFallback || this.userPaused || !this.isInView || document.hidden) {
           return;
         }
-
-        gsap.registerPlugin(ScrollTrigger);
-        document.documentElement.classList.add("is-scroll-driven");
-        document.body.classList.remove("is-reduced-motion");
-
-        const totalFrames = frames.length;
-        const tl = gsap.timeline({ defaults: { ease: "none" } });
-        tl.to(stageEl, { duration: totalFrames });
-
-        this.timeline = tl;
-        this.scrollTriggerInstance = ScrollTrigger.create({
-          animation: tl,
-          trigger: showcaseSection,
-          pin: stageEl,
-          start: "top top",
-          end: () => `+=${Math.round(window.innerHeight * (this.pinScrollVh / 100))}`,
-          scrub: true,
-          anticipatePin: 1,
-          invalidateOnRefresh: true,
-          onUpdate: (self) => {
-            const nextProgress = Math.max(0, Math.min(1, self.progress || 0));
-            if (nextProgress !== this.targetProgress) {
-              this.scrollDirection = nextProgress >= this.targetProgress ? 1 : -1;
-              this.targetProgress = nextProgress;
-              this.scheduleRender();
-            }
-          }
-        });
-        ScrollTrigger.refresh();
+        this.startProgressiveLoad();
+        if (this.readyCount === 0) return;
+        if (this.isPlaying) return;
+        this.isPlaying = true;
+        this.lastFrameTime = 0;
+        this.drawFrame(this.currentFrame);
+        this.rafId = window.requestAnimationFrame((ts) => this.tick(ts));
       },
 
-      disposeFrames() {
-        for (let i = 0; i < this.scrubTotalFrames; i++) {
-          if (i !== 0 && !this.isAnchorDegree(i)) {
-            this.scrubImages[i] = null;
-            if (this.frameStates[i] === "ready") {
-              this.frameStates[i] = "idle";
-            }
-          }
-        }
-        this.frameTouchOrder = [0];
-      },
-
-      bindDragSpin(boxEl) {
-        if (!boxEl || boxEl.dataset.dragSpinBound === "true") return;
-        boxEl.dataset.dragSpinBound = "true";
-        boxEl.setAttribute("tabindex", "0");
-        boxEl.setAttribute("role", "region");
-        boxEl.setAttribute("aria-label", "Interactive 360-degree Saree Turntable. Use Left and Right arrow keys or drag to rotate.");
-        boxEl.addEventListener("keydown", (e) => {
-          if (e.key === "ArrowRight") {
-            e.preventDefault();
-            const cur = this.progressToDegree(this.currentProgress);
-            this.setDegree(this.normalizeDegree(cur + 15));
-          } else if (e.key === "ArrowLeft") {
-            e.preventDefault();
-            const cur = this.progressToDegree(this.currentProgress);
-            this.setDegree(this.normalizeDegree(cur - 15));
-          }
-        });
-        let dragging = false;
-        let startX = 0;
-        let startDeg = 0;
-        boxEl.addEventListener("pointerdown", (e) => {
-          if (e.target && e.target.closest("button, a")) return;
-          dragging = true;
-          startX = e.clientX;
-          startDeg = this.progressToDegree(this.currentProgress);
-          try { boxEl.setPointerCapture(e.pointerId); } catch (_) {}
-        });
-        boxEl.addEventListener("pointermove", (e) => {
-          if (!dragging) return;
-          const dx = e.clientX - startX;
-          const nextDeg = this.normalizeDegree(startDeg + Math.round(dx * 0.65));
-          this.setDegree(nextDeg);
-        });
-        const endDrag = () => { dragging = false; };
-        boxEl.addEventListener("pointerup", endDrag);
-        boxEl.addEventListener("pointercancel", endDrag);
-      },
-
-      openDetailHotspot(galleryIndex) {
-        if (window.app && typeof window.app.openProductDetail === "function") {
-          window.app.state.selectedProductId = "jt-saree-09";
-          window.app.state.selectedGalleryIndex = galleryIndex;
-          window.app.openProductDetail("jt-saree-09");
-          setTimeout(() => {
-            if (typeof window.app.selectGalleryView === "function") {
-              window.app.selectGalleryView(galleryIndex);
-            }
-          }, 60);
-        }
-      },
-
-      unmount() {
+      pauseLoop() {
+        this.isPlaying = false;
         if (this.rafId !== null) {
           window.cancelAnimationFrame(this.rafId);
           this.rafId = null;
         }
-        this.disposeFrames();
-        if (this.scrollTriggerInstance) {
-          this.scrollTriggerInstance.kill();
-          this.scrollTriggerInstance = null;
+      },
+
+      toggleUserPause() {
+        this.userPaused = !this.userPaused;
+        this.syncUI();
+        if (this.userPaused) {
+          this.pauseLoop();
+        } else {
+          this.startLoop();
         }
-        if (this.timeline) {
-          this.timeline.kill();
-          this.timeline = null;
+      },
+
+      mount() {
+        this.unmount();
+        const section = document.getElementById("catalogue-section");
+        if (!section) return;
+
+        this.syncUI();
+
+        if (!this.visibilityBound) {
+          this.visibilityBound = true;
+          document.addEventListener("visibilitychange", () => {
+            if (document.hidden) {
+              this.pauseLoop();
+            } else if (this.isInView && !this.userPaused) {
+              this.startLoop();
+            }
+          });
         }
-        if (this.reducedObserver) {
-          this.reducedObserver.disconnect();
-          this.reducedObserver = null;
+
+        if (!this.mediaBound && window.matchMedia) {
+          this.mediaBound = true;
+          const onMediaChange = () => {
+            this.syncUI();
+            if (this.staticFallback) {
+              this.pauseLoop();
+            } else if (this.isInView && !this.userPaused && !document.hidden) {
+              this.startLoop();
+            }
+          };
+          try {
+            window.matchMedia("(max-width: 767px)").addEventListener("change", onMediaChange);
+            window.matchMedia("(prefers-reduced-motion: reduce)").addEventListener("change", onMediaChange);
+          } catch (_) {}
         }
+
+        if ("IntersectionObserver" in window) {
+          this.observer = new IntersectionObserver(
+            (entries) => {
+              entries.forEach((entry) => {
+                const vh = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 800);
+                const viewportCover = entry.intersectionRect ? entry.intersectionRect.height / vh : 0;
+                const visibleEnough =
+                  entry.isIntersecting && (entry.intersectionRatio >= 0.2 || viewportCover >= 0.22);
+                const leftScreen =
+                  !entry.isIntersecting || (entry.intersectionRatio < 0.08 && viewportCover < 0.1);
+
+                if (visibleEnough) {
+                  this.isInView = true;
+                  this.startProgressiveLoad();
+                  this.startLoop();
+                } else if (leftScreen) {
+                  this.isInView = false;
+                  this.pauseLoop();
+                }
+              });
+            },
+            {
+              root: null,
+              threshold: [0, 0.08, 0.15, 0.2, 0.25, 0.3, 0.5]
+            }
+          );
+          this.observer.observe(section);
+        }
+
+        // Non-blocking background warm-up of poster + first 30 frames on desktop after page settle
+        if (!this.staticFallback) {
+          const scheduleIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 250));
+          this.idleTimer = scheduleIdle(() => {
+            if (!this.staticFallback) {
+              this.startProgressiveLoad();
+            }
+          });
+        }
+      },
+
+      unmount() {
+        this.pauseLoop();
+        if (this.observer) {
+          this.observer.disconnect();
+          this.observer = null;
+        }
+        this.isInView = false;
       }
     };
-    window.ShowcaseScrollEngine = ShowcaseScrollEngine;
+    window.CatalogBgAnimation = CatalogBgAnimation;
 
     /**
      * ============================================================================
@@ -2856,80 +2231,64 @@
 
         return `
           <div class="page-transition">
-            <!-- 1. SCROLL-DRIVEN SAREE SHOWCASE -->
-            <section id="showcase-section" class="showcase-section" aria-label="Saree visual showcase">
+            <!-- 1. FEATURED SAREE 5-VIEW STUDIO GALLERY (No 360° turntable, no scroll-trapping) -->
+            <section id="showcase-section" class="showcase-section" aria-label="Featured Saree Studio Views">
               <div id="showcase-stage" class="showcase-stage">
-                <div class="stage-ambient" aria-hidden="true"></div>
-
-                <div id="frames-viewport" class="frames-viewport">
-                  ${ShowcaseScrollEngine.framesConfig.map((frame, idx) => `
-                    <figure
-                      class="showcase-item saree-frame ${idx === 0 ? "is-active" : ""}"
-                      data-index="${idx}"
-                      data-step="${idx}"
-                      data-view-type="${frame.viewType || "full"}"
-                      style="z-index: ${idx + 1}; --focal-desktop: ${frame.focalDesktop || "50% 50%"}; --focal-mobile: ${frame.focalMobile || "50% 50%"};"
-                    >
-                      <picture class="showcase-picture">
+                <div class="rounded-3xl bg-[#FAF8F5] border border-gold/45 p-4 sm:p-6 shadow-sm">
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                    <div class="lg:col-span-7">
+                      <div class="relative aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-[#EFE6D5] border border-gold/35 overflow-hidden flex items-center justify-center">
                         <img
-                          src="${frame.jpg}"
-                          alt="${frame.alt}"
+                          id="hero-showcase-main-img"
+                          src="${ShowcaseScrollEngine.framesConfig[0].jpg}"
+                          alt="${ShowcaseScrollEngine.framesConfig[0].alt}"
                           width="1792"
                           height="2400"
-                          loading="${idx < 2 ? "eager" : "lazy"}"
-                          ${idx === 0 ? 'fetchpriority="high"' : ""}
+                          fetchpriority="high"
                           decoding="async"
-                          class="showcase-img saree-img"
+                          class="w-full h-full object-contain"
                         />
-                      </picture>
-                      <figcaption class="showcase-item-caption">0${idx + 1} / 05 — ${frame.caption}</figcaption>
-                    </figure>
-                  `).join("")}
-                </div>
-
-                <!-- 360° Portrait 9:16 Saree Turntable Scroll-Scrub Stage -->
-                <div id="saree-360-turntable-stage" class="saree-360-turntable-stage" aria-label="360-degree Saree Turntable">
-                  <div class="saree-360-frame-box">
-                    <div id="saree-360-loading-pill" class="saree-360-loading-pill" role="status" aria-live="polite">
-                      <span class="saree-360-loading-dot" aria-hidden="true"></span>
-                      <span id="saree-360-loading-text">Loading 360° views…</span>
+                        <p id="hero-showcase-caption" class="absolute bottom-2.5 left-2.5 right-2.5 sm:right-auto px-3 py-1 rounded-full bg-[#FAF8F5]/95 border border-gold/50 text-[11px] sm:text-xs font-serif italic text-ink shadow-xs truncate">
+                          ${ShowcaseScrollEngine.framesConfig[0].caption}
+                        </p>
+                      </div>
                     </div>
-                    <div id="saree-360-error-banner" class="saree-360-error-banner is-hidden" role="alert">
-                      <span id="saree-360-error-text">Some 360° frames could not be loaded.</span>
-                      <button type="button" class="saree-360-retry-btn" onclick="ShowcaseScrollEngine.retryFailedFrames()">Retry</button>
+                    <div class="lg:col-span-5 space-y-3">
+                      <span class="text-[11px] font-bold uppercase tracking-widest text-teal block">Lepakshi Weaves • Studio Views</span>
+                      <h1 class="font-serif text-2xl sm:text-3xl font-bold text-ink leading-snug">Champagne Tissue Saree with Floral &amp; Peacock Embroidery</h1>
+                      <p class="text-xs sm:text-sm text-ink-muted leading-relaxed">Select any thumbnail below or use the Left and Right arrow keys to inspect the front drape, back pallu, embroidery close-up, weave macro, and blouse border.</p>
+                      <div id="hero-showcase-thumbs" class="grid grid-cols-5 gap-2 pt-1" role="tablist" aria-label="Featured Saree Studio Views">
+                        ${ShowcaseScrollEngine.framesConfig.map((frame, idx) => `
+                          <button
+                            type="button"
+                            role="tab"
+                            aria-selected="${idx === 0 ? "true" : "false"}"
+                            aria-label="${frame.caption}"
+                            onclick="ShowcaseScrollEngine.setActiveStep(${idx})"
+                            onkeydown="ShowcaseScrollEngine.handleThumbKeydown(event, ${idx})"
+                            class="text-left rounded-xl overflow-hidden border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                              idx === 0 ? "is-active-thumb border-ink ring-2 ring-gold" : "border-gold/35 opacity-80 hover:opacity-100"
+                            }"
+                          >
+                            <div class="aspect-[4/5] bg-[#EFE6D5] overflow-hidden flex items-center justify-center p-0.5">
+                              <img src="${frame.jpg}" alt="${frame.alt}" width="320" height="420" loading="${idx < 2 ? "eager" : "lazy"}" decoding="async" class="w-full h-full object-contain" />
+                            </div>
+                            <div class="hero-thumb-caption px-2 py-1 text-[10px] font-semibold ${idx === 0 ? "bg-ink text-ivory" : "bg-[#FAF8F5] text-ink"} truncate">
+                              0${idx + 1}
+                            </div>
+                          </button>
+                        `).join("")}
+                      </div>
+                      <div class="pt-2 flex flex-wrap items-center gap-2.5">
+                        <button type="button" onclick="app.openProductDetail('jt-saree-09')" class="px-4 py-2.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light transition-colors shadow-xs">
+                          Inspect Full Saree Details →
+                        </button>
+                        <button type="button" onclick="app.navigate('shop')" class="px-4 py-2.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 text-xs font-semibold hover:bg-gold/25 transition-colors">
+                          Browse Saree Catalogue ↓
+                        </button>
+                      </div>
                     </div>
-                    <span id="saree-360-angle-badge" class="saree-360-angle-badge">360° Turntable • 0°</span>
-                    <img
-                      id="saree-360-poster-fallback"
-                      src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/saree-360/frames/frame-000.webp?v=360-v6"
-                      alt="Champagne Tissue Saree 360-degree turntable view"
-                      class="saree-360-poster-fallback"
-                      fetchpriority="high"
-                      decoding="async"
-                    />
-                    <canvas
-                      id="saree-360-canvas"
-                      class="saree-360-canvas"
-                      width="720"
-                      height="1280"
-                      aria-label="Champagne Tissue Saree 360-degree turntable view"
-                    ></canvas>
                   </div>
-                </div>
-
-                <div class="stage-vignette" aria-hidden="true"></div>
-
-                <!-- Minimal editorial captions (bottom-left soft ivory surface) -->
-                <div id="captions-hud" class="captions-hud caption-layer" aria-hidden="true">
-                  ${ShowcaseScrollEngine.framesConfig.map((frame, idx) => `
-                    <p class="caption-step ${idx === 0 ? "is-active" : ""}" data-index="${idx}" data-caption="${idx}">${frame.caption}</p>
-                  `).join("")}
-                </div>
-
-                <!-- Subtle initial scroll cue -->
-                <div id="scroll-cue" class="scroll-cue" aria-hidden="true">
-                  <span class="scroll-cue-label">Scroll</span>
-                  <span class="scroll-cue-line"></span>
                 </div>
               </div>
             </section>
@@ -2944,7 +2303,7 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-2 shrink-0">
                   <button type="button" onclick="app.navigate('home')" class="px-3.5 py-2 rounded-full bg-[#F5EFE4] text-ink border border-gold/45 text-xs font-semibold hover:bg-gold/20 transition-colors">
-                    ↑ 360° Showcase
+                    ↑ Studio Views
                   </button>
                 </div>
               </div>
