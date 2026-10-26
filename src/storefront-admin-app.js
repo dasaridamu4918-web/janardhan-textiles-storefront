@@ -1712,8 +1712,10 @@
     const isWishlisted = this.state.wishlistIds.has(pid);
 
     return `
-      <article data-product-card="${pid}" class="jt-product-card group flex flex-col overflow-hidden min-w-0">
-        <div class="lw-saree-photo-frame relative aspect-[3/4] bg-[#EFE6D5] overflow-hidden" style="${(saree.blurDataUrl || (firstGallerySlot && firstGallerySlot.blurDataUrl)) ? `background-image:url('${saree.blurDataUrl || firstGallerySlot.blurDataUrl}');background-size:cover;background-position:center;` : ''}">
+      <article data-product-card="${pid}" class="jt-product-card group bg-[#FAF8F5] rounded-2xl border ${
+      saree.isGeneratedSaree ? "border-2 border-gold shadow-md" : "border-gold/35 shadow-sm"
+    } hover:shadow-xl flex flex-col overflow-hidden min-w-0">
+        <div class="relative aspect-[3/4] bg-[#EFE6D5] overflow-hidden" style="${(saree.blurDataUrl || (firstGallerySlot && firstGallerySlot.blurDataUrl)) ? `background-image:url('${saree.blurDataUrl || firstGallerySlot.blurDataUrl}');background-size:cover;background-position:center;` : ''}">
           <img
             src="${primaryImg}"
             ${(saree.srcset || (firstGallerySlot && firstGallerySlot.srcset)) ? `srcset="${saree.srcset || firstGallerySlot.srcset}" sizes="(max-width: 640px) 48vw, (max-width: 1024px) 31vw, 24vw"` : ""}
@@ -1755,7 +1757,7 @@
             aria-pressed="${isWishlisted ? "true" : "false"}"
             aria-label="${isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}"
             onclick="event.stopPropagation(); app.toggleWishlist('${pid}', this)"
-            class="lw-btn-icon absolute top-2.5 right-2.5 w-8 h-8 sm:w-9 sm:h-9 rounded-full flex items-center justify-center"
+            class="absolute top-2.5 right-2.5 w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-ivory/90 backdrop-blur-xs border border-gold/40 flex items-center justify-center text-ink hover:border-gold shadow-sm transition-transform"
           >
             <svg class="w-4 h-4 ${isWishlisted ? "text-gold" : "text-ink"}" fill="${isWishlisted ? "#C4A15A" : "none"}" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
@@ -1763,11 +1765,11 @@
           </button>
         </div>
 
-        <div class="lw-card-info-glass p-3.5 sm:p-4 flex-grow flex flex-col justify-between space-y-3 min-w-0">
+        <div class="p-3 sm:p-4 flex-grow flex flex-col justify-between space-y-3 min-w-0">
           <div onclick="app.openProductDetail('${pid}')" class="cursor-pointer space-y-1.5 min-w-0">
             <div class="flex flex-wrap items-center gap-1 text-[11px] text-ink-muted">
-              ${saree.color ? `<span class="lw-glass-chip px-2.5 py-0.5 rounded-full font-semibold text-ink truncate" title="Colour: ${saree.color}">${saree.color}</span>` : ""}
-              ${saree.fabric ? `<span class="lw-glass-chip px-2.5 py-0.5 rounded-full font-medium text-ink truncate" title="Fabric: ${saree.fabric}">${saree.fabric}</span>` : ""}
+              ${saree.color ? `<span class="px-2 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/35 font-semibold text-ink truncate" title="Colour: ${saree.color}">${saree.color}</span>` : ""}
+              ${saree.fabric ? `<span class="px-2 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/35 font-medium text-ink truncate" title="Fabric: ${saree.fabric}">${saree.fabric}</span>` : ""}
               ${saree.occasion ? `<span class="px-2 py-0.5 rounded-full bg-ivory border border-gold/30 text-ink-muted truncate" title="Occasion: ${saree.occasion}">${saree.occasion}</span>` : ""}
             </div>
             <h3 class="font-serif text-base sm:text-lg font-semibold text-ink group-hover:text-teal transition-colors line-clamp-2 leading-snug break-words">
@@ -1796,7 +1798,7 @@
                     href="https://wa.me/919652262173?text=${encodeURIComponent(`Hi Lepakshi Weaves, please share the price and availability for ${saree.name} (SKU: ${pid}).`)}"
                     target="_blank"
                     rel="noopener noreferrer"
-                    class="lw-btn-secondary w-full py-2.5 px-3 rounded-full text-xs font-bold flex items-center justify-center gap-1.5"
+                    class="w-full py-2 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all bg-[#F5EFE4] text-ink border border-gold/60 hover:bg-gold/25"
                   >
                     <span>Enquire on WhatsApp</span>
                   </a>`
@@ -1805,13 +1807,13 @@
                     data-add-cart-btn="${pid}"
                     onclick="app.addToCart('${pid}', 1, this)"
                     ${outOfStock ? "disabled" : ""}
-                    class="${
+                    class="w-full py-2 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 transition-all ${
                       outOfStock
-                        ? "w-full py-2.5 px-3 rounded-full text-xs font-semibold flex items-center justify-center gap-1.5 bg-sand-deep/50 text-ink-muted cursor-not-allowed"
-                        : "lw-btn-primary w-full py-2.5 px-3 rounded-full text-xs font-bold flex items-center justify-center gap-1.5"
+                        ? "bg-sand-deep/50 text-ink-muted cursor-not-allowed"
+                        : "bg-teal text-ivory hover:bg-teal-light active:scale-95 shadow-xs"
                     }"
                   >
-                    <svg class="w-3.5 h-3.5 text-ink shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
+                    <svg class="w-3.5 h-3.5 text-gold shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
                     <span>${outOfStock ? "Out of stock" : "Add to Cart"}</span>
                   </button>`
             }
@@ -2135,7 +2137,7 @@
 
       <div class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 space-y-12 pb-8">
         <!-- Shop by Fabric & Occasion Collection Links + React Bits FlowingMenu (from /api/filters & /api/products) -->
-        <section id="home-flowing-menu-section" class="lw-glass-panel rounded-3xl p-4 sm:p-8 space-y-6" aria-label="Saree Collections by Fabric and Occasion">
+        <section id="home-flowing-menu-section" class="rounded-3xl bg-[#FAF8F5] border border-gold/40 p-4 sm:p-8 shadow-sm space-y-6" aria-label="Saree Collections by Fabric and Occasion">
           <div class="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div>
               <span class="text-xs font-bold uppercase tracking-widest text-teal">Curated Loom Collections • Flowing Menu</span>
@@ -2288,7 +2290,7 @@
         </section>
 
         <!-- Honest Trust Strip (Real policy & shipping data only) -->
-        <section class="lw-glass-panel rounded-3xl p-5 sm:p-8" aria-label="Store Policies and Support">
+        <section class="rounded-3xl bg-[#F5EFE4] border border-gold/50 p-5 sm:p-8 shadow-sm" aria-label="Store Policies and Support">
           <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div class="flex items-start gap-3.5">
               <div class="w-10 h-10 rounded-2xl bg-teal text-gold flex items-center justify-center shrink-0 font-serif font-bold">01</div>
@@ -2427,7 +2429,7 @@
         ${chips
           .map(
             (chip) => `
-          <span class="lw-glass-chip inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold text-ink">
+          <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#FAF8F5] border border-gold/50 text-xs font-semibold text-ink shadow-2xs">
             <span>${chip.label}</span>
             <button
               type="button"
@@ -2978,21 +2980,86 @@
   app.renderShowcaseAndShopPage = function () {
     const cq = this.state.catalogueQuery;
     const isPaused = window.CatalogBgAnimation ? Boolean(window.CatalogBgAnimation.userPaused) : false;
-    const base = window.__ASSET_BASE_PATH__ || "";
     return `
       <div class="page-transition">
-        <!-- 1. HOME COLLECTIONS, FEATURED, NEW ARRIVALS, BESTSELLERS & TRUST STRIP -->
-        <div id="home-api-collections-container" class="pt-4 sm:pt-6">
+        <!-- 1. FEATURED SAREE 5-VIEW STUDIO GALLERY (No 360° turntable, no scroll-trapping) -->
+        <section id="showcase-section" class="showcase-section" aria-label="Featured Saree Studio Views">
+          <div id="showcase-stage" class="showcase-stage">
+            <div class="rounded-3xl bg-[#FAF8F5] border border-gold/45 p-4 sm:p-6 shadow-sm">
+              <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                <div class="lg:col-span-7">
+                  <div class="relative aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-[#EFE6D5] border border-gold/35 overflow-hidden flex items-center justify-center">
+                    <img
+                      id="hero-showcase-main-img"
+                      src="${ShowcaseScrollEngine.framesConfig[0].jpg}"
+                      alt="${ShowcaseScrollEngine.framesConfig[0].alt}"
+                      width="1792"
+                      height="2400"
+                      fetchpriority="high"
+                      decoding="async"
+                      class="w-full h-full object-contain"
+                    />
+                    <p id="hero-showcase-caption" class="absolute bottom-2.5 left-2.5 right-2.5 sm:right-auto px-3 py-1 rounded-full bg-[#FAF8F5]/95 border border-gold/50 text-[11px] sm:text-xs font-serif italic text-ink shadow-xs truncate">
+                      ${ShowcaseScrollEngine.framesConfig[0].caption}
+                    </p>
+                  </div>
+                </div>
+                <div class="lg:col-span-5 space-y-3">
+                  <span class="text-[11px] font-bold uppercase tracking-widest text-teal block">Lepakshi Weaves • Studio Views</span>
+                  <h1 class="font-serif text-2xl sm:text-3xl font-bold text-ink leading-snug">Champagne Tissue Saree with Floral &amp; Peacock Embroidery</h1>
+                  <p class="text-xs sm:text-sm text-ink-muted leading-relaxed">Select any thumbnail below or use the Left and Right arrow keys to inspect the front drape, back pallu, embroidery close-up, weave macro, and blouse border.</p>
+                  <div id="hero-showcase-thumbs" class="grid grid-cols-5 gap-2 pt-1" role="tablist" aria-label="Featured Saree Studio Views">
+                    ${ShowcaseScrollEngine.framesConfig
+                      .map(
+                        (frame, idx) => `
+                      <button
+                        type="button"
+                        role="tab"
+                        aria-selected="${idx === 0 ? "true" : "false"}"
+                        aria-label="${frame.caption}"
+                        onclick="ShowcaseScrollEngine.setActiveStep(${idx})"
+                        onkeydown="ShowcaseScrollEngine.handleThumbKeydown(event, ${idx})"
+                        class="text-left rounded-xl overflow-hidden border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                          idx === 0 ? "is-active-thumb border-ink ring-2 ring-gold" : "border-gold/35 opacity-80 hover:opacity-100"
+                        }"
+                      >
+                        <div class="aspect-[4/5] bg-[#EFE6D5] overflow-hidden flex items-center justify-center p-0.5">
+                          <img src="${frame.jpg}" alt="${frame.alt}" width="320" height="420" loading="${idx < 2 ? "eager" : "lazy"}" decoding="async" class="w-full h-full object-contain" />
+                        </div>
+                        <div class="hero-thumb-caption px-2 py-1 text-[10px] font-semibold ${idx === 0 ? "bg-ink text-ivory" : "bg-[#FAF8F5] text-ink"} truncate">
+                          0${idx + 1}
+                        </div>
+                      </button>
+                    `
+                      )
+                      .join("")}
+                  </div>
+                  <div class="pt-2 flex flex-wrap items-center gap-2.5">
+                    <button type="button" onclick="app.openProductDetail('jt-saree-09')" class="px-4 py-2.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light transition-colors shadow-xs">
+                      Inspect Full Saree Details →
+                    </button>
+                    <button type="button" onclick="app.navigate('shop')" class="px-4 py-2.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 text-xs font-semibold hover:bg-gold/25 transition-colors">
+                      Browse Saree Catalogue ↓
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 2. HOME COLLECTIONS, FEATURED, NEW ARRIVALS, BESTSELLERS & TRUST STRIP -->
+        <div id="home-api-collections-container">
           ${this.renderHomeCollectionsAndSections()}
         </div>
 
-        <!-- 2. FULL CATALOGUE SECTION WITH SUBTLY BLURRED LOOPING SAREE VIDEO & LIQUID-GLASS FOREGROUND -->
+        <!-- 3. FULL CATALOGUE SECTION WITH LOOPING SAREE BACKGROUND ANIMATION -->
         <section id="catalogue-section" class="catalog-animated-section border-t border-gold/30 py-8 sm:py-12" aria-label="Saree Catalogue">
-          <!-- Decorative Background Video Layer (z-index below foreground, pointer-events: none) -->
+          <!-- Decorative Background Animation Layer (z-index below foreground, pointer-events: none) -->
           <div id="catalog-bg-layer" class="catalog-bg-layer" aria-hidden="true">
             <img
               id="catalog-bg-poster"
-              src="${base}/public/assets/catalog-bg/poster.webp"
+              src="${window.__ASSET_BASE_PATH__ || ""}/public/assets/catalog-bg/poster.webp"
               alt=""
               width="1280"
               height="720"
@@ -3000,31 +3067,22 @@
               decoding="async"
               class="catalog-bg-poster"
             />
-            <video
-              id="catalog-bg-video"
-              class="catalog-bg-video"
-              muted
-              loop
-              playsinline
-              preload="none"
-              poster="${base}/public/assets/catalog-bg/poster.webp"
+            <canvas
+              id="catalog-bg-canvas"
+              class="catalog-bg-canvas"
               width="1280"
               height="720"
               aria-hidden="true"
-              tabindex="-1"
-            >
-              <source data-src="${base}/public/assets/catalog-bg/saree-catalog-bg.webm" type="video/webm" />
-              <source data-src="${base}/public/assets/catalog-bg/saree-catalog-bg.mp4" type="video/mp4" />
-            </video>
+            ></canvas>
             <div class="catalog-bg-overlay" aria-hidden="true"></div>
           </div>
 
           <!-- Foreground Catalog Content -->
           <div class="catalog-fg-content max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-            <div class="lw-glass-panel p-4 sm:p-6 mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+            <div class="mb-5 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
               <div>
-                <span class="text-xs font-bold uppercase tracking-widest text-teal">Lepakshi Weaves • ~600 Power Looms</span>
-                <h1 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-ink mt-0.5">Saree Catalogue</h1>
+                <span class="text-xs font-bold uppercase tracking-widest text-[#E8CFA0]">Lepakshi Weaves • ~600 Power Looms</span>
+                <h2 id="catalogue-heading" class="font-serif text-2xl sm:text-4xl font-semibold text-[#FAF6EE] mt-0.5">Saree Catalogue</h2>
               </div>
 
               <!-- Mobile Filter Trigger + Desktop Pause Animation Toggle + Sort Dropdown -->
@@ -3034,7 +3092,7 @@
                   type="button"
                   onclick="CatalogBgAnimation.toggleUserPause()"
                   aria-pressed="${isPaused ? "true" : "false"}"
-                  class="lw-btn-secondary hidden md:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold"
+                  class="hidden md:inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#FAF8F5]/95 text-ink border border-gold/60 text-xs font-semibold shadow-2xs hover:bg-ivory focus:outline-none focus-visible:ring-2 focus-visible:ring-gold focus-visible:ring-offset-2 focus-visible:ring-offset-[#191113] transition-colors"
                 >
                   <span id="catalog-bg-toggle-icon" aria-hidden="true">${isPaused ? "▶" : "⏸"}</span>
                   <span id="catalog-bg-toggle-label">${isPaused ? "Play animation" : "Pause animation"}</span>
@@ -3043,18 +3101,18 @@
                 <button
                   type="button"
                   onclick="app.openMobileFilterSheet()"
-                  class="lw-btn-secondary lg:hidden px-3.5 py-2 rounded-full text-xs font-semibold flex items-center gap-1.5"
+                  class="lg:hidden px-3.5 py-2 rounded-xl bg-[#FAF8F5] text-ink border border-gold/50 text-xs font-semibold flex items-center gap-1.5 shadow-2xs"
                 >
                   <svg class="w-4 h-4 text-teal" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/></svg>
                   <span>Filters</span>
                 </button>
 
-                <div class="lw-glass-pill flex items-center gap-1.5 px-3.5 py-1.5 rounded-full">
+                <div class="flex items-center gap-1.5 bg-[#FAF8F5]/95 px-3 py-1.5 rounded-xl border border-gold/50 shadow-2xs">
                   <label for="catalogue-sort-select" class="text-xs font-semibold text-ink">Sort:</label>
                   <select
                     id="catalogue-sort-select"
                     onchange="app.setSingleCatalogueFilter('sort', this.value)"
-                    class="bg-transparent text-ink text-xs font-semibold focus:outline-none rounded"
+                    class="bg-transparent text-ink text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold rounded"
                   >
                     <option value="newest" ${cq.sort === "newest" ? "selected" : ""}>Newest Arrivals</option>
                     <option value="price_asc" ${cq.sort === "price_asc" ? "selected" : ""}>Price: Low to High</option>
@@ -3071,8 +3129,8 @@
             </div>
 
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              <!-- Desktop Left Sidebar FilterPanel (Liquid-Glass Panel) -->
-              <aside id="catalogue-desktop-sidebar" class="lw-glass-panel hidden lg:block lg:col-span-3 p-5 sticky top-20">
+              <!-- Desktop Left Sidebar FilterPanel -->
+              <aside id="catalogue-desktop-sidebar" class="hidden lg:block lg:col-span-3 bg-[#FAF8F5] rounded-2xl border border-gold/40 p-5 shadow-xs sticky top-20">
                 ${this.renderFilterPanelContent("desktop")}
               </aside>
 
@@ -3099,7 +3157,7 @@
     const pages = res.pages || 1;
 
     return `
-      <div class="lw-glass-panel flex items-center justify-between text-xs text-ink px-4 py-2.5 rounded-full mb-4">
+      <div class="flex items-center justify-between text-xs text-ink bg-[#FAF8F5]/95 border border-gold/45 px-3.5 py-2 rounded-xl shadow-2xs mb-3">
         <span>Showing <strong>${items.length}</strong> of <strong>${total}</strong> sarees (Page ${page} of ${pages})</span>
         ${
           total !== this.state.products.length
@@ -3128,7 +3186,7 @@
         ${
           pages > 1
             ? `
-          <div class="lw-glass-panel mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 p-4">
+          <div class="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-[#FAF8F5] rounded-2xl border border-gold/35 p-4">
             <div class="flex items-center gap-1.5">
               <button
                 type="button"
@@ -3383,8 +3441,8 @@
             </div>
           </div>
 
-          <!-- RIGHT COLUMN: Saree Specifications (Liquid-Glass Panel; Saree Gallery Photo stays clean & solid) -->
-          <div class="lw-glass-panel lg:col-span-5 p-4 sm:p-8 space-y-5 min-w-0">
+          <!-- RIGHT COLUMN: Saree Specifications (Only render non-empty fields from API) -->
+          <div class="lg:col-span-5 bg-[#FAF8F5] rounded-2xl border border-gold/40 p-4 sm:p-8 shadow-sm space-y-5 min-w-0">
             <div class="space-y-2 border-b border-gold/25 pb-4">
               <div class="flex items-center justify-between gap-2">
                 <span class="px-2.5 py-0.5 rounded-full bg-[#F5EFE4] border border-gold/40 text-ink font-semibold text-xs">
