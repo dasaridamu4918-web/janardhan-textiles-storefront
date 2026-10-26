@@ -419,326 +419,23 @@
       }
     }
 
-    /* ==========================================================================
-       LEPAKSHI WEAVES — LIQUID-GLASS DESIGN TOKENS & COMPONENT SYSTEM
-       Inspired by the Liquid Glass Kit UI reference:
-       - Warm ivory & pearl ambient canvas
-       - Translucent frosted-glass panels with 1.5px top-left white specular rim
-       - Gentle lavender & aqua refractive edge highlights + soft layered shadows
-       - Clean, solid, unblurred frames for all saree photography
-       ========================================================================== */
-    :root {
-      /* Surfaces (Warm Ivory & Pearl) */
-      --lw-bg-ivory: #FAF6EE;
-      --lw-bg-pearl: #FDFBF7;
-      --lw-saree-photo-surface: #EFE6D5;
-      --lw-glass-bg: rgba(255, 253, 250, 0.68);
-      --lw-glass-bg-strong: rgba(255, 254, 251, 0.80);
-      --lw-glass-bg-subtle: rgba(255, 252, 247, 0.58);
-      --lw-glass-solid-fallback: #FAF8F5;
-
-      /* Backdrop Blur */
-      --lw-glass-blur-sm: 14px;
-      --lw-glass-blur: 18px;
-      --lw-glass-blur-lg: 22px;
-
-      /* Corner Radii */
-      --lw-radius-control: 18px;
-      --lw-radius-card: 24px;
-      --lw-radius-panel: 28px;
-      --lw-radius-pill: 9999px;
-
-      /* Accents & Typography (WCAG AA+ Dark Text on Light Glass) */
-      --lw-gold-primary: #C4A15A;
-      --lw-gold-bright: #EDD38C;
-      --lw-gold-deep: #9B7830;
-      --lw-wine: #6B1D2F;
-      --lw-wine-deep: #4F1321;
-      --lw-indigo: #1E243B;
-      --lw-text-primary: #1D1614;
-      --lw-text-secondary: #4A3D36;
-      --lw-text-muted: #5E4F47;
-
-      /* Specular Borders & Lavender / Aqua / Champagne-Gold Edge Highlights */
-      --lw-glass-border-inner: rgba(255, 255, 255, 0.94);
-      --lw-glass-border-outer: rgba(210, 185, 130, 0.42);
-      --lw-glow-lavender: rgba(167, 139, 250, 0.30);
-      --lw-glow-aqua: rgba(110, 231, 218, 0.28);
-      --lw-glow-gold: rgba(196, 161, 90, 0.36);
-
-      /* Tactile 3D Liquid-Glass Layered Shadows & Focus Ring */
-      --lw-shadow-glass:
-        0 16px 36px -10px rgba(34, 24, 18, 0.11),
-        0 4px 12px -2px rgba(34, 24, 18, 0.06),
-        0 0 18px -6px var(--lw-glow-lavender),
-        0 0 16px -6px var(--lw-glow-aqua),
-        inset 0 1.5px 1px 0 var(--lw-glass-border-inner),
-        inset 1.5px 0 1px 0 rgba(255, 255, 255, 0.78),
-        inset 0 -1.5px 2px 0 rgba(110, 231, 218, 0.22),
-        inset -1.5px 0 2px 0 rgba(167, 139, 250, 0.20);
-      --lw-shadow-glass-hover:
-        0 20px 42px -10px rgba(34, 24, 18, 0.15),
-        0 0 22px -4px var(--lw-glow-lavender),
-        0 0 20px -4px var(--lw-glow-aqua),
-        inset 0 2px 1.5px 0 #FFFFFF,
-        inset 0 -1.5px 2.5px 0 rgba(110, 231, 218, 0.34),
-        inset -1.5px 0 2.5px 0 rgba(167, 139, 250, 0.32);
-      --lw-focus-ring:
-        0 0 0 2px var(--lw-bg-pearl),
-        0 0 0 4px var(--lw-gold-primary),
-        0 0 16px 3px var(--lw-glow-aqua);
-
-      /* Catalog Video Translucent Pearl Veil (lets the saree video shimmer through clearly) */
-      --lw-catalog-overlay-top: rgba(250, 246, 238, 0.62);
-      --lw-catalog-overlay-mid: rgba(250, 246, 238, 0.46);
-      --lw-catalog-overlay-bottom: rgba(250, 246, 238, 0.64);
-      --lw-catalog-video-blur: 1.5px;
-
-      /* Smooth Interaction Timing (150-250ms) */
-      --lw-transition: 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    /* Hero Studio Showcase (5-view saree gallery, normal document flow, zero scroll-trapping) */
+    .showcase-section {
+      padding: 1rem 0 0.5rem;
     }
 
-    /* Ambient Warm Ivory & Pearl Page Surface with Subtle Iridescent Light Pools */
-    body.woven-bg {
-      background-color: var(--lw-bg-ivory);
-      background-image:
-        radial-gradient(circle at 14% 12%, rgba(167, 139, 250, 0.09) 0%, transparent 38%),
-        radial-gradient(circle at 86% 18%, rgba(110, 231, 218, 0.09) 0%, transparent 40%),
-        radial-gradient(circle at 50% 60%, rgba(212, 175, 55, 0.08) 0%, transparent 50%),
-        linear-gradient(135deg, rgba(196, 161, 90, 0.04) 25%, transparent 25%),
-        linear-gradient(225deg, rgba(196, 161, 90, 0.04) 25%, transparent 25%);
-      background-size: 100% 100%, 100% 100%, 100% 100%, 36px 36px, 36px 36px;
+    .showcase-stage {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0.75rem 0.75rem 1.25rem;
     }
 
-    /* Sticky Frosted-Glass Header & Navigation */
-    .lw-glass-header {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.84) 0%, rgba(252, 249, 242, 0.74) 100%) !important;
-      backdrop-filter: blur(var(--lw-glass-blur-lg)) saturate(145%);
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur-lg)) saturate(145%);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.85) !important;
-      box-shadow:
-        0 10px 28px -8px rgba(34, 24, 18, 0.09),
-        0 1px 0 0 rgba(196, 161, 90, 0.30),
-        inset 0 -1px 0 0 rgba(110, 231, 218, 0.22);
-    }
-
-    .lw-glass-nav {
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.78) 0%, rgba(250, 246, 238, 0.64) 65%, rgba(243, 240, 255, 0.66) 100%) !important;
-      backdrop-filter: blur(var(--lw-glass-blur-sm));
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur-sm));
-      border: 1px solid rgba(255, 255, 255, 0.88) !important;
-      border-radius: var(--lw-radius-pill) !important;
-      box-shadow: var(--lw-shadow-glass);
-    }
-
-    /* Frosted 3D Liquid-Glass Panels (Filters, Sort Bar, Spec Panels, Modals, Footer Card) */
-    .lw-glass-panel {
-      background:
-        radial-gradient(120% 100% at 0% 0%, rgba(255, 255, 255, 0.82) 0%, transparent 55%),
-        radial-gradient(100% 100% at 100% 100%, rgba(167, 139, 250, 0.11) 0%, rgba(110, 231, 218, 0.11) 48%, transparent 78%),
-        var(--lw-glass-bg-strong) !important;
-      backdrop-filter: blur(var(--lw-glass-blur)) saturate(145%);
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur)) saturate(145%);
-      border: 1px solid rgba(255, 255, 255, 0.86) !important;
-      border-radius: var(--lw-radius-panel);
-      box-shadow: var(--lw-shadow-glass);
-      transition: box-shadow var(--lw-transition), border-color var(--lw-transition), transform var(--lw-transition);
-    }
-
-    /* Pill Search Input, Filter Chips, Tabs & Sort Controls */
-    .lw-glass-search,
-    .lw-glass-pill,
-    .lw-glass-chip {
-      background:
-        linear-gradient(180deg, rgba(255, 255, 255, 0.88) 0%, rgba(250, 247, 240, 0.74) 100%) !important;
-      backdrop-filter: blur(var(--lw-glass-blur-sm));
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur-sm));
-      border: 1px solid rgba(255, 255, 255, 0.90) !important;
-      border-radius: var(--lw-radius-pill) !important;
-      color: var(--lw-text-primary);
-      box-shadow:
-        0 6px 16px -4px rgba(34, 24, 18, 0.08),
-        0 0 12px -4px var(--lw-glow-lavender),
-        inset 0 1.5px 1px 0 #FFFFFF,
-        inset 0 -1px 1.5px 0 rgba(110, 231, 218, 0.22);
-      transition: all var(--lw-transition);
-    }
-
-    .lw-glass-search:hover,
-    .lw-glass-pill:hover,
-    .lw-glass-chip:hover {
-      border-color: var(--lw-gold-primary) !important;
-      box-shadow: var(--lw-shadow-glass-hover);
-    }
-
-    .lw-glass-search:focus,
-    .lw-glass-search:focus-visible,
-    .lw-glass-pill:focus-visible,
-    .lw-glass-chip:focus-visible {
-      outline: none !important;
-      border-color: var(--lw-gold-primary) !important;
-      box-shadow: var(--lw-focus-ring) !important;
-    }
-
-    /* Product Cards: Clean unblurred photo frame + Sculpted 3D Liquid-Glass info panel below */
-    .jt-product-card {
-      background:
-        radial-gradient(110% 90% at 100% 100%, rgba(167, 139, 250, 0.12) 0%, rgba(110, 231, 218, 0.12) 45%, transparent 75%),
-        var(--lw-glass-bg-strong) !important;
-      border: 1px solid rgba(255, 255, 255, 0.88) !important;
-      border-radius: var(--lw-radius-card) !important;
-      box-shadow: var(--lw-shadow-glass);
-      transition: transform var(--lw-transition), box-shadow var(--lw-transition), border-color var(--lw-transition);
-    }
-
-    .jt-product-card:hover {
-      transform: translateY(-3px);
-      border-color: rgba(255, 255, 255, 0.98) !important;
-      box-shadow: var(--lw-shadow-glass-hover);
-    }
-
-    /* Saree photos ALWAYS sit on clean, solid, unblurred surfaces */
-    .lw-saree-photo-frame {
-      background-color: var(--lw-saree-photo-surface) !important;
-      backdrop-filter: none !important;
-      -webkit-backdrop-filter: none !important;
-      filter: none !important;
-    }
-
-    .lw-card-info-glass {
-      background:
-        radial-gradient(120% 100% at 0% 0%, rgba(255, 255, 255, 0.85) 0%, transparent 60%),
-        radial-gradient(100% 100% at 100% 100%, rgba(167, 139, 250, 0.12) 0%, rgba(110, 231, 218, 0.12) 50%, transparent 80%),
-        linear-gradient(180deg, rgba(255, 254, 250, 0.82) 0%, rgba(250, 246, 238, 0.72) 100%);
-      backdrop-filter: blur(var(--lw-glass-blur-sm)) saturate(140%);
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur-sm)) saturate(140%);
-      border-top: 1px solid rgba(255, 255, 255, 0.92);
-    }
-
-    /* Primary Button: Tactile 3D Champagne-Gold Liquid-Glass Capsule */
-    .lw-btn-primary {
-      background:
-        linear-gradient(180deg, #F0D996 0%, #D4B05E 52%, #BA923E 100%) !important;
-      color: var(--lw-text-primary) !important;
-      border: 1px solid rgba(255, 255, 255, 0.82) !important;
-      border-radius: var(--lw-radius-pill) !important;
-      box-shadow:
-        0 10px 22px -5px rgba(186, 146, 62, 0.45),
-        0 2px 6px -1px rgba(167, 139, 250, 0.22),
-        inset 0 2px 1.5px 0 rgba(255, 255, 255, 0.88),
-        inset 0 -2px 2px 0 rgba(128, 92, 24, 0.25);
-      transition: transform var(--lw-transition), box-shadow var(--lw-transition), filter var(--lw-transition);
-    }
-
-    .lw-btn-primary:hover:not(:disabled) {
-      filter: brightness(1.04);
-      transform: translateY(-1px);
-      box-shadow:
-        0 14px 28px -5px rgba(186, 146, 62, 0.55),
-        0 0 18px -2px var(--lw-glow-lavender),
-        0 0 16px -2px var(--lw-glow-aqua),
-        inset 0 2px 2px 0 #FFFFFF;
-    }
-
-    .lw-btn-primary:active:not(:disabled) {
-      transform: scale(0.98);
-    }
-
-    .lw-btn-primary:focus-visible {
-      outline: none !important;
-      box-shadow: var(--lw-focus-ring) !important;
-    }
-
-    .lw-btn-primary:disabled {
-      opacity: 0.52;
-      cursor: not-allowed;
-      box-shadow: none;
-    }
-
-    /* Secondary Button: Tactile Frosted Pearl-Aqua-Lavender Liquid-Glass Capsule */
-    .lw-btn-secondary {
-      background:
-        linear-gradient(135deg, rgba(255, 255, 255, 0.88) 0%, rgba(242, 252, 250, 0.74) 52%, rgba(245, 240, 255, 0.76) 100%) !important;
-      color: var(--lw-text-primary) !important;
-      backdrop-filter: blur(var(--lw-glass-blur-sm));
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur-sm));
-      border: 1px solid rgba(255, 255, 255, 0.92) !important;
-      border-radius: var(--lw-radius-pill) !important;
-      box-shadow:
-        0 8px 20px -5px rgba(34, 24, 18, 0.10),
-        0 0 14px -4px var(--lw-glow-aqua),
-        inset 0 2px 1.5px 0 #FFFFFF,
-        inset 0 -1.5px 2px 0 rgba(110, 231, 218, 0.28),
-        inset -1.5px 0 2px 0 rgba(167, 139, 250, 0.26);
-      transition: transform var(--lw-transition), box-shadow var(--lw-transition), border-color var(--lw-transition), background var(--lw-transition);
-    }
-
-    .lw-btn-secondary:hover:not(:disabled) {
-      transform: translateY(-1px);
-      border-color: var(--lw-gold-primary) !important;
-      box-shadow: var(--lw-shadow-glass-hover);
-    }
-
-    .lw-btn-secondary:active:not(:disabled) {
-      transform: scale(0.98);
-    }
-
-    .lw-btn-secondary:focus-visible {
-      outline: none !important;
-      box-shadow: var(--lw-focus-ring) !important;
-    }
-
-    /* Round 3D Glass Droplet Icon Button (like the + and > circular glass buttons in the reference) */
-    .lw-btn-icon {
-      background:
-        radial-gradient(circle at 30% 25%, #FFFFFF 0%, rgba(255, 253, 249, 0.82) 55%, rgba(236, 248, 246, 0.75) 100%) !important;
-      color: var(--lw-text-primary) !important;
-      backdrop-filter: blur(var(--lw-glass-blur-sm));
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur-sm));
-      border: 1px solid rgba(255, 255, 255, 0.92) !important;
-      border-radius: var(--lw-radius-pill) !important;
-      box-shadow:
-        0 8px 18px -4px rgba(34, 24, 18, 0.14),
-        0 0 12px -3px var(--lw-glow-lavender),
-        inset 0 2px 1.5px 0 #FFFFFF,
-        inset 0 -1.5px 2px 0 rgba(110, 231, 218, 0.28);
-      transition: transform var(--lw-transition), box-shadow var(--lw-transition), border-color var(--lw-transition);
-    }
-
-    .lw-btn-icon:hover:not(:disabled) {
-      transform: translateY(-1px) scale(1.03);
-      border-color: var(--lw-gold-primary) !important;
-      box-shadow: var(--lw-shadow-glass-hover);
-    }
-
-    .lw-btn-icon:active:not(:disabled) {
-      transform: scale(0.95);
-    }
-
-    .lw-btn-icon:focus-visible {
-      outline: none !important;
-      box-shadow: var(--lw-focus-ring) !important;
-    }
-
-    /* Frosted-Glass Toast Notification */
-    .lw-glass-toast {
-      background: var(--lw-glass-bg-strong) !important;
-      backdrop-filter: blur(var(--lw-glass-blur)) saturate(145%);
-      -webkit-backdrop-filter: blur(var(--lw-glass-blur)) saturate(145%);
-      border: 1px solid rgba(255, 255, 255, 0.92) !important;
-      border-radius: var(--lw-radius-control);
-      color: var(--lw-text-primary) !important;
-      box-shadow: var(--lw-shadow-glass-hover);
-    }
-
-    /* Catalog Background Video Layer (behind #catalogue-section, pointer-events: none) */
+    /* Catalog Background Animation Layer (behind #catalogue-section, pointer-events: none) */
     #catalogue-section.catalog-animated-section {
       position: relative;
       isolation: isolate;
       clip-path: inset(0);
-      background-color: var(--lw-bg-ivory);
+      background-color: #191113;
     }
 
     .catalog-bg-layer {
@@ -750,11 +447,11 @@
       pointer-events: none;
       overflow: hidden;
       user-select: none;
-      background-color: var(--lw-bg-ivory);
+      background-color: #191113;
     }
 
     .catalog-bg-poster,
-    .catalog-bg-video {
+    .catalog-bg-canvas {
       position: absolute;
       inset: 0;
       width: 100%;
@@ -765,8 +462,6 @@
       pointer-events: none;
       user-select: none;
       -webkit-user-drag: none;
-      filter: blur(var(--lw-catalog-video-blur)) saturate(1.08);
-      transform: scale(1.02);
     }
 
     .catalog-bg-poster {
@@ -774,34 +469,28 @@
       opacity: 1;
     }
 
-    .catalog-bg-video {
+    .catalog-bg-canvas {
       z-index: 2;
       opacity: 0;
-      transition: opacity 0.45s ease;
+      transition: opacity 0.35s ease;
     }
 
-    .catalog-bg-video.is-ready {
+    .catalog-bg-canvas.is-ready {
       opacity: 1;
     }
 
     /* Mobile, reduced-motion, or static fallback: show still poster only */
     @media (max-width: 767px), (prefers-reduced-motion: reduce) {
-      .catalog-bg-video {
+      .catalog-bg-canvas {
         display: none !important;
-      }
-      /* Keep mobile scrolling light by reducing backdrop blur radius */
-      .lw-glass-panel,
-      .lw-card-info-glass {
-        backdrop-filter: blur(8px);
-        -webkit-backdrop-filter: blur(8px);
       }
     }
 
-    .catalog-bg-layer.is-static-fallback .catalog-bg-video {
+    .catalog-bg-layer.is-static-fallback .catalog-bg-canvas {
       display: none !important;
     }
 
-    /* Translucent Warm Pearl Veil over the saree video so the video shimmers behind the frosted-glass cards */
+    /* Soft dark overlay for WCAG AA contrast while preserving true champagne-gold saree colours */
     .catalog-bg-overlay {
       position: absolute;
       inset: 0;
@@ -810,32 +499,18 @@
       background:
         linear-gradient(
           180deg,
-          var(--lw-catalog-overlay-top) 0%,
-          var(--lw-catalog-overlay-mid) 48%,
-          var(--lw-catalog-overlay-bottom) 100%
+          rgba(22, 14, 16, 0.80) 0%,
+          rgba(22, 14, 16, 0.66) 40%,
+          rgba(22, 14, 16, 0.72) 75%,
+          rgba(22, 14, 16, 0.84) 100%
         );
+      backdrop-filter: blur(1.5px);
+      -webkit-backdrop-filter: blur(1.5px);
     }
 
     .catalog-fg-content {
       position: relative;
       z-index: 10;
-    }
-
-    /* Fallback for browsers or low-power devices without backdrop-filter support */
-    @supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-      .lw-glass-header,
-      .lw-glass-nav,
-      .lw-glass-panel,
-      .lw-glass-search,
-      .lw-glass-pill,
-      .lw-glass-chip,
-      .lw-card-info-glass,
-      .lw-btn-secondary,
-      .lw-btn-icon,
-      .lw-glass-toast {
-        background: var(--lw-glass-solid-fallback) !important;
-        border: 1px solid rgba(196, 161, 90, 0.45) !important;
-      }
     }
 
     /* Fixed-frame Saree Product Gallery with 350-450ms Crossfade & 1.02 to 1.00 Subtle Zoom Settle */
@@ -1002,7 +677,7 @@
   <a href="#app-viewport" class="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[100] focus:px-4 focus:py-2 focus:rounded-xl focus:bg-teal focus:text-gold focus:font-bold">Skip to main content</a>
 
   <!-- Sticky Storefront Header with Prominent Search, Navigation, Wishlist, Account & Cart -->
-  <header class="lw-glass-header sticky top-0 z-40 w-full max-w-full overflow-x-clip">
+  <header class="sticky top-0 z-40 w-full max-w-full overflow-x-clip bg-[#FAF8F5]/95 backdrop-blur-md border-b border-gold/40 shadow-[0_1px_8px_rgba(35,29,22,0.06)]">
     <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8 h-14 sm:h-16 flex items-center justify-between gap-1.5 sm:gap-3">
       <!-- Brand Logo (Present across all pages) -->
       <button id="header-brand-btn" onclick="app.navigate('home')" class="min-w-0 shrink-0 flex items-center text-left group focus:outline-none focus-visible:ring-2 focus-visible:ring-gold rounded-lg py-1" aria-label="Lepakshi Weaves home">
@@ -1024,7 +699,7 @@
           placeholder="Search 600-loom sarees, fabric, colour..."
           oninput="app.handleHeaderSearchInput(this.value)"
           onkeydown="if(event.key==='Enter'){ event.preventDefault(); app.submitHeaderSearch(this.value); }"
-          class="lw-glass-search w-full pl-9 pr-8 py-2 rounded-full text-xs text-ink placeholder:text-ink-muted transition-all"
+          class="w-full pl-9 pr-8 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/45 text-xs text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-gold transition-all"
         />
         <svg class="w-3.5 h-3.5 text-ink-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
         <button
@@ -1037,9 +712,9 @@
       </div>
 
       <!-- Desktop Navigation -->
-      <nav class="lw-glass-nav hidden xl:flex items-center gap-1 px-1.5 py-1 rounded-full shrink-0" aria-label="Primary Navigation">
+      <nav class="hidden xl:flex items-center gap-0.5 bg-[#F3ECE0]/90 px-1.5 py-1 rounded-full border border-gold/40 shrink-0" aria-label="Primary Navigation">
         <button onclick="app.navigate('home')" data-nav="home" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Home</button>
-        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="lw-btn-primary px-3 py-1.5 rounded-full text-xs font-bold">Shop Collections</button>
+        <button id="header-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="px-2.5 py-1.5 rounded-full text-xs font-semibold text-ink bg-gold/25 border border-gold/60 hover:bg-gold/40 transition-colors">Shop Collections</button>
         <button onclick="app.navigate('shop')" data-nav="shop" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Catalogue</button>
         <button onclick="app.navigate('orders')" data-nav="orders" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">My Orders</button>
         <button onclick="app.navigate('wholesale')" data-nav="wholesale" class="nav-link px-2.5 py-1.5 rounded-full text-xs font-medium text-ink hover:bg-gold/20 transition-colors">Wholesale</button>
@@ -1052,24 +727,45 @@
           id="tablet-shop-collections-btn"
           type="button"
           onclick="app.openFlowingMenuModal()"
-          class="lw-btn-primary hidden md:inline-flex xl:hidden px-3 h-8 sm:h-9 items-center rounded-full text-xs font-bold"
+          class="hidden md:inline-flex xl:hidden px-2.5 h-8 sm:h-9 items-center rounded-full bg-gold/20 text-ink border border-gold/55 hover:bg-gold/35 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-gold"
         >
           Shop Collections
         </button>
-<!-- Wishlist Button -->
-        <button id="header-wishlist-btn" onclick="app.navigate('wishlist')" class="lw-btn-icon shrink-0 relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full" aria-label="View Wishlist">
+
+        <!-- Accessible 01 / 05 Saree Progress Indicator -->
+        <div
+          id="progress-indicator"
+          class="progress-indicator shrink-0"
+          role="region"
+          aria-label="Saree view progress"
+        >
+          <span id="progress-readout" class="progress-readout" aria-hidden="true">01 / 05</span>
+          <span id="progress-sr-status" class="sr-only" aria-live="polite">
+            Showing image 1 of 5: 1. Front view (three-quarter angle on the mannequin)
+          </span>
+          <ol class="progress-ticks" aria-hidden="true">
+            <li class="progress-tick is-active"></li>
+            <li class="progress-tick"></li>
+            <li class="progress-tick"></li>
+            <li class="progress-tick"></li>
+            <li class="progress-tick"></li>
+          </ol>
+        </div>
+
+        <!-- Wishlist Button -->
+        <button id="header-wishlist-btn" onclick="app.navigate('wishlist')" class="shrink-0 relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-[#F5EFE4] text-ink border border-gold/50 hover:bg-gold/20 transition-colors focus:outline-none focus:ring-2 focus:ring-gold" aria-label="View Wishlist">
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/></svg>
           <span id="header-wishlist-badge" class="hidden absolute -top-1 -right-0.5 min-w-[16px] h-[16px] px-1 rounded-full bg-teal text-gold font-bold text-[10px] items-center justify-center shadow-sm">0</span>
         </button>
 
         <!-- Account / Login Button -->
-        <button id="header-auth-btn" onclick="app.handleHeaderAuthClick()" class="lw-btn-secondary shrink-0 px-3 h-8 sm:h-9 flex items-center gap-1.5 rounded-full text-[11px] sm:text-xs font-semibold" aria-label="Account or Sign In">
+        <button id="header-auth-btn" onclick="app.handleHeaderAuthClick()" class="shrink-0 px-2.5 sm:px-3 h-8 sm:h-9 flex items-center gap-1.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/50 hover:bg-gold/20 transition-colors text-[11px] sm:text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-gold" aria-label="Account or Sign In">
           <svg class="w-3.5 h-3.5 sm:w-4 sm:h-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
           <span id="header-auth-label" class="hidden sm:inline truncate max-w-[90px]">Sign In</span>
         </button>
 
         <!-- Cart Button (Opens Slide-in CartDrawer) -->
-        <button id="header-cart-btn" onclick="app.openCartDrawer()" class="lw-btn-icon shrink-0 mr-0.5 relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full" aria-label="View Shopping Cart">
+        <button id="header-cart-btn" onclick="app.openCartDrawer()" class="shrink-0 mr-0.5 relative w-8 h-8 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-[#F5EFE4] text-ink border border-gold/50 hover:bg-gold/20 transition-colors focus:outline-none focus:ring-2 focus:ring-gold" aria-label="View Shopping Cart">
           <svg class="w-4 h-4 sm:w-4.5 sm:h-4.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.8" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/></svg>
           <span id="header-cart-badge" class="absolute -top-1 -right-0.5 min-w-[17px] h-[17px] px-1 rounded-full bg-gold text-ink font-bold text-[10px] flex items-center justify-center shadow-sm">0</span>
         </button>
@@ -1086,11 +782,11 @@
           placeholder="Search sarees, fabric, colour..."
           oninput="app.handleHeaderSearchInput(this.value)"
           onkeydown="if(event.key==='Enter'){ event.preventDefault(); app.submitHeaderSearch(this.value); }"
-          class="lw-glass-search w-full pl-8 pr-6 py-1.5 rounded-full text-xs text-ink placeholder:text-ink-muted"
+          class="w-full pl-8 pr-6 py-1.5 rounded-full bg-[#F5EFE4] border border-gold/40 text-xs text-ink placeholder:text-ink-muted focus:outline-none focus:ring-2 focus:ring-gold"
         />
         <svg class="w-3.5 h-3.5 text-ink-muted absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
       </div>
-      <button id="mobile-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="lw-btn-primary shrink-0 px-3 py-1.5 rounded-full text-[11px] font-bold">Shop Collections</button>
+      <button id="mobile-shop-collections-btn" type="button" onclick="app.openFlowingMenuModal()" class="shrink-0 px-2.5 py-1.5 rounded-full bg-gold/25 border border-gold/55 text-[11px] font-semibold text-ink">Shop Collections</button>
     </div>
   </header>
 
@@ -1241,8 +937,8 @@
           </ul>
         </div>
 
-        <!-- Direct Contact & WhatsApp Button (Liquid-Glass Footer Panel) -->
-        <div class="lw-glass-panel p-4 sm:p-5 space-y-3">
+        <!-- Direct Contact & WhatsApp Button -->
+        <div class="space-y-3">
           <h3 class="font-serif text-lg font-semibold text-ink">Contact &amp; WhatsApp</h3>
           <a
             id="footer-whatsapp-contact-btn"
@@ -1495,43 +1191,191 @@
 
     /**
      * ============================================================================
-     * 5. SHOWCASE & CATALOG BACKGROUND VIDEO CONTROLLER
-     * - Lazy-loads and plays the compressed muted looping saree video (< 2.5 MB)
-     *   behind #catalogue-section only when scrolled into view (IntersectionObserver)
-     * - Pauses when off-screen, when tab is hidden, or when paused by visitor
-     * - Automatic still-image fallback (poster.webp) on mobile (< 768px),
-     *   prefers-reduced-motion: reduce, Save-Data, slow 2g/3g, or video error
+     * 5. HERO STUDIO SHOWCASE & CATALOG BACKGROUND ANIMATION ENGINE
+     * - ShowcaseScrollEngine: Manages the 5 supplied studio photos (front, back,
+     *   pallu detail, fabric macro, blouse) with click + keyboard support and
+     *   normal page scrolling (no 360° turntable, no scroll-jacking).
+     * - CatalogBgAnimation: Plays the 300-frame looping saree animation on a
+     *   decorative <canvas> behind #catalogue-section when 20-30% in view.
      * ============================================================================
      */
     const ShowcaseScrollEngine = {
-      framesConfig: [],
       activeStepIndex: 0,
-      timeline: null,
-      setActiveStep() {},
-      handleThumbKeydown() {},
+      framesConfig: [
+        {
+          index: 1,
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/1-front.jpg`,
+          viewType: "full",
+          caption: "1. Front view (three-quarter angle on the mannequin)",
+          shortLabel: "1. Front View",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 1. Front view (three-quarter angle on the mannequin)"
+        },
+        {
+          index: 2,
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/2-back-pallu.jpg`,
+          viewType: "full",
+          caption: "2. Back and pallu view",
+          shortLabel: "2. Back & Pallu",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 2. Back and pallu view"
+        },
+        {
+          index: 3,
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/3-pallu-detail.jpg`,
+          viewType: "detail",
+          caption: "3. Pallu embroidery detail",
+          shortLabel: "3. Pallu Detail",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 3. Pallu embroidery detail"
+        },
+        {
+          index: 4,
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/4-macro.jpg`,
+          viewType: "detail",
+          caption: "4. Fabric and embroidery macro",
+          shortLabel: "4. Weave Macro",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 4. Fabric and embroidery macro"
+        },
+        {
+          index: 5,
+          jpg: `${window.__ASSET_BASE_PATH__ || ""}/public/images/sarees/jt-saree-09/5-blouse.jpg`,
+          viewType: "detail",
+          caption: "5. Blouse and border detail",
+          shortLabel: "5. Blouse & Border",
+          alt: "Champagne Tissue Saree with Floral and Peacock Embroidery — 5. Blouse and border detail"
+        }
+      ],
+
+      formatIndex(num) {
+        return String(num).padStart(2, "0");
+      },
+
+      setActiveStep(stepIndex, focusThumb = false) {
+        const total = this.framesConfig.length;
+        const idx = ((Number(stepIndex) || 0) % total + total) % total;
+        this.activeStepIndex = idx;
+        const frame = this.framesConfig[idx];
+
+        const mainImg = document.getElementById("hero-showcase-main-img");
+        if (mainImg && frame) {
+          mainImg.src = frame.jpg;
+          mainImg.alt = frame.alt;
+        }
+        const captionEl = document.getElementById("hero-showcase-caption");
+        if (captionEl && frame) {
+          captionEl.textContent = frame.caption;
+        }
+
+        const progressReadout = document.getElementById("progress-readout");
+        if (progressReadout) {
+          progressReadout.textContent = `${this.formatIndex(idx + 1)} / ${this.formatIndex(total)}`;
+        }
+        const srStatus = document.getElementById("progress-sr-status");
+        if (srStatus && frame) {
+          srStatus.textContent = `Showing image ${idx + 1} of ${total}: ${frame.caption}`;
+        }
+        document.querySelectorAll(".progress-tick").forEach((tick, i) => {
+          tick.classList.toggle("is-active", i === idx);
+          tick.classList.toggle("is-complete", i < idx);
+        });
+
+        const thumbs = document.querySelectorAll("#hero-showcase-thumbs [role='tab']");
+        thumbs.forEach((btn, i) => {
+          const active = i === idx;
+          btn.setAttribute("aria-selected", active ? "true" : "false");
+          btn.classList.toggle("is-active-thumb", active);
+          btn.classList.toggle("border-ink", active);
+          btn.classList.toggle("ring-2", active);
+          btn.classList.toggle("ring-gold", active);
+          btn.classList.toggle("border-gold/35", !active);
+          btn.classList.toggle("opacity-80", !active);
+          const cap = btn.querySelector(".hero-thumb-caption");
+          if (cap) {
+            cap.className = active
+              ? "hero-thumb-caption px-2 py-1 text-[10px] font-semibold bg-ink text-ivory truncate"
+              : "hero-thumb-caption px-2 py-1 text-[10px] font-semibold bg-[#FAF8F5] text-ink truncate";
+          }
+          if (active && focusThumb) {
+            btn.focus();
+          }
+        });
+      },
+
+      handleThumbKeydown(event, idx) {
+        const total = this.framesConfig.length;
+        if (event.key === "ArrowRight") {
+          event.preventDefault();
+          this.setActiveStep((idx + 1) % total, true);
+        } else if (event.key === "ArrowLeft") {
+          event.preventDefault();
+          this.setActiveStep((idx - 1 + total) % total, true);
+        } else if (event.key === "Home") {
+          event.preventDefault();
+          this.setActiveStep(0, true);
+        } else if (event.key === "End") {
+          event.preventDefault();
+          this.setActiveStep(total - 1, true);
+        } else if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          this.setActiveStep(idx, true);
+        }
+      },
+
       mount() {
         document.documentElement.classList.remove("is-scroll-driven");
+        this.setActiveStep(this.activeStepIndex || 0, false);
         CatalogBgAnimation.mount();
       },
+
       unmount() {
         CatalogBgAnimation.unmount();
       }
     };
     window.ShowcaseScrollEngine = ShowcaseScrollEngine;
 
+    /**
+     * ============================================================================
+     * CATALOG BACKGROUND ANIMATION CONTROLLER (300 Frames, 1280x720 WebP)
+     * - Starts when #catalogue-section is ~20-30% visible via IntersectionObserver
+     * - Pauses when off-screen, when tab is hidden, or when paused by visitor
+     * - Seamless loop via ping-pong playback + crossfade blend
+     * - Progressive non-blocking loading: poster -> first 30 frames -> rest
+     * - Automatic static still fallback on mobile (<768px), reduced motion,
+     *   Save-Data / slow connection, or frame load failure
+     * ============================================================================
+     */
     const CatalogBgAnimation = {
+      totalFrames: 300,
+      fps: 24,
+      frames: new Array(301).fill(null),
+      frameStatus: new Array(301).fill("idle"), // "idle" | "loading" | "ready" | "error"
+      loadQueue: [],
+      activeLoads: 0,
+      maxConcurrentLoads: 4,
+      readyCount: 0,
+      failedCount: 0,
+      firstBatchTarget: 30,
+      firstBatchStarted: false,
+      restBatchStarted: false,
+      currentFrame: 1,
+      prevDrawnFrame: 1,
+      direction: 1, // 1: forward (1 -> 300), -1: reverse ping-pong (300 -> 1)
       isInView: false,
       userPaused: false,
       isPlaying: false,
       staticFallback: false,
-      sourcesLoaded: false,
-      videoFailed: false,
+      rafId: null,
+      lastFrameTime: 0,
       observer: null,
+      idleTimer: null,
       visibilityBound: false,
       mediaBound: false,
 
+      getFrameUrl(index) {
+        const basePath = window.__ASSET_BASE_PATH__ || "";
+        const padded = String(index).padStart(3, "0");
+        return `${basePath}/public/assets/catalog-bg/frame-${padded}.webp`;
+      },
+
       shouldUseStaticFallback() {
-        if (this.videoFailed) return true;
         if (window.matchMedia && window.matchMedia("(max-width: 767px)").matches) {
           return true;
         }
@@ -1545,16 +1389,15 @@
             return true;
           }
         }
+        if (this.failedCount >= 10 && this.readyCount === 0) {
+          return true;
+        }
         return false;
-      },
-
-      getVideoEl() {
-        return document.getElementById("catalog-bg-video");
       },
 
       syncUI() {
         const layer = document.getElementById("catalog-bg-layer");
-        const video = this.getVideoEl();
+        const canvas = document.getElementById("catalog-bg-canvas");
         const toggleBtn = document.getElementById("catalog-bg-toggle-btn");
         const toggleIcon = document.getElementById("catalog-bg-toggle-icon");
         const toggleLabel = document.getElementById("catalog-bg-toggle-label");
@@ -1563,8 +1406,8 @@
         if (layer) {
           layer.classList.toggle("is-static-fallback", this.staticFallback);
         }
-        if (video && this.staticFallback) {
-          video.classList.remove("is-ready");
+        if (canvas && this.staticFallback) {
+          canvas.classList.remove("is-ready");
         }
         if (toggleBtn) {
           toggleBtn.setAttribute("aria-pressed", this.userPaused ? "true" : "false");
@@ -1573,53 +1416,172 @@
         }
       },
 
-      ensureVideoSourcesLoaded() {
+      enqueueRange(indices) {
+        for (let i = 0; i < indices.length; i++) {
+          const idx = indices[i];
+          if (idx >= 1 && idx <= this.totalFrames && this.frameStatus[idx] === "idle") {
+            this.frameStatus[idx] = "queued";
+            this.loadQueue.push(idx);
+          }
+        }
+        this.pumpQueue();
+      },
+
+      startProgressiveLoad() {
         if (this.staticFallback) return;
-        const video = this.getVideoEl();
-        if (!video) return;
+        if (!this.firstBatchStarted) {
+          this.firstBatchStarted = true;
+          const first30 = [];
+          for (let i = 1; i <= this.firstBatchTarget; i++) first30.push(i);
+          this.enqueueRange(first30);
+        }
+      },
 
-        if (!video.dataset.boundEvents) {
-          video.dataset.boundEvents = "1";
-          video.muted = true;
-          video.playsInline = true;
-          video.loop = true;
+      enqueueRemainingFrames() {
+        if (this.restBatchStarted || this.staticFallback) return;
+        this.restBatchStarted = true;
+        // Load every second frame (31, 33, ..., 299, 300) so total network payload stays ~8 MB
+        const rest = [];
+        for (let i = 31; i <= this.totalFrames; i += 2) {
+          rest.push(i);
+        }
+        if (rest[rest.length - 1] !== this.totalFrames) {
+          rest.push(this.totalFrames);
+        }
+        this.enqueueRange(rest);
+      },
 
-          const markReady = () => {
-            if (!this.staticFallback) {
-              video.classList.add("is-ready");
-            }
-          };
-          video.addEventListener("loadeddata", markReady);
-          video.addEventListener("canplay", markReady);
-          video.addEventListener("playing", () => {
-            this.isPlaying = true;
-            if (!this.staticFallback) video.classList.add("is-ready");
-          });
-          video.addEventListener("pause", () => {
-            this.isPlaying = false;
-          });
-          video.addEventListener("error", () => {
-            this.videoFailed = true;
+      pumpQueue() {
+        if (this.staticFallback) return;
+        while (this.activeLoads < this.maxConcurrentLoads && this.loadQueue.length > 0) {
+          const idx = this.loadQueue.shift();
+          this.loadSingleFrame(idx);
+        }
+      },
+
+      loadSingleFrame(idx) {
+        this.frameStatus[idx] = "loading";
+        this.activeLoads++;
+        const img = new Image();
+        img.decoding = "async";
+
+        const finishOk = () => {
+          this.activeLoads = Math.max(0, this.activeLoads - 1);
+          this.frames[idx] = img;
+          this.frameStatus[idx] = "ready";
+          this.readyCount++;
+
+          if (this.readyCount === 1) {
+            this.drawFrame(this.currentFrame);
+          }
+          if (this.readyCount >= 12 && this.isInView && !this.userPaused && !document.hidden && !this.isPlaying) {
+            this.startLoop();
+          }
+          if (this.readyCount >= this.firstBatchTarget && !this.restBatchStarted) {
+            this.enqueueRemainingFrames();
+          }
+          this.pumpQueue();
+        };
+
+        img.onload = () => {
+          if (typeof img.decode === "function") {
+            img.decode().then(finishOk).catch(finishOk);
+          } else {
+            finishOk();
+          }
+        };
+
+        img.onerror = () => {
+          this.activeLoads = Math.max(0, this.activeLoads - 1);
+          this.frameStatus[idx] = "error";
+          this.failedCount++;
+          if (this.failedCount >= 10 && this.readyCount === 0) {
             this.pauseLoop();
             this.syncUI();
-          });
+          } else {
+            this.pumpQueue();
+          }
+        };
+
+        img.src = this.getFrameUrl(idx);
+      },
+
+      findNearestReadyImage(targetIdx) {
+        const direct = this.frames[targetIdx];
+        if (direct && this.frameStatus[targetIdx] === "ready" && direct.complete && direct.naturalWidth > 0) {
+          return direct;
+        }
+        for (let offset = 1; offset <= this.totalFrames; offset++) {
+          const prev = targetIdx - offset;
+          if (prev >= 1 && this.frameStatus[prev] === "ready" && this.frames[prev]?.complete) {
+            return this.frames[prev];
+          }
+          const next = targetIdx + offset;
+          if (next <= this.totalFrames && this.frameStatus[next] === "ready" && this.frames[next]?.complete) {
+            return this.frames[next];
+          }
+        }
+        return null;
+      },
+
+      drawFrame(frameIdx) {
+        if (this.staticFallback) return;
+        const canvas = document.getElementById("catalog-bg-canvas");
+        if (!canvas) return;
+        const img = this.findNearestReadyImage(frameIdx);
+        if (!img) return;
+
+        const ctx = canvas.getContext("2d", { alpha: false });
+        if (!ctx) return;
+
+        if (canvas.width !== 1280 || canvas.height !== 720) {
+          canvas.width = 1280;
+          canvas.height = 720;
         }
 
-        const sources = video.querySelectorAll("source[data-src]");
-        let attached = false;
-        sources.forEach((srcEl) => {
-          const dataSrc = srcEl.getAttribute("data-src");
-          if (dataSrc && !srcEl.getAttribute("src")) {
-            srcEl.setAttribute("src", dataSrc);
-            attached = true;
-          }
-        });
-        if (attached || !this.sourcesLoaded) {
-          this.sourcesLoaded = true;
-          try {
-            video.load();
-          } catch (_) {}
+        // Subtle crossfade near turnaround ends (frames 1..8 and 293..300) for a seamless loop
+        const prevImg = this.frames[this.prevDrawnFrame];
+        const nearTurnaround = frameIdx <= 8 || frameIdx >= this.totalFrames - 7;
+        if (nearTurnaround && prevImg && prevImg !== img && prevImg.complete && prevImg.naturalWidth > 0) {
+          ctx.globalAlpha = 1;
+          ctx.drawImage(prevImg, 0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 0.65;
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 1;
+        } else {
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
         }
+
+        this.prevDrawnFrame = frameIdx;
+        canvas.classList.add("is-ready");
+        canvas.dataset.currentFrame = String(frameIdx);
+      },
+
+      stepFrame() {
+        let next = this.currentFrame + this.direction;
+        if (next > this.totalFrames) {
+          this.direction = -1;
+          next = this.totalFrames - 1;
+        } else if (next < 1) {
+          this.direction = 1;
+          next = 2;
+        }
+        this.currentFrame = Math.max(1, Math.min(this.totalFrames, next));
+        this.drawFrame(this.currentFrame);
+      },
+
+      tick(timestamp) {
+        if (!this.isPlaying) return;
+        const interval = 1000 / this.fps;
+        if (!this.lastFrameTime) {
+          this.lastFrameTime = timestamp;
+        }
+        const elapsed = timestamp - this.lastFrameTime;
+        if (elapsed >= interval) {
+          this.lastFrameTime = timestamp - (elapsed % interval);
+          this.stepFrame();
+        }
+        this.rafId = window.requestAnimationFrame((ts) => this.tick(ts));
       },
 
       startLoop() {
@@ -1627,32 +1589,20 @@
         if (this.staticFallback || this.userPaused || !this.isInView || document.hidden) {
           return;
         }
-        const video = this.getVideoEl();
-        if (!video) return;
-        this.ensureVideoSourcesLoaded();
-        video.muted = true;
-        const playPromise = video.play();
-        if (playPromise && typeof playPromise.then === "function") {
-          playPromise
-            .then(() => {
-              this.isPlaying = true;
-              video.classList.add("is-ready");
-            })
-            .catch(() => {
-              this.isPlaying = false;
-            });
-        } else {
-          this.isPlaying = !video.paused;
-        }
+        this.startProgressiveLoad();
+        if (this.readyCount === 0) return;
+        if (this.isPlaying) return;
+        this.isPlaying = true;
+        this.lastFrameTime = 0;
+        this.drawFrame(this.currentFrame);
+        this.rafId = window.requestAnimationFrame((ts) => this.tick(ts));
       },
 
       pauseLoop() {
         this.isPlaying = false;
-        const video = this.getVideoEl();
-        if (video && !video.paused) {
-          try {
-            video.pause();
-          } catch (_) {}
+        if (this.rafId !== null) {
+          window.cancelAnimationFrame(this.rafId);
+          this.rafId = null;
         }
       },
 
@@ -1707,12 +1657,13 @@
                 const vh = Math.max(1, window.innerHeight || document.documentElement.clientHeight || 800);
                 const viewportCover = entry.intersectionRect ? entry.intersectionRect.height / vh : 0;
                 const visibleEnough =
-                  entry.isIntersecting && (entry.intersectionRatio >= 0.18 || viewportCover >= 0.2);
+                  entry.isIntersecting && (entry.intersectionRatio >= 0.2 || viewportCover >= 0.22);
                 const leftScreen =
-                  !entry.isIntersecting || (entry.intersectionRatio < 0.05 && viewportCover < 0.08);
+                  !entry.isIntersecting || (entry.intersectionRatio < 0.08 && viewportCover < 0.1);
 
                 if (visibleEnough) {
                   this.isInView = true;
+                  this.startProgressiveLoad();
                   this.startLoop();
                 } else if (leftScreen) {
                   this.isInView = false;
@@ -1722,10 +1673,20 @@
             },
             {
               root: null,
-              threshold: [0, 0.05, 0.15, 0.2, 0.3, 0.5]
+              threshold: [0, 0.08, 0.15, 0.2, 0.25, 0.3, 0.5]
             }
           );
           this.observer.observe(section);
+        }
+
+        // Non-blocking background warm-up of poster + first 30 frames on desktop after page settle
+        if (!this.staticFallback) {
+          const scheduleIdle = window.requestIdleCallback || ((cb) => setTimeout(cb, 250));
+          this.idleTimer = scheduleIdle(() => {
+            if (!this.staticFallback) {
+              this.startProgressiveLoad();
+            }
+          });
         }
       },
 
@@ -1921,7 +1882,7 @@
         const bgClass = type === "error"
           ? "bg-[#3D231E] border-gold text-ivory"
           : "bg-ivory border-gold text-ink";
-        toast.className = `lw-glass-toast pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-2xl border shadow-xl text-xs sm:text-sm font-semibold transition-all duration-300 ${bgClass}`;
+        toast.className = `pointer-events-auto flex items-center justify-between gap-3 px-4 py-3 rounded-xl border shadow-xl text-xs sm:text-sm font-medium transition-all duration-300 ${bgClass}`;
         toast.innerHTML = `
           <span>${message}</span>
           <button onclick="this.parentElement.remove()" class="text-gold-dark hover:text-ink font-bold ml-2" aria-label="Dismiss notification">✕</button>
@@ -2270,7 +2231,69 @@
 
         return `
           <div class="page-transition">
-<!-- 2. SHOP CATALOGUE SECTION -->
+            <!-- 1. FEATURED SAREE 5-VIEW STUDIO GALLERY (No 360° turntable, no scroll-trapping) -->
+            <section id="showcase-section" class="showcase-section" aria-label="Featured Saree Studio Views">
+              <div id="showcase-stage" class="showcase-stage">
+                <div class="rounded-3xl bg-[#FAF8F5] border border-gold/45 p-4 sm:p-6 shadow-sm">
+                  <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-center">
+                    <div class="lg:col-span-7">
+                      <div class="relative aspect-[4/3] sm:aspect-[16/11] rounded-2xl bg-[#EFE6D5] border border-gold/35 overflow-hidden flex items-center justify-center">
+                        <img
+                          id="hero-showcase-main-img"
+                          src="${ShowcaseScrollEngine.framesConfig[0].jpg}"
+                          alt="${ShowcaseScrollEngine.framesConfig[0].alt}"
+                          width="1792"
+                          height="2400"
+                          fetchpriority="high"
+                          decoding="async"
+                          class="w-full h-full object-contain"
+                        />
+                        <p id="hero-showcase-caption" class="absolute bottom-2.5 left-2.5 right-2.5 sm:right-auto px-3 py-1 rounded-full bg-[#FAF8F5]/95 border border-gold/50 text-[11px] sm:text-xs font-serif italic text-ink shadow-xs truncate">
+                          ${ShowcaseScrollEngine.framesConfig[0].caption}
+                        </p>
+                      </div>
+                    </div>
+                    <div class="lg:col-span-5 space-y-3">
+                      <span class="text-[11px] font-bold uppercase tracking-widest text-teal block">Lepakshi Weaves • Studio Views</span>
+                      <h1 class="font-serif text-2xl sm:text-3xl font-bold text-ink leading-snug">Champagne Tissue Saree with Floral &amp; Peacock Embroidery</h1>
+                      <p class="text-xs sm:text-sm text-ink-muted leading-relaxed">Select any thumbnail below or use the Left and Right arrow keys to inspect the front drape, back pallu, embroidery close-up, weave macro, and blouse border.</p>
+                      <div id="hero-showcase-thumbs" class="grid grid-cols-5 gap-2 pt-1" role="tablist" aria-label="Featured Saree Studio Views">
+                        ${ShowcaseScrollEngine.framesConfig.map((frame, idx) => `
+                          <button
+                            type="button"
+                            role="tab"
+                            aria-selected="${idx === 0 ? "true" : "false"}"
+                            aria-label="${frame.caption}"
+                            onclick="ShowcaseScrollEngine.setActiveStep(${idx})"
+                            onkeydown="ShowcaseScrollEngine.handleThumbKeydown(event, ${idx})"
+                            class="text-left rounded-xl overflow-hidden border-2 transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-gold ${
+                              idx === 0 ? "is-active-thumb border-ink ring-2 ring-gold" : "border-gold/35 opacity-80 hover:opacity-100"
+                            }"
+                          >
+                            <div class="aspect-[4/5] bg-[#EFE6D5] overflow-hidden flex items-center justify-center p-0.5">
+                              <img src="${frame.jpg}" alt="${frame.alt}" width="320" height="420" loading="${idx < 2 ? "eager" : "lazy"}" decoding="async" class="w-full h-full object-contain" />
+                            </div>
+                            <div class="hero-thumb-caption px-2 py-1 text-[10px] font-semibold ${idx === 0 ? "bg-ink text-ivory" : "bg-[#FAF8F5] text-ink"} truncate">
+                              0${idx + 1}
+                            </div>
+                          </button>
+                        `).join("")}
+                      </div>
+                      <div class="pt-2 flex flex-wrap items-center gap-2.5">
+                        <button type="button" onclick="app.openProductDetail('jt-saree-09')" class="px-4 py-2.5 rounded-full bg-teal text-ivory text-xs font-bold hover:bg-teal-light transition-colors shadow-xs">
+                          Inspect Full Saree Details →
+                        </button>
+                        <button type="button" onclick="app.navigate('shop')" class="px-4 py-2.5 rounded-full bg-[#F5EFE4] text-ink border border-gold/55 text-xs font-semibold hover:bg-gold/25 transition-colors">
+                          Browse Saree Catalogue ↓
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- 2. SHOP CATALOGUE SECTION -->
             <section id="catalogue-section" class="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-8 sm:py-12" aria-label="Saree Catalogue">
               <div class="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
                 <div class="min-w-0">
@@ -4532,7 +4555,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   <!-- Slide-in Right Cart Drawer (Prompt 1 CartDrawer Component) -->
   <div id="cart-drawer-modal" class="fixed inset-0 z-50 hidden" role="dialog" aria-modal="true" aria-label="Shopping Cart Drawer">
     <div id="cart-drawer-backdrop" onclick="app.closeCartDrawer()" class="absolute inset-0 bg-ink/60 backdrop-blur-xs transition-opacity"></div>
-    <aside id="cart-drawer-panel" class="cart-drawer-panel lw-glass-panel absolute top-0 right-0 bottom-0 w-full max-w-md border-l border-gold/50 shadow-2xl flex flex-col justify-between z-10">
+    <aside id="cart-drawer-panel" class="cart-drawer-panel absolute top-0 right-0 bottom-0 w-full max-w-md bg-[#FAF8F5] border-l-2 border-gold shadow-2xl flex flex-col justify-between z-10">
       <!-- Populated dynamically by app.renderCartDrawerContent() -->
     </aside>
   </div>
@@ -4540,7 +4563,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   <!-- Slide-up Mobile Filter Bottom Sheet (Prompt 1 FilterPanel on Mobile) -->
   <div id="mobile-filter-sheet" class="fixed inset-0 z-50 hidden lg:hidden" role="dialog" aria-modal="true" aria-label="Filter Sarees">
     <div onclick="app.closeMobileFilterSheet()" class="absolute inset-0 bg-ink/60 backdrop-blur-xs"></div>
-    <div id="mobile-filter-sheet-panel" class="filter-sheet-panel lw-glass-panel absolute left-0 right-0 bottom-0 max-h-[86vh] border-t border-gold/50 rounded-t-3xl shadow-2xl flex flex-col overflow-hidden z-10">
+    <div id="mobile-filter-sheet-panel" class="filter-sheet-panel absolute left-0 right-0 bottom-0 max-h-[86vh] bg-[#FAF8F5] border-t-2 border-gold rounded-t-3xl shadow-2xl flex flex-col overflow-hidden z-10">
       <!-- Populated dynamically by app.renderMobileFilterSheetContent() -->
     </div>
   </div>
@@ -4581,7 +4604,7 @@ REQUIRED SHOT: ${viewInstructions[viewIdx]}`;
   </div>
 
   <!-- Storefront (Prompt 1) & Protected Admin Panel (Prompt 2) Controller Extension -->
-  <script src="src/storefront-admin-app.js?v=liquid-glass-v2"></script>
+  <script src="src/storefront-admin-app.js?v=360-v5"></script>
   <script>
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function () {
