@@ -7,6 +7,10 @@
     {
       "source": "/images/sarees/(.*)",
       "destination": "/public/images/sarees/$1"
+    },
+    {
+      "source": "/assets/saree-360/(.*)",
+      "destination": "/public/assets/saree-360/$1"
     }
   ],
   "headers": [
@@ -29,15 +33,6 @@
     },
     {
       "source": "/public/brand/(.*)",
-      "headers": [
-        {
-          "key": "Cache-Control",
-          "value": "public, max-age=604800, stale-while-revalidate=86400"
-        }
-      ]
-    },
-    {
-      "source": "/public/assets/catalog-bg/(.*)",
       "headers": [
         {
           "key": "Cache-Control",

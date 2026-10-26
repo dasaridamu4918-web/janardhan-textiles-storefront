@@ -1,0 +1,112 @@
+{
+  "productId": "jt-saree-09",
+  "name": "Champagne Tissue Saree with Floral and Peacock Embroidery",
+  "version": "360-v6",
+  "updatedAt": 1792638690,
+  "totalFrames": 360,
+  "dimensions": {
+    "width": 720,
+    "height": 960,
+    "aspectRatio": "3:4"
+  },
+  "aiAssistedPreview": true,
+  "disclosure": "AI-assisted angle preview \u2014 see original photos below",
+  "fullBodyAnchors": [
+    {
+      "yaw": 0,
+      "role": "front",
+      "file": "/public/images/sarees/jt-saree-09/1-front.jpg",
+      "source": "real",
+      "approved": true,
+      "label": "0\u00b0 Front View (Original Studio Photo)"
+    },
+    {
+      "yaw": 45,
+      "role": "side",
+      "file": "/public/images/sarees/jt-saree-09/yaw-045.jpg",
+      "source": "ai",
+      "model": "Nano Banana 2 Pro",
+      "approved": true,
+      "label": "45\u00b0 Front-Right Angle (AI-Assisted Preview)"
+    },
+    {
+      "yaw": 90,
+      "role": "side",
+      "file": "/public/images/sarees/jt-saree-09/yaw-090.jpg",
+      "source": "ai",
+      "model": "Nano Banana 2 Pro",
+      "approved": true,
+      "label": "90\u00b0 Right Profile (AI-Assisted Preview)"
+    },
+    {
+      "yaw": 135,
+      "role": "side",
+      "file": "/public/images/sarees/jt-saree-09/yaw-135.jpg",
+      "source": "ai",
+      "model": "Nano Banana 2 Pro",
+      "approved": true,
+      "label": "135\u00b0 Back-Right Angle (AI-Assisted Preview)"
+    },
+    {
+      "yaw": 180,
+      "role": "back",
+      "file": "/public/images/sarees/jt-saree-09/2-back-pallu.jpg",
+      "source": "real",
+      "approved": true,
+      "label": "180\u00b0 Back & Pallu View (Original Studio Photo)"
+    },
+    {
+      "yaw": 225,
+      "role": "side2",
+      "file": "/public/images/sarees/jt-saree-09/yaw-225.jpg",
+      "source": "ai",
+      "model": "Nano Banana 2 Pro",
+      "approved": true,
+      "label": "225\u00b0 Back-Left Angle (AI-Assisted Preview)"
+    },
+    {
+      "yaw": 270,
+      "role": "side2",
+      "file": "/public/images/sarees/jt-saree-09/yaw-270.jpg",
+      "source": "ai",
+      "model": "Nano Banana 2 Pro",
+      "approved": true,
+      "label": "270\u00b0 Left Profile (AI-Assisted Preview)"
+    },
+    {
+      "yaw": 315,
+      "role": "side2",
+      "file": "/public/images/sarees/jt-saree-09/yaw-315.jpg",
+      "source": "ai",
+      "model": "Nano Banana 2 Pro",
+      "approved": true,
+      "label": "315\u00b0 Front-Left Angle (AI-Assisted Preview)"
+    }
+  ],
+  "detailHotspots": [
+    {
+      "key": "pallu_detail",
+      "role": "detail",
+      "file": "/public/images/sarees/jt-saree-09/3-pallu-detail.jpg",
+      "source": "real",
+      "label": "Pallu Embroidery Close-Up",
+      "targetYaw": 180
+    },
+    {
+      "key": "fabric_macro",
+      "role": "detail",
+      "file": "/public/images/sarees/jt-saree-09/4-macro.jpg",
+      "source": "real",
+      "label": "Fabric & Zari Weave Macro",
+      "targetYaw": 45
+    },
+    {
+      "key": "blouse_border",
+      "role": "detail",
+      "file": "/public/images/sarees/jt-saree-09/5-blouse.jpg",
+      "source": "real",
+      "label": "Blouse & Scalloped Border",
+      "targetYaw": 0
+    }
+  ]
+}
