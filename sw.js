@@ -1,5 +1,5 @@
 // Lepakshi Weaves Service Worker - network-first for API, images and JS (never serves stale swapped images)
-const CACHE_NAME = "lw-storefront-v8";
+const CACHE_NAME = "lw-storefront-v9";
 const STATIC_PRECACHE = ["/", "/index.html", "/manifest.json"];
 
 self.addEventListener("install", (event) => {
